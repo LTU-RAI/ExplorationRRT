@@ -234,7 +234,7 @@ struct node{
         }else{
           ufo::geometry::LineSegment myLine(*(targetNode->point), *point);
 
-//        EITHER LINE OR OBB BASED COLLISION CHECK // 
+          //  EITHER LINE OR OBB BASED COLLISION CHECK // 
 
           // ufo::math::Vector3 direction = *(targetNode->point) - *point;
           // ufo::math::Vector3 center = *point + (direction / 2.0);
