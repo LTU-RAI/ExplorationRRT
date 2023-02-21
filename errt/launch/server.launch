@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<launch>
+
+		<arg name="resolution" default="0.4" />
+		<arg name="depth_levels" default="16" />
+		<arg name="num_workers" default="1" />
+		<arg name="color" default="true" />
+
+  <node pkg="ufomap_mapping" type="ufomap_mapping_server_node" name="ufomap_mapping_server_node" required="true">
+		
+		<param name="cloud_in" value="/pelican/velodyne_points" />
+		<!-- <param name="cloud_in" value="/velodyne_points" /> -->
+
+		<param name="frame_id" type="string" value="world" />
+
+		<remap from="cloud_in" to="/pelican/velodyne_points" />
+		<!-- <remap from="cloud_in" to="/velodyne_points" /> -->
+
+    	<param name="robot_frame_id" value="pelican/base_link" />
+		<!-- <param name="robot_frame_id" value="base_link" /> -->
+
+		<param name="num_workers" value="$(arg num_workers)" />
+		<param name="max_range" value="10" />
+		<param name="min_range" value="1" />
+		<param name="robot_radius" value="1" />
+		<param name="robot_height" value="1" />
+		<param name="compress" value="True" />
+
+		<param name="clear_robot" value="True" />
+
+		<!-- FOR SHAFTER/PIONEER/SPOT CLEAR ROBOT SHOULD BE SET TO TRUE -->
+
+		<!-- <param name="clear_robot" value="True" /> -->
+
+		<param name="clearing_depth" value="0" />
+		<param name="publish_depth" value="0" />
+		<param name="pub_rate" value="1" />
+		<param name="insert_depth" value="0" />
+		
+		<param name="resolution" value="$(arg resolution)" />
+		<param name="depth_levels" value="$(arg depth_levels)" />
+		<param name="color_map" value="$(arg color)"/>
+  </node>
+
+
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find errt)/rviz/errt.rviz" />
+
+
+</launch>
