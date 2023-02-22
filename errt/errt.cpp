@@ -100,7 +100,9 @@ struct node{
         return;
       }
       
-      int findInformationGain(float SCALER_AABB, float givenHorizontal, float givenVertical, float givenMin, float givenMax, ufo::map::OccupancyMapColor const& map, bool excludePath, bool findAnyInfo){
+      int findInformationGain(float SCALER_AABB, float givenHorizontal, float givenVertical, 
+                                      float givenMin, float givenMax, ufo::map::OccupancyMapColor const& map, 
+                                                    bool excludePath, bool findAnyInfo){
         if(myHits.empty() or findAnyInfo){
           // Setting up targets, X / Y targets in either positive (P) or negative (N) direction
           ufo::math::Vector3 targetXP(point->x() + 1, point->y(), point->z());
@@ -114,7 +116,7 @@ struct node{
           double horizontal_angle = givenHorizontal;
         
           //Distances
-          double near_distance = givenMin;
+          double near_distance = 5;
           double far_distance = givenMax;
         
           //Frustums
@@ -127,6 +129,21 @@ struct node{
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
+
+              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
+
+              // ufo::math::Vector3 direction = end_point - *point;
+              // ufo::math::Vector3 center = *point + (direction / 2.0);
+              // double dd = direction.norm();
+              // direction /= dd;
+              // double yaw = -atan2(direction[1], direction[0]);
+              // double pitch = -asin(direction[2]);
+              // double roll = 0; // TODO: Fix
+              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
+              //                       ufo::math::Quaternion(roll, pitch, yaw));
+
+              //   if(!isInCollision(map, obb, true, false, false, 0)){
+
             if(!isInCollision(map, myLine, true, false, false, 0)){
               if(findAnyInfo){
                 return 1;
@@ -138,6 +155,21 @@ struct node{
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
+
+              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
+
+              // ufo::math::Vector3 direction = end_point - *point;
+              // ufo::math::Vector3 center = *point + (direction / 2.0);
+              // double dd = direction.norm();
+              // direction /= dd;
+              // double yaw = -atan2(direction[1], direction[0]);
+              // double pitch = -asin(direction[2]);
+              // double roll = 0; // TODO: Fix
+              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
+              //                       ufo::math::Quaternion(roll, pitch, yaw));
+
+              //   if(!isInCollision(map, obb, true, false, false, 0)){
+
             if(!isInCollision(map, myLine, true, false, false, 0)){
               if(findAnyInfo){
                 return 1;
@@ -149,6 +181,21 @@ struct node{
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
+
+              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
+
+              // ufo::math::Vector3 direction = end_point - *point;
+              // ufo::math::Vector3 center = *point + (direction / 2.0);
+              // double dd = direction.norm();
+              // direction /= dd;
+              // double yaw = -atan2(direction[1], direction[0]);
+              // double pitch = -asin(direction[2]);
+              // double roll = 0; // TODO: Fix
+              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
+              //                       ufo::math::Quaternion(roll, pitch, yaw));
+
+              //   if(!isInCollision(map, obb, true, false, false, 0)){
+
             if(!isInCollision(map, myLine, true, false, false, 0)){
               if(findAnyInfo){
                 return 1;
@@ -160,6 +207,21 @@ struct node{
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
+
+              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
+
+              // ufo::math::Vector3 direction = end_point - *point;
+              // ufo::math::Vector3 center = *point + (direction / 2.0);
+              // double dd = direction.norm();
+              // direction /= dd;
+              // double yaw = -atan2(direction[1], direction[0]);
+              // double pitch = -asin(direction[2]);
+              // double roll = 0; // TODO: Fix
+              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
+              //                       ufo::math::Quaternion(roll, pitch, yaw));
+
+              //   if(!isInCollision(map, obb, true, false, false, 0)){
+
             if(!isInCollision(map, myLine, true, false, false, 0)){
               if(findAnyInfo){
                 return 1;
@@ -174,6 +236,21 @@ struct node{
           std::list<ufo::math::Vector3>::iterator it_hits;	
           for(it_hits = myHits.begin(); it_hits != myHits.end();){
             ufo::geometry::LineSegment myLine2(*point, *it_hits);
+
+              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
+
+              // ufo::math::Vector3 direction = *it_hits - *point;
+              // ufo::math::Vector3 center = *point + (direction / 2.0);
+              // double dd = direction.norm();
+              // direction /= dd;
+              // double yaw = -atan2(direction[1], direction[0]);
+              // double pitch = -asin(direction[2]);
+              // double roll = 0; // TODO: Fix
+              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
+              //                       ufo::math::Quaternion(roll, pitch, yaw));
+
+              //   if(isInCollision(map, obb, true, false, false, 0)){
+
             if(isInCollision(map, myLine2, true, false, false, 0)){
               it_hits = myHits.erase(it_hits);
             }else{
@@ -582,18 +659,23 @@ void visualize(ros::Publisher* points_pub, ros::Publisher* chosen_path_visualiza
     if(!CHOSEN_PATH.empty()){
       CHOSEN_PATH_points.header.frame_id = CHOSEN_PATH_line_list.header.frame_id = MAP_FRAME_ID;
       CHOSEN_PATH_points.ns = "points";
+      CHOSEN_PATH_line_list.ns = "lines";
       CHOSEN_PATH_points.action = visualization_msgs::Marker::ADD;
       CHOSEN_PATH_points.pose.orientation.w = 1.0;
+      CHOSEN_PATH_line_list.pose.orientation.w = 1.0;
       CHOSEN_PATH_points.id = 0;
       CHOSEN_PATH_line_list.id = 1;
       CHOSEN_PATH_points.type = visualization_msgs::Marker::SPHERE_LIST;
       CHOSEN_PATH_line_list.type = visualization_msgs::Marker::LINE_LIST;
       CHOSEN_PATH_points.scale.x = 0.3;
-      // CHOSEN_PATH_points.scale.y = 0.2;
+      CHOSEN_PATH_points.scale.z = 0.3;
+      CHOSEN_PATH_points.scale.y = 0.3;
       CHOSEN_PATH_line_list.scale.x = 0.1;
+      CHOSEN_PATH_line_list.scale.z = 0.1;
+      CHOSEN_PATH_line_list.scale.y = 0.1;
       CHOSEN_PATH_points.color.g = 0.8f;
       CHOSEN_PATH_points.color.a = 1.0;
-      CHOSEN_PATH_line_list.color.b = 1.0;
+      CHOSEN_PATH_line_list.color.r = 1.0;
       CHOSEN_PATH_line_list.color.a = 1.0;
       std::list<node*>::iterator it_comeon_visualizer2;
       for(it_comeon_visualizer2 = CHOSEN_PATH.begin(); it_comeon_visualizer2 != CHOSEN_PATH.end(); it_comeon_visualizer2++){
@@ -604,11 +686,12 @@ void visualize(ros::Publisher* points_pub, ros::Publisher* chosen_path_visualiza
         CHOSEN_PATH_points.points.push_back(p);
         if((*it_comeon_visualizer2)->myParent != nullptr){
           if(*it_comeon_visualizer2 != *CHOSEN_PATH.begin()){
+            geometry_msgs::Point pl;
             CHOSEN_PATH_line_list.points.push_back(p);
-            p.x = (*it_comeon_visualizer2)->myParent->point->x();
-            p.y = (*it_comeon_visualizer2)->myParent->point->y();
-            p.z = (*it_comeon_visualizer2)->myParent->point->z();
-            CHOSEN_PATH_line_list.points.push_back(p);
+            pl.x = (*it_comeon_visualizer2)->myParent->point->x();
+            pl.y = (*it_comeon_visualizer2)->myParent->point->y();
+            pl.z = (*it_comeon_visualizer2)->myParent->point->z();
+            CHOSEN_PATH_line_list.points.push_back(pl);
           }
         }
       }
@@ -1155,10 +1238,11 @@ void setPath(){
         double actuationCost = SCALER_ACTUATION * cost;
         
         newCost = distanceCost - informationGain + actuationCost;
-        // cout << "distanceCost " << distanceCost << endl;
-        // cout << "informationGain " << informationGain << endl;
-        // cout << "actuationCost " << actuationCost << endl;
-        // cout << "newCost " << newCost << endl;
+        cout << "\ndistanceCost :    " << distanceCost << endl;
+        cout << "\ninformationGain : " << informationGain << endl;
+        cout << "\nactuationCost :   " << actuationCost << endl;
+        cout << "\nnewCost :         " << newCost << endl;
+        cout << "\n------------- NEW NODE ------------\n" << endl;
         if(informationGain > initialGoalInfo){
           initialGoalInfo = informationGain;
         }
@@ -1291,20 +1375,21 @@ void generateRRT(float given_x, float given_y, float given_z){
       //        EITHER LINE OR OBB BASED COLLISION CHECK // 
 
 
-      // ufo::math::Vector3 direction = random_point - start_point;
-      // ufo::math::Vector3 center = start_point + (direction / 2.0);
-      // double dis = direction.norm();
-      // direction /= dis;
-      // double yaw = -atan2(direction[1], direction[0]);
-      // double pitch = -asin(direction[2]);
-      // double roll = 0; // TODO: Fix
-      // ufo::geometry::OBB obb(center, ufo::math::Vector3(dis / 2.0, 0.6, 0.6),
-      //                         ufo::math::Quaternion(roll, pitch, yaw));
-      // ufo::geometry::LineSegment line_check(random_point, start_point);
+      ufo::math::Vector3 direction = random_point - start_point;
+      ufo::math::Vector3 center = start_point + (direction / 2.0);
+      double dis = direction.norm();
+      direction /= dis;
+      double yaw = -atan2(direction[1], direction[0]);
+      double pitch = -asin(direction[2]);
+      double roll = 0; // TODO: Fix
+      ufo::geometry::OBB obb(center, ufo::math::Vector3(dis / 2.0, 0.5, 0.5),
+                              ufo::math::Quaternion(roll, pitch, yaw));
+      ufo::geometry::LineSegment line_check(random_point, start_point);
       
-      if(!isInCollision(myMap, myLine, true, false, true, 0)) {
+      // if(!isInCollision(myMap, myLine, true, false, true, 0)) {
 
-        // if (!isInCollision(myMap, obb, true, false, true, 0)) {
+        if (!isInCollision(myMap, obb, true, false, true, 0)) {
+
           node* new_node = new node(x, y, z);
           new_node->addParent(parent);
           parent->addChild(new_node);

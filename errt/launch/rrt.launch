@@ -18,9 +18,9 @@
   <param name="SCALER_AABB_" type="double" value="12" />			<!-- The bounding box 'radius', signifying the border between local and global space -->
   
   <!-- Tuning parameters -->
-  <param name="SCALER_DISTANCE_" type="double" value="0.001" />			<!-- The scaler for the distance cost during path evaluation -->
-  <param name="SCALER_INFORMATION_GAIN_" type="double" value="10" />	<!-- The scaler for the information gain during path evaluation -->
-  <param name="SCALER_ACTUATION_" type="double" value="0" />	<!-- The scaler for the actuation cost during path evaluation -->
+  <param name="SCALER_DISTANCE_" type="double" value="0.01" />			<!-- The scaler for the distance cost during path evaluation -->
+  <param name="SCALER_INFORMATION_GAIN_" type="double" value="0.05" />	<!-- The scaler for the information gain during path evaluation -->
+  <param name="SCALER_ACTUATION_" type="double" value="0.01" />	<!-- The scaler for the actuation cost during path evaluation -->
   <param name="NEXT_PATH_DISTANCE_" type="double" value="0.5" />		<!-- The distance from the current goal at which a new path will be calculated -->
   <param name="NEXT_POINT_DISTANCE_" type="double" value="0.5" />		<!-- The distance from the current point at which the next point in the path will be set to current point -->
   <param name="PATH_IMPROVEMENT_MAX_" type="double" value="5000" />		<!-- The maximum amount of micro seconds which can be spent improving a single path before starting to exit the function -->
