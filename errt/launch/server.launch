@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
 
-		<arg name="resolution" default="0.4" />
+		<arg name="resolution" default="0.05" />
 		<arg name="depth_levels" default="16" />
 		<arg name="num_workers" default="1" />
 		<arg name="color" default="true" />
@@ -33,7 +33,7 @@
 		<!-- <param name="clear_robot" value="True" /> -->
 
 		<param name="clearing_depth" value="0" />
-		<param name="publish_depth" value="0" />
+		<param name="publish_depth" value="4" />
 		<param name="pub_rate" value="1" />
 		<param name="insert_depth" value="0" />
 		

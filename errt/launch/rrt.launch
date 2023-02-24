@@ -9,7 +9,7 @@
   <param name="NUMBER_OF_GOALS_" type="int" value="40" />			<!-- The amount of goals to be generated -->
   <param name="NUMBER_OF_ITTERATIONS_" type="int" value="3000" />		<!-- The maximum number of itterations, for when you run by itterations -->
   <param name="RESOLUTION_" type="double" value="0.4" />			<!-- The size of the voxels in ufomap -->
-  
+  <param name="DEPTH_VALUE_" type="double" value="3" />	
   <!-- RRT-tree parameters -->
   <param name="DISTANCE_BETWEEN_NODES_" type="double" value="0.3" />		<!-- The distance between nodes in a finished path -->
   <param name="DISTANCE_BETWEEN_GOALS_" type="double" value="0.5" />		<!-- The minimum guranteed distance between generated goals -->
@@ -18,14 +18,14 @@
   <param name="SCALER_AABB_" type="double" value="12" />			<!-- The bounding box 'radius', signifying the border between local and global space -->
   
   <!-- Tuning parameters -->
-  <param name="SCALER_DISTANCE_" type="double" value="0.01" />			<!-- The scaler for the distance cost during path evaluation -->
-  <param name="SCALER_INFORMATION_GAIN_" type="double" value="0.05" />	<!-- The scaler for the information gain during path evaluation -->
-  <param name="SCALER_ACTUATION_" type="double" value="0.01" />	<!-- The scaler for the actuation cost during path evaluation -->
+  <param name="SCALER_DISTANCE_" type="double" value="0.05" />			<!-- The scaler for the distance cost during path evaluation -->
+  <param name="SCALER_INFORMATION_GAIN_" type="double" value="0.1" />	<!-- The scaler for the information gain during path evaluation -->
+  <param name="SCALER_ACTUATION_" type="double" value="0.1" />	<!-- The scaler for the actuation cost during path evaluation -->
   <param name="NEXT_PATH_DISTANCE_" type="double" value="0.5" />		<!-- The distance from the current goal at which a new path will be calculated -->
   <param name="NEXT_POINT_DISTANCE_" type="double" value="0.5" />		<!-- The distance from the current point at which the next point in the path will be set to current point -->
   <param name="PATH_IMPROVEMENT_MAX_" type="double" value="5000" />		<!-- The maximum amount of micro seconds which can be spent improving a single path before starting to exit the function -->
-  <param name="GLOBAL_STRATEGY_THRESHOLD_" type="double" value="30" />	<!-- The threshold at which the global strategy will be used instead of the local strategy; This also acts as the cutoff point for accepted accepted paths by the local planner -->
-  <param name="GLOBAL_PATH_THRESHOLD_" type="double" value="30" />		<!-- The threshold at which the global strategy will accept a found path -->
+  <param name="GLOBAL_STRATEGY_THRESHOLD_" type="double" value="10" />	<!-- The threshold at which the global strategy will be used instead of the local strategy; This also acts as the cutoff point for accepted accepted paths by the local planner -->
+  <param name="GLOBAL_PATH_THRESHOLD_" type="double" value="10" />		<!-- The threshold at which the global strategy will accept a found path -->
   
   <!-- Sensor parameters -->
   <param name="SENSOR_RANGE_" type="double" value="8" />			<!-- The range of the lidar sensor, used for information gain calculations -->
@@ -50,19 +50,17 @@
   
     <!-- Initial point parameters -->
   <param name="INITIAL_POINT_" type="bool" value="True" />			<!-- Denotes if there's an initial given point to travel to or not -->
-  <param name="INITIAL_X_" type="double" value="8" />			<!-- The x value of the initial given point -->
+  <param name="INITIAL_X_" type="double" value="10" />			<!-- The x value of the initial given point -->
   <param name="INITIAL_Y_" type="double" value="0" />			<!-- The y value of the intiial given point -->
   <param name="INITIAL_Z_" type="double" value="1" />			<!-- The z value of the intiial given point -->
   
   <node pkg="errt" type="errt_node" name="errt_node" output="screen" required="true">
     <remap from="ODOMETRY_IN_" to="/pelican/ground_truth/odometry"/>				<!-- The odometry topic subscribed to -->
-    <remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"/>			<!-- The ufomap topic subscribed to -->
+    <remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map_depth_3"/>			<!-- The ufomap topic subscribed to -->
     <remap from="REFERENCE_OUT_" to="/pelican/reference"/>					<!-- The topic to post the control reference to -->
   </node>
 
 
 <node type="visualize_navigation" name="visualize_navigation" pkg="visualization_tools" />
-
-
 
 </launch>
