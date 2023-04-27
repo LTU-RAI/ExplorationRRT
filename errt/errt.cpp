@@ -18,15 +18,17 @@
 #include <tf/tf.h>
 #include <ros/package.h>
 #include <dynamic_reconfigure/server.h>
+#include "std_msgs/Int64.h"
+#include "std_msgs/Float64MultiArray.h"
+
 
 using namespace std::chrono;
 using namespace std;
 using namespace std::this_thread;
-
+double PLANNING_DEPTH = 0;
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
 // Structs
-double DEPTH_VALUE;
-bool store_pos;
+
 struct rrtSolverStatus rrt_solve(struct rrtCache *instance,
                                  double *u,
                                  const double *params,
@@ -101,9 +103,7 @@ struct node{
         return;
       }
       
-      int findInformationGain(float SCALER_AABB, float givenHorizontal, float givenVertical, 
-                                      float givenMin, float givenMax, ufo::map::OccupancyMapColor const& map, 
-                                                    bool excludePath, bool findAnyInfo){
+      int findInformationGain(float SCALER_AABB, float givenHorizontal, float givenVertical, float givenMin, float givenMax, ufo::map::OccupancyMapColor const& map, bool excludePath, bool findAnyInfo){
         if(myHits.empty() or findAnyInfo){
           // Setting up targets, X / Y targets in either positive (P) or negative (N) direction
           ufo::math::Vector3 targetXP(point->x() + 1, point->y(), point->z());
@@ -126,104 +126,44 @@ struct node{
           ufo::geometry::Frustum frustYP(*point, targetYP, upwards, vertical_angle, horizontal_angle, near_distance, far_distance);
           ufo::geometry::Frustum frustYN(*point, targetYN, upwards, vertical_angle, horizontal_angle, near_distance, far_distance);
           int checks = 0;
-          for (auto it = map.beginLeaves(frustXP, false, false, true, false, DEPTH_VALUE), it_end = map.endLeaves(); it != it_end; ++it){
+          for (auto it = map.beginLeaves(frustXP, false, false, true, false, PLANNING_DEPTH), it_end = map.endLeaves(); it != it_end; ++it){
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
-
-              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-              // ufo::math::Vector3 direction = end_point - *point;
-              // ufo::math::Vector3 center = *point + (direction / 2.0);
-              // double dd = direction.norm();
-              // direction /= dd;
-              // double yaw = -atan2(direction[1], direction[0]);
-              // double pitch = -asin(direction[2]);
-              // double roll = 0; // TODO: Fix
-              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
-              //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-              //   if(!isInCollision(map, obb, true, false, false, DEPTH_VALUE)){
-
-            if(!isInCollision(map, myLine, true, false, false, DEPTH_VALUE)){
+            if(!isInCollision(map, myLine, true, false, false, PLANNING_DEPTH)){
               if(findAnyInfo){
                 return 1;
               }
               myHits.push_back(end_point);
             }
           }
-          for (auto it = map.beginLeaves(frustXN, false, false, true, false, DEPTH_VALUE), it_end = map.endLeaves(); it != it_end; ++it){
+          for (auto it = map.beginLeaves(frustXN, false, false, true, false, PLANNING_DEPTH), it_end = map.endLeaves(); it != it_end; ++it){
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
-
-              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-              // ufo::math::Vector3 direction = end_point - *point;
-              // ufo::math::Vector3 center = *point + (direction / 2.0);
-              // double dd = direction.norm();
-              // direction /= dd;
-              // double yaw = -atan2(direction[1], direction[0]);
-              // double pitch = -asin(direction[2]);
-              // double roll = 0; // TODO: Fix
-              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
-              //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-              //   if(!isInCollision(map, obb, true, false, false, DEPTH_VALUE)){
-
-            if(!isInCollision(map, myLine, true, false, false, DEPTH_VALUE)){
+            if(!isInCollision(map, myLine, true, false, false, PLANNING_DEPTH)){
               if(findAnyInfo){
                 return 1;
               }
               myHits.push_back(end_point);
             }
           }
-          for (auto it = map.beginLeaves(frustYP, false, false, true, false, DEPTH_VALUE), it_end = map.endLeaves(); it != it_end; ++it){
+          for (auto it = map.beginLeaves(frustYP, false, false, true, false, PLANNING_DEPTH), it_end = map.endLeaves(); it != it_end; ++it){
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
-
-              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-              // ufo::math::Vector3 direction = end_point - *point;
-              // ufo::math::Vector3 center = *point + (direction / 2.0);
-              // double dd = direction.norm();
-              // direction /= dd;
-              // double yaw = -atan2(direction[1], direction[0]);
-              // double pitch = -asin(direction[2]);
-              // double roll = 0; // TODO: Fix
-              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
-              //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-              //   if(!isInCollision(map, obb, true, false, false, DEPTH_VALUE)){
-
-            if(!isInCollision(map, myLine, true, false, false, DEPTH_VALUE)){
+            if(!isInCollision(map, myLine, true, false, false, PLANNING_DEPTH)){
               if(findAnyInfo){
                 return 1;
               }
               myHits.push_back(end_point);
             }
           }
-          for (auto it = map.beginLeaves(frustYN, false, false, true, false, DEPTH_VALUE), it_end = map.endLeaves(); it != it_end; ++it){
+          for (auto it = map.beginLeaves(frustYN, false, false, true, false, PLANNING_DEPTH), it_end = map.endLeaves(); it != it_end; ++it){
             ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
             ufo::geometry::LineSegment myLine(*point, end_point);
             checks++;
-
-              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-              // ufo::math::Vector3 direction = end_point - *point;
-              // ufo::math::Vector3 center = *point + (direction / 2.0);
-              // double dd = direction.norm();
-              // direction /= dd;
-              // double yaw = -atan2(direction[1], direction[0]);
-              // double pitch = -asin(direction[2]);
-              // double roll = 0; // TODO: Fix
-              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
-              //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-              //   if(!isInCollision(map, obb, true, false, false, DEPTH_VALUE)){
-
-            if(!isInCollision(map, myLine, true, false, false, DEPTH_VALUE)){
+            if(!isInCollision(map, myLine, true, false, false, PLANNING_DEPTH)){
               if(findAnyInfo){
                 return 1;
               }
@@ -237,25 +177,10 @@ struct node{
           std::list<ufo::math::Vector3>::iterator it_hits;	
           for(it_hits = myHits.begin(); it_hits != myHits.end();){
             ufo::geometry::LineSegment myLine2(*point, *it_hits);
-
-              //  EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-              // ufo::math::Vector3 direction = *it_hits - *point;
-              // ufo::math::Vector3 center = *point + (direction / 2.0);
-              // double dd = direction.norm();
-              // direction /= dd;
-              // double yaw = -atan2(direction[1], direction[0]);
-              // double pitch = -asin(direction[2]);
-              // double roll = 0; // TODO: Fix
-              // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.4, 0.4),
-              //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-              //   if(isInCollision(map, obb, true, false, false, DEPTH_VALUE)){
-
-            if(isInCollision(map, myLine2, true, false, false, DEPTH_VALUE)){
+            if(isInCollision(map, myLine2, true, false, false, PLANNING_DEPTH)){
               it_hits = myHits.erase(it_hits);
             }else{
-              if(isInCollision(map, *it_hits, false, true, false, DEPTH_VALUE)){
+              if(isInCollision(map, *it_hits, false, true, false, PLANNING_DEPTH)){
                 it_hits = myHits.erase(it_hits);
               }else{
                 it_hits++;
@@ -311,23 +236,7 @@ struct node{
           }
         }else{
           ufo::geometry::LineSegment myLine(*(targetNode->point), *point);
-
-          //  EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-          // ufo::math::Vector3 direction = *(targetNode->point) - *point;
-          // ufo::math::Vector3 center = *point + (direction / 2.0);
-          // double dd = direction.norm();
-          // direction /= dd;
-          // double yaw = -atan2(direction[1], direction[0]);
-          // double pitch = -asin(direction[2]);
-          // double roll = 0; // TODO: Fix
-          // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.5, 0.5),
-          //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-          if(!isInCollision(map, myLine, true, false, true, DEPTH_VALUE)){
-
-            // if(!isInCollision(map, obb, true, false, true, DEPTH_VALUE)){
-
+          if(!isInCollision(map, myLine, true, false, true, PLANNING_DEPTH)){
             ufo::math::Vector3 newVector(targetNode->point->x() - point->x(), targetNode->point->y() - point->y(), targetNode->point->z() - point->z());
             float distance = newVector.norm();
             // float distance = sqrt(pow(targetNode->point->x() - point->x(), 2) + pow(targetNode->point->y() - point->y(), 2) + pow(targetNode->point->z() - point->z(), 2));
@@ -344,7 +253,7 @@ struct node{
               }
               ufo::math::Vector3 newVector = ufo::math::Vector3(point->x() + i * xStep, point->y() + i * yStep, point->z() + i * zStep);
               ufo::geometry::Sphere new_sphere(newVector, givenRadious);
-              if(isInCollision(map, new_sphere, true, false, true, DEPTH_VALUE)){
+              if(isInCollision(map, new_sphere, true, false, true, PLANNING_DEPTH)){
                 return false;
               }
             }
@@ -356,23 +265,7 @@ struct node{
         }
         if(!improvementFound){
           ufo::geometry::LineSegment myLine(*(targetNode->point), *point);
-
-//        EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-          // ufo::math::Vector3 direction = *(targetNode->point) - *point;
-          // ufo::math::Vector3 center = *point + (direction / 2.0);
-          // double dd = direction.norm();
-          // direction /= dd;
-          // double yaw = -atan2(direction[1], direction[0]);
-          // double pitch = -asin(direction[2]);
-          // double roll = 0; // TODO: Fix
-          // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.5, 0.5),
-          //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-          if(!isInCollision(map, myLine, true, false, true, DEPTH_VALUE)){
-
-            // if(!isInCollision(map, obb, true, false, true, DEPTH_VALUE)){
-
+          if(!isInCollision(map, myLine, true, false, true, PLANNING_DEPTH)){
             ufo::math::Vector3 newVector(targetNode->point->x() - point->x(), targetNode->point->y() - point->y(), targetNode->point->z() - point->z());
             float distance = newVector.norm();
             float itterations = (distance / givenRadious);
@@ -388,7 +281,7 @@ struct node{
               }
               ufo::math::Vector3 newVector = ufo::math::Vector3(point->x() + i * xStep, point->y() + i * yStep, point->z() + i * zStep);
               ufo::geometry::Sphere new_sphere(newVector, givenRadious);
-              if(isInCollision(map, new_sphere, true, false, true, DEPTH_VALUE)){
+              if(isInCollision(map, new_sphere, true, false, true, PLANNING_DEPTH)){
                 return false;
               }
             }
@@ -410,7 +303,7 @@ struct node{
       bool isInCollision(ufo::map::OccupancyMapColor const& map, 
                    ufo::geometry::BoundingVar const& bounding_volume, 
                    bool occupied_space = true, bool free_space = false,
-                   bool unknown_space = false, ufo::map::DepthType min_depth = DEPTH_VALUE){
+                   bool unknown_space = false, ufo::map::DepthType min_depth = PLANNING_DEPTH){
         // Iterate through all leaf nodes that intersects the bounding volume
         for (auto it = map.beginLeaves(bounding_volume, occupied_space, 
                                  free_space, unknown_space, false, min_depth), 
@@ -480,6 +373,9 @@ double NEXT_PATH_DISTANCE;
 double NMPC_DT;
 double RADIOUS;
 double RESOLUTION;
+double MIN_INFO_GOAL;
+double GOAL_SENSOR_RANGE;
+
 double POSITION_TRACKING_WEIGHT_X;
 double POSITION_TRACKING_WEIGHT_Y;
 double POSITION_TRACKING_WEIGHT_Z;
@@ -517,7 +413,6 @@ std::list<struct node*> myGoals{};
 std::list<struct node*> myReserveGoals{};
 std::list<ufo::math::Vector3> hits{};
 std::list<node*> VISITED_POINTS{};
-std::list<ufo::math::Vector3> STORED_POINTS{};
 std::list<node*>::iterator path_itterator;
 
 // End of variables
@@ -551,7 +446,6 @@ void linSpace(node* givenNode, float givenDistance){
 // Evaluates the current point in the current path.
 // This includes deciding when to change the current target to the next node in the path and when to calculate a new path.
 void evaluateCurrentPoint(ros::Publisher* chosen_path_pub){
-  
   if((sqrt(pow(position_x - goalNode->point->x(), 2) + pow(position_y - goalNode->point->y(), 2) + pow(position_z - goalNode->point->z(), 2)) < NEXT_PATH_DISTANCE)){
     itterations = 0;
     fetched_path = false;
@@ -595,76 +489,29 @@ void evaluateCurrentPoint(ros::Publisher* chosen_path_pub){
     nextPoint.header.stamp = ros::Time::now();
     nextPoint.header.frame_id = MAP_FRAME_ID;
     chosen_path_pub->publish(nextPoint);
-
   }
 }
 
-
 // Builds and publishes the visualization messages.
-void visualize(ros::Publisher* points_pub, ros::Publisher* reserved_goals_pub, ros::Publisher* chosen_path_visualization_pub, ros::Publisher* all_path_pub, ros::Publisher* goal_pub, ros::Publisher* hits_pub, ros::Publisher* taken_path_pub, ros::Publisher* map_pub, ros::Publisher* position_pub){
-  visualization_msgs::Marker RRT_points, reserved_goals, reserved_goals_line_list, RRT_line_list, CHOSEN_PATH_points, CHOSEN_PATH_line_list, PATH_points, PATH_line_list, GOAL_points, HITS_points, TAKEN_PATH_points, TAKEN_PATH_line_list, POSITION_point;
+void visualize(ros::Publisher* points_pub, ros::Publisher* output_path_pub, ros::Publisher* chosen_path_visualization_pub, ros::Publisher* all_path_pub, ros::Publisher* goal_pub, ros::Publisher* hits_pub, ros::Publisher* taken_path_pub, ros::Publisher* map_pub, ros::Publisher* position_pub){
+  visualization_msgs::Marker RRT_points, RRT_line_list, CHOSEN_PATH_points, CHOSEN_PATH_line_list, PATH_points, PATH_line_list, GOAL_points, HITS_points, TAKEN_PATH_points, TAKEN_PATH_line_list, POSITION_point;
   // Visualize each itteration
-
-  if(!myReserveGoals.empty()){
-    reserved_goals.header.frame_id = reserved_goals_line_list.header.frame_id = MAP_FRAME_ID;
-    reserved_goals.ns = "points";
-    reserved_goals.action = visualization_msgs::Marker::ADD;
-    reserved_goals.pose.orientation.w = 1.0;
-    reserved_goals.id = 0;
-    reserved_goals_line_list.id = 1;
-    reserved_goals.type = visualization_msgs::Marker::SPHERE_LIST;
-    reserved_goals_line_list.type = visualization_msgs::Marker::LINE_LIST;
-    reserved_goals.scale.x = 0.4;
-    reserved_goals.scale.y = 0.4;
-    reserved_goals.scale.z = 0.4;
-    reserved_goals_line_list.scale.x = 0.05;
-    reserved_goals.color.b = 1.0;
-    reserved_goals.color.a = 0.6;
-    reserved_goals_line_list.color.r = 1.0;
-    reserved_goals_line_list.color.a = 0.6;
-    std::list<node*>::iterator it_reserved;
-    for(it_reserved = myReserveGoals.begin(); it_reserved != myReserveGoals.end(); it_reserved++){
-      geometry_msgs::Point p;
-      p.x = (*it_reserved)->point->x();
-      p.y = (*it_reserved)->point->y();
-      p.z = (*it_reserved)->point->z();
-      reserved_goals.points.push_back(p);
-      if((*it_reserved)->myParent != nullptr){
-        reserved_goals_line_list.points.push_back(p);
-        p.x = (*it_reserved)->myParent->point->x();
-        p.y = (*it_reserved)->myParent->point->y();
-        p.z = (*it_reserved)->myParent->point->z();
-        reserved_goals_line_list.points.push_back(p);
-      }
-    }
-    reserved_goals_pub->publish(reserved_goals);
-    reserved_goals_pub->publish(reserved_goals_line_list);
-  }
-
   if(position_received){
-    // if (store_pos) {
     POSITION_point.header.frame_id = MAP_FRAME_ID;
     POSITION_point.ns = "points";
     POSITION_point.action = visualization_msgs::Marker::ADD;
-    POSITION_point.pose.position.x = position_x;
-    POSITION_point.pose.position.y = position_y;
-    POSITION_point.pose.position.z = position_z;
-    POSITION_point.pose.orientation.x = 0.0;
-    POSITION_point.pose.orientation.y = 0.0;
-    POSITION_point.pose.orientation.z = 0.0;
     POSITION_point.pose.orientation.w = 1.0;
     POSITION_point.id = 0;
-    POSITION_point.type = visualization_msgs::Marker::CUBE;
-    POSITION_point.scale.x = 0.5;
-    POSITION_point.scale.y = 0.5;
-    POSITION_point.scale.z = 0.5;
-    POSITION_point.color.b = 1.0;
-    POSITION_point.color.a = 0.6;
-    // geometry_msgs::Point p;
-    // p.x = position_x;
-    // p.y = position_y;
-    // p.z = position_z;
-    // POSITION_point.points.push_back(p);
+    POSITION_point.type = visualization_msgs::Marker::POINTS;
+    POSITION_point.scale.x = 0.2;
+    POSITION_point.scale.y = 0.2;
+    POSITION_point.color.g = 1.0f;
+    POSITION_point.color.a = 1.0;
+    geometry_msgs::Point p;
+    p.x = position_x;
+    p.y = position_y;
+    p.z = position_z;
+    POSITION_point.points.push_back(p);
     position_pub->publish(POSITION_point);
   }
   // Visualize only once
@@ -704,25 +551,33 @@ void visualize(ros::Publisher* points_pub, ros::Publisher* reserved_goals_pub, r
       points_pub->publish(RRT_line_list);
     }
     if(!CHOSEN_PATH.empty()){
+      nav_msgs::Path chosen_path;
+      chosen_path.header.frame_id = MAP_FRAME_ID;
+      chosen_path.poses.clear();
+      for (auto i = CHOSEN_PATH.begin(); i != CHOSEN_PATH.end(); i++) {
+        geometry_msgs::PoseStamped chosen_pose;
+        chosen_pose.header.frame_id = MAP_FRAME_ID;
+        chosen_pose.pose.position.x = (*i)->point->x();
+        chosen_pose.pose.position.y = (*i)->point->y();
+        chosen_pose.pose.position.z = (*i)->point->z();
+        chosen_path.poses.push_back(chosen_pose);
+      }
+      output_path_pub->publish(chosen_path);
       CHOSEN_PATH_points.header.frame_id = CHOSEN_PATH_line_list.header.frame_id = MAP_FRAME_ID;
       CHOSEN_PATH_points.ns = "points";
-      CHOSEN_PATH_line_list.ns = "lines";
       CHOSEN_PATH_points.action = visualization_msgs::Marker::ADD;
       CHOSEN_PATH_points.pose.orientation.w = 1.0;
-      CHOSEN_PATH_line_list.pose.orientation.w = 1.0;
       CHOSEN_PATH_points.id = 0;
       CHOSEN_PATH_line_list.id = 1;
       CHOSEN_PATH_points.type = visualization_msgs::Marker::SPHERE_LIST;
       CHOSEN_PATH_line_list.type = visualization_msgs::Marker::LINE_LIST;
-      CHOSEN_PATH_points.scale.x = 0.3;
-      CHOSEN_PATH_points.scale.z = 0.3;
-      CHOSEN_PATH_points.scale.y = 0.3;
+      CHOSEN_PATH_points.scale.x = 0.2;
+      CHOSEN_PATH_points.scale.y = 0.2;
+      CHOSEN_PATH_points.scale.y = 0.2;
       CHOSEN_PATH_line_list.scale.x = 0.1;
-      CHOSEN_PATH_line_list.scale.z = 0.1;
-      CHOSEN_PATH_line_list.scale.y = 0.1;
-      CHOSEN_PATH_points.color.g = 0.8f;
+      CHOSEN_PATH_points.color.g = 0.8;
       CHOSEN_PATH_points.color.a = 1.0;
-      CHOSEN_PATH_line_list.color.r = 1.0;
+      CHOSEN_PATH_line_list.color.b = 1.0;
       CHOSEN_PATH_line_list.color.a = 1.0;
       std::list<node*>::iterator it_comeon_visualizer2;
       for(it_comeon_visualizer2 = CHOSEN_PATH.begin(); it_comeon_visualizer2 != CHOSEN_PATH.end(); it_comeon_visualizer2++){
@@ -733,17 +588,15 @@ void visualize(ros::Publisher* points_pub, ros::Publisher* reserved_goals_pub, r
         CHOSEN_PATH_points.points.push_back(p);
         if((*it_comeon_visualizer2)->myParent != nullptr){
           if(*it_comeon_visualizer2 != *CHOSEN_PATH.begin()){
-            geometry_msgs::Point pl;
             CHOSEN_PATH_line_list.points.push_back(p);
-            pl.x = (*it_comeon_visualizer2)->myParent->point->x();
-            pl.y = (*it_comeon_visualizer2)->myParent->point->y();
-            pl.z = (*it_comeon_visualizer2)->myParent->point->z();
-            CHOSEN_PATH_line_list.points.push_back(pl);
+            p.x = (*it_comeon_visualizer2)->myParent->point->x();
+            p.y = (*it_comeon_visualizer2)->myParent->point->y();
+            p.z = (*it_comeon_visualizer2)->myParent->point->z();
+            CHOSEN_PATH_line_list.points.push_back(p);
           }
         }
       }
       chosen_path_visualization_pub->publish(CHOSEN_PATH_points);
-      chosen_path_visualization_pub->publish(CHOSEN_PATH_line_list);
     }
     if(RRT_created){
       PATH_points.header.frame_id = PATH_line_list.header.frame_id = MAP_FRAME_ID;
@@ -786,12 +639,11 @@ void visualize(ros::Publisher* points_pub, ros::Publisher* reserved_goals_pub, r
       GOAL_points.id = 0;
       GOAL_points.type = visualization_msgs::Marker::SPHERE_LIST;
       GOAL_points.scale.x = 0.2;
-      // GOAL_points.scale.y = 0.2;
-      GOAL_points.color.r = 1;
-      GOAL_points.color.g = 1;
-      GOAL_points.color.b = 0.0;
-      // GOAL_points.color.b = 0.2f;
-      GOAL_points.color.a = 1.0;
+      GOAL_points.scale.y = 0.2;
+      GOAL_points.scale.z = 0.2;
+      GOAL_points.color.g = 0.8;
+      GOAL_points.color.r = 0.8;
+      GOAL_points.color.a = 0.8;
       std::list<node*>::iterator it_comeon_visualizer3;	
       for(it_comeon_visualizer3 = myGoals.begin(); it_comeon_visualizer3 != myGoals.end(); it_comeon_visualizer3++){
         geometry_msgs::Point p;
@@ -834,8 +686,11 @@ void visualize(ros::Publisher* points_pub, ros::Publisher* reserved_goals_pub, r
       TAKEN_PATH_points.type = visualization_msgs::Marker::POINTS;
       TAKEN_PATH_points.scale.x = 0.2;
       TAKEN_PATH_points.scale.y = 0.2;
-      TAKEN_PATH_points.color.r = 1.0f;
-      TAKEN_PATH_points.color.a = 1.0;
+      // TAKEN_PATH_points.scale.z = 0.2;
+      TAKEN_PATH_points.color.b = 1;
+      TAKEN_PATH_points.color.g = 1;
+      TAKEN_PATH_points.color.r = 1;
+      TAKEN_PATH_points.color.a = 0.8;
       std::list<node*>::iterator taken_path_visualizer;
       for(taken_path_visualizer = VISITED_POINTS.begin(); taken_path_visualizer != VISITED_POINTS.end(); taken_path_visualizer++){
         geometry_msgs::Point p;
@@ -882,7 +737,7 @@ void updatePathTaken(){
 // Tunes the generation.
 // This sets the bounding box which represents the local space.
 // The bounding box will be reduced in size as much as possible without losing free space.
-void tuneGeneration(ufo::map::OccupancyMapColor const& map, bool occupied_space, bool free_space, bool unknown_space, float given_x, float given_y, float given_z, ufo::map::DepthType min_depth = DEPTH_VALUE){
+void tuneGeneration(ufo::map::OccupancyMapColor const& map, bool occupied_space, bool free_space, bool unknown_space, float given_x, float given_y, float given_z, ufo::map::DepthType min_depth = PLANNING_DEPTH){
   highest_x = -9999;
   highest_y = -9999;
   highest_z = -9999;
@@ -917,7 +772,7 @@ void tuneGeneration(ufo::map::OccupancyMapColor const& map, bool occupied_space,
 bool isInCollision(ufo::map::OccupancyMapColor const& map, 
                    ufo::geometry::BoundingVar const& bounding_volume, 
                    bool occupied_space = false, bool free_space = false,
-                   bool unknown_space = false, ufo::map::DepthType min_depth = DEPTH_VALUE)
+                   bool unknown_space = false, ufo::map::DepthType min_depth = PLANNING_DEPTH)
 {
   // Iterate through all leaf nodes that intersects the bounding volume
   for (auto it = map.beginLeaves(bounding_volume, occupied_space, 
@@ -934,9 +789,6 @@ bool isInCollision(ufo::map::OccupancyMapColor const& map,
 // If the local path planning fails, the global planner tries to retrace to the most recently not picked goal.
 void globalStrategy(){
   for(std::list<node*>::iterator retrace_path_itterator = --myReserveGoals.end(); retrace_path_itterator != myReserveGoals.begin(); retrace_path_itterator--){
-    
-    std::cout << "My Reserved Goals for backtracking .. " << myReserveGoals.size() << std::endl;
-    
     if(!CHOSEN_PATH.empty()){
       for(std::list<node*>::iterator it_clear_helper = CHOSEN_PATH.begin(); it_clear_helper != --CHOSEN_PATH.end(); it_clear_helper++){
         (*it_clear_helper)->readyForDeletion();
@@ -947,12 +799,7 @@ void globalStrategy(){
     }
     (*retrace_path_itterator)->clearInformationGain();
     double informationGain = (*retrace_path_itterator)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, true, false);
-    
-    std::cout << "check info gain for retracing " << informationGain << std::endl;
-    
     if(informationGain > GLOBAL_PATH_THRESHOLD){
-
-      std::cout << "global_strategy condition satisfied for at least one goal ..\n" << std::endl;
       auto pathImprovement_start = high_resolution_clock::now();
       (*retrace_path_itterator)->findPathImprovement(*retrace_path_itterator, myMap, DISTANCE_BETWEEN_NODES, RADIOUS, pathImprovement_start, PATH_IMPROVEMENT_MAX);
       std::list<struct node*> PATH_CONTAINER{};
@@ -968,7 +815,7 @@ void globalStrategy(){
         std::advance(it_path_helper1, mySavedIndex);
         while(it_path_helper1 != PATH_CONTAINER.end()){
           ufo::geometry::LineSegment myLine(*(currentPoint->point), (*(*it_path_helper1)->point));
-          if(!isInCollision(myMap, myLine, true, false, true, DEPTH_VALUE)){
+          if(!isInCollision(myMap, myLine, true, false, true, PLANNING_DEPTH)){
             savedPoint = *(it_path_helper1);
             mySavedIndex = myIndex;
           }
@@ -979,28 +826,21 @@ void globalStrategy(){
         CHOSEN_PATH.push_back(new node(savedPoint->point->x(), savedPoint->point->y(), savedPoint->point->z()));
       }
       CHOSEN_PATH.push_back(new node((*retrace_path_itterator)->point->x(), (*retrace_path_itterator)->point->y(), (*retrace_path_itterator)->point->z()));
-      
       goalNode = *retrace_path_itterator;
       path_itterator = CHOSEN_PATH.begin();
       currentTarget = *path_itterator;
-      goalNode = *CHOSEN_PATH.begin();
       advance_index = 0;
       allowNewPath = false;
       recoveryUnderway = true;
       std::list<node*>::iterator erase_it = myReserveGoals.end();
       retrace_path_itterator++;
       myReserveGoals.erase(retrace_path_itterator, erase_it);
-      
-      for (auto check_it = CHOSEN_PATH.begin(); check_it != CHOSEN_PATH.end(); check_it++) {
-        cout << "\nGLOBAL CHOSEN PATH POINTS___X = " << (*check_it)->point->x() << endl;
-        cout << "\nGLOBAL CHOSEN PATH POINTS___Y = " << (*check_it)->point->y() << endl;
-        cout << "\nGLOBAL CHOSEN PATH POINTS___Z = " << (*check_it)->point->z() << endl;
-        cout << "\n----------------------------" << endl;
-      }        
       break;
     }
-
+  cout << " \n----- GLOBAL ----- " << endl;
+  
   }
+
   
 }
 
@@ -1017,25 +857,7 @@ void findShortestPath(){
       double totalDistance = distanceNodeToGoal + distanceToNode;
       if(totalDistance < distance){
         ufo::geometry::LineSegment myLine(*((*it_goals)->point), *((*it_RRT)->point));
-
-
-//        EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-          // ufo::math::Vector3 direction = *((*it_goals)->point) - *((*it_RRT)->point);
-          // ufo::math::Vector3 center = *((*it_RRT)->point) + (direction / 2.0);
-          // double dd = direction.norm();
-          // direction /= dd;
-          // double yaw = -atan2(direction[1], direction[0]);
-          // double pitch = -asin(direction[2]);
-          // double roll = 0; // TODO: Fix
-          // ufo::geometry::OBB obb(center, ufo::math::Vector3(dd / 2.0, 0.5, 0.5),
-          //                       ufo::math::Quaternion(roll, pitch, yaw));
-
-
-        if(!isInCollision(myMap, myLine, true, false, true, DEPTH_VALUE)){
-
-          // if(!isInCollision(myMap, obb, true, false, true, DEPTH_VALUE)){
-
+        if(!isInCollision(myMap, myLine, true, false, true, PLANNING_DEPTH)){
           ufo::math::Vector3 newVector((*it_goals)->point->x() - (*it_RRT)->point->x(), (*it_goals)->point->y() - (*it_RRT)->point->y(), (*it_goals)->point->z() - (*it_RRT)->point->z());
           float distance_calc = newVector.norm();
           float itterations = (distance_calc / DISTANCE_BETWEEN_NODES);
@@ -1047,7 +869,7 @@ void findShortestPath(){
           for(int i = 1; i < itterations; i++){
             ufo::math::Vector3 newVector = ufo::math::Vector3((*it_RRT)->point->x() + i * xStep, (*it_RRT)->point->y() + i * yStep, (*it_RRT)->point->z() + i * zStep);
             ufo::geometry::Sphere new_sphere(newVector, RADIOUS);
-            if(isInCollision(myMap, new_sphere, true, false, true, DEPTH_VALUE)){
+            if(isInCollision(myMap, new_sphere, true, false, true, PLANNING_DEPTH)){
               add = false;
               break;
             }
@@ -1099,7 +921,7 @@ void generateGoals(ufo::map::OccupancyMapColor const& map, bool evaluateOldGoals
       myReserveGoals.push_back(reserveGoalNode);
       for(std::list<node*>::iterator it_parent_finder = --VISITED_POINTS.end(); it_parent_finder != VISITED_POINTS.begin(); it_parent_finder--){
         ufo::geometry::LineSegment myLine((*(*it_parent_finder)->point), (*reserveGoalNode->point));
-        if(!isInCollision(map, myLine, true, false, true, DEPTH_VALUE)){
+        if(!isInCollision(map, myLine, true, false, true, PLANNING_DEPTH)){
           reserveGoalNode->addParent((*it_parent_finder));
           break;
         }
@@ -1143,7 +965,7 @@ void generateGoals(ufo::map::OccupancyMapColor const& map, bool evaluateOldGoals
     node goal = node(x, y, z);
     ufo::geometry::Sphere goal_sphere(*(goal.point), RADIOUS);
     if(sqrt(pow(position_x - x, 2) + pow(position_y - y, 2) + pow(position_z - z, 2)) > MINIMUM_DISTANCE_TO_GOAL){
-      if(!isInCollision(myMap, goal_sphere, true, false, true, DEPTH_VALUE) and isInCollision(myMap, goal_sphere, false, true, false, DEPTH_VALUE)){
+      if(!isInCollision(myMap, goal_sphere, true, false, true, PLANNING_DEPTH) and isInCollision(myMap, goal_sphere, false, true, false, PLANNING_DEPTH)){
         bool add = true;
         for(std::list<node*>::iterator it_goal = myGoals.begin(); it_goal != myGoals.end(); it_goal++){
           if(sqrt(pow((*it_goal)->point->x() - x, 2) + pow((*it_goal)->point->y() - y, 2) + pow((*it_goal)->point->z() - z, 2)) < DISTANCE_BETWEEN_GOALS){
@@ -1152,8 +974,17 @@ void generateGoals(ufo::map::OccupancyMapColor const& map, bool evaluateOldGoals
           }
         }
         if(add){
-          int foundInfo = goal.findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, false, true);
-          if(foundInfo == 1){
+          
+          int foundInfo;
+
+          if (MIN_INFO_GOAL == 1) {
+          foundInfo = goal.findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, GOAL_SENSOR_RANGE, myMap, false, true);
+          } else {
+          foundInfo = goal.findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, GOAL_SENSOR_RANGE, myMap, false, false);
+          }
+
+          // if(foundInfo == MIN_INFO_GOAL){
+            if(foundInfo >= MIN_INFO_GOAL){
             node* newGoal = new node(x, y, z);
             myGoals.push_back(newGoal);
           }
@@ -1200,14 +1031,10 @@ void setPath(){
         auto pathImprovement_start = high_resolution_clock::now();
         (*it_goal)->findPathImprovement(*it_goal, myMap, DISTANCE_BETWEEN_NODES, RADIOUS, pathImprovement_start, PATH_IMPROVEMENT_MAX);
         double distanceCost = (*it_goal)->sumDistance() * SCALER_DISTANCE;
+        // double informationGain = SCALER_INFORMATION_GAIN * log((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, true, false));
         double informationGain = SCALER_INFORMATION_GAIN * ((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, true, false));
         linSpace(*it_goal, DISTANCE_BETWEEN_NODES);
-
-
-        // double informationGain = SCALER_INFORMATION_GAIN * log((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, true, false));
-
-
-
+	
         typedef rrtCache* (*arbitrary)();
         typedef rrtSolverStatus (*arbitrary2)(void*, double*, double*, double, double*);
         typedef void (*rrt_clearer)(rrtCache*);
@@ -1269,7 +1096,9 @@ void setPath(){
         *(void **) (&rrt_solve) = dlsym(handle, "rrt_solve");
         rrt_clearer rrt_free;
         *(void **) (&rrt_free) = dlsym(handle, "rrt_free");
-        std::cout << init_penalty << std::endl;
+
+        ROS_INFO_STREAM ( "Calculating .. " << init_penalty);
+        
         rrtSolverStatus status = rrt_solve(cache, u, p, 0, &init_penalty);
   
         std::list<double> uold = {9.81,0.0,0.0};
@@ -1283,13 +1112,18 @@ void setPath(){
         xref.clear();
         rrt_free(cache);
         double actuationCost = SCALER_ACTUATION * cost;
-        
         newCost = distanceCost - informationGain + actuationCost;
-        cout << "\ndistanceCost :    " << distanceCost << endl;
-        cout << "\ninformationGain : " << informationGain << endl;
-        cout << "\nactuationCost :   " << actuationCost << endl;
-        cout << "\nnewCost :         " << newCost << endl;
-        cout << "\n------------- NEW NODE ------------\n" << endl;
+        ////////////////////////////////////////////////////////////////
+        std::list<double> new_p_hist;
+        // new_p_hist.clear();
+        // if (EVALUATE_PATH.size() < NMPC_POINTS) {
+          for (auto i = p_hist.begin(); i != p_hist.end(); i++) {
+            if (std::distance(p_hist.begin(), i) / 3  <= EVALUATE_PATH.size() + 1) {
+              new_p_hist.push_back(*i);
+            }
+          }
+        // }
+
         if(informationGain > initialGoalInfo){
           initialGoalInfo = informationGain;
         }
@@ -1309,7 +1143,7 @@ void setPath(){
           // PATH_CONTAINER.push_back(position_x);
           // PATH_CONTAINER.push_back(position_y);
           // PATH_CONTAINER.push_back(position_z);
-          for(std::list<double>::iterator path_itterator_helper = p_hist.begin(); path_itterator_helper != p_hist.end();){
+          for(std::list<double>::iterator path_itterator_helper = new_p_hist.begin(); path_itterator_helper != new_p_hist.end();){
             double x = *path_itterator_helper;
             PATH_CONTAINER.push_back(x);
             path_itterator_helper++;
@@ -1404,7 +1238,7 @@ void generateRRT(float given_x, float given_y, float given_z){
     float z = lowest_z + abs(1024 * rand () / (RAND_MAX + 1.0)) * SCALER_Z;
     ufo::math::Vector3 random_point(x, y, z);
     ufo::geometry::Sphere point_sphere(random_point, RADIOUS);
-    if(!isInCollision(myMap, point_sphere, true, false, true, DEPTH_VALUE) and isInCollision(myMap, point_sphere, false, true, false, DEPTH_VALUE)){
+    if(!isInCollision(myMap, point_sphere, true, false, true, PLANNING_DEPTH) and isInCollision(myMap, point_sphere, false, true, false, PLANNING_DEPTH)){
       float distance = std::numeric_limits<float>::max();
       node* parent;
       std::list<node*>::iterator it_node;
@@ -1418,25 +1252,7 @@ void generateRRT(float given_x, float given_y, float given_z){
       };
       ufo::math::Vector3 start_point(parent->point->x(), parent->point->y(), parent->point->z());
       ufo::geometry::LineSegment myLine(random_point, start_point);
-      
-      //        EITHER LINE OR OBB BASED COLLISION CHECK // 
-
-
-      ufo::math::Vector3 direction = random_point - start_point;
-      ufo::math::Vector3 center = start_point + (direction / 2.0);
-      double dis = direction.norm();
-      direction /= dis;
-      double yaw = -atan2(direction[1], direction[0]);
-      double pitch = -asin(direction[2]);
-      double roll = 0; // TODO: Fix
-      ufo::geometry::OBB obb(center, ufo::math::Vector3(dis / 2.0, 0.5, 0.5),
-                              ufo::math::Quaternion(roll, pitch, yaw));
-      ufo::geometry::LineSegment line_check(random_point, start_point);
-      
-      // if(!isInCollision(myMap, myLine, true, false, true, DEPTH_VALUE)) {
-
-        if (!isInCollision(myMap, obb, true, false, true, DEPTH_VALUE)) {
-
+      if(!isInCollision(myMap, myLine, true, false, true, PLANNING_DEPTH)) {
           node* new_node = new node(x, y, z);
           new_node->addParent(parent);
           parent->addChild(new_node);
@@ -1605,16 +1421,17 @@ int main(int argc, char *argv[])
   ros::NodeHandle nh;
   ros::Publisher points_pub = nh.advertise<visualization_msgs::Marker>("RRT_NODES", 1);
   ros::Publisher chosen_path_visualization_pub = nh.advertise<visualization_msgs::Marker>("CHOSEN_RRT_PATH_VISUALIZATION", 1);
+  ros::Publisher output_path_pub = nh.advertise<nav_msgs::Path>("chosen_path", 1);
   ros::Publisher chosen_path_pub = nh.advertise<nav_msgs::Odometry>("REFERENCE_OUT_", 1);
   ros::Publisher all_path_pub = nh.advertise<visualization_msgs::Marker>("RRT_PATHS", 1);
   ros::Publisher goal_pub = nh.advertise<visualization_msgs::Marker>("RRT_GOALS", 1);
-  ros::Publisher reserved_goals_pub = nh.advertise<visualization_msgs::Marker>("RESERVED_GOALS", 1);
   ros::Publisher map_pub = nh.advertise<ufomap_msgs::UFOMapStamped>("Internal_ufo_map", 11);
   ros::Subscriber map_sub = nh.subscribe("UFOMAP_IN_", 1, mapCallback);
   ros::Subscriber sub = nh.subscribe("ODOMETRY_IN_", 1, odomCallback);
   ros::Publisher hits_pub = nh.advertise<visualization_msgs::Marker>("HITS", 1);
   ros::Publisher position_pub = nh.advertise<visualization_msgs::Marker>("POSITION", 1);
   ros::Publisher taken_path_pub = nh.advertise<visualization_msgs::Marker>("PATH_TAKEN", 1);
+  ros::Publisher execution_time_pub = nh.advertise<std_msgs::Float64MultiArray>("/errt_execution_time", 1);
   ros::Rate rate(10);
   
   // Initial point
@@ -1648,11 +1465,16 @@ int main(int argc, char *argv[])
   ros::param::get("/RESOLUTION_", RESOLUTION);
   ros::param::get("/GLOBAL_STRATEGY_THRESHOLD_", GLOBAL_STRATEGY_THRESHOLD);
   ros::param::get("/GLOBAL_PATH_THRESHOLD_", GLOBAL_PATH_THRESHOLD);
+
+  ros::param::get("/MIN_INFO_GOAL_", MIN_INFO_GOAL);
+  ros::param::get("/GOAL_SENSOR_RANGE_", GOAL_SENSOR_RANGE);
+
   
   ros::param::get("/DISTANCE_BETWEEN_NODES_", DISTANCE_BETWEEN_NODES);
   ros::param::get("/DISTANCE_BETWEEN_GOALS_", DISTANCE_BETWEEN_GOALS);
   ros::param::get("/MINIMUM_DISTANCE_TO_GOAL_", MINIMUM_DISTANCE_TO_GOAL);
   ros::param::get("/RADIOUS_", RADIOUS);
+  ros::param::get("/PLANNING_DEPTH_", PLANNING_DEPTH);
   ros::param::get("/SCALER_AABB_", SCALER_AABB);
   
   ros::param::get("/SCALER_DISTANCE_", SCALER_DISTANCE);
@@ -1680,37 +1502,28 @@ int main(int argc, char *argv[])
   ros::param::get("/INPUT_RATE_WEIGHT_THRUST_", INPUT_RATE_WEIGHT_THRUST);
   ros::param::get("/INPUT_RATE_WEIGHT_ROLL_", INPUT_RATE_WEIGHT_ROLL);
   ros::param::get("/INPUT_RATE_WEIGHT_PITCH_", INPUT_RATE_WEIGHT_PITCH);
-  ros::param::get("/DEPTH_VALUE_", DEPTH_VALUE);
   
-  double start = ros::Time::now().toSec();
-  bool go_back_up = false;
   // Main
   // When the ufomap and current position have been received through their respective callback functions, the rrt executes by:
   // 1) Tuning the generation and generating goals.
   // 2) Generating the RRT tree and attatching generated goals.
-  // 0) Set the path.
+  // 3) Set the path.
   // 4) Evaluates the current point.
   // 5) Trigger global strategy if necessary.
   while(ros::ok()){
-
-    // cout << "reserved goals are :  " << myReserveGoals.size() << endl;
-    
-    double add_sec = ros::Time::now().toSec();
-
     high_resolution_clock::time_point start_total = high_resolution_clock::now();
-    if((map_received and not GOALS_generated and position_received)){
+    if(map_received and not GOALS_generated and position_received){
       if(CHOSEN_PATH.empty()){
-        tuneGeneration(myMap, false, true, false, position_x, position_y, position_z, DEPTH_VALUE);
+        tuneGeneration(myMap, false, true, false, position_x, position_y, position_z, PLANNING_DEPTH);
       }else{
-        tuneGeneration(myMap, false, true, false, (*(--CHOSEN_PATH.end()))->point->x(), (*(--CHOSEN_PATH.end()))->point->y(), (*(--CHOSEN_PATH.end()))->point->z(), DEPTH_VALUE);
+        tuneGeneration(myMap, false, true, false, (*(--CHOSEN_PATH.end()))->point->x(), (*(--CHOSEN_PATH.end()))->point->y(), (*(--CHOSEN_PATH.end()))->point->z(), PLANNING_DEPTH);
       }
       generateGoals(myMap, true);
     }
-    if((map_received and not RRT_created and GOALS_generated)){
+    if(map_received and not RRT_created and GOALS_generated){
       if(CHOSEN_PATH.empty()){
         generateRRT(position_x, position_y, position_z);
       }else{
-        label:
         generateRRT((*(--CHOSEN_PATH.end()))->point->x(), (*(--CHOSEN_PATH.end()))->point->y(), (*(--CHOSEN_PATH.end()))->point->z());
       }
       if(RRT_created){
@@ -1718,18 +1531,18 @@ int main(int argc, char *argv[])
       }
       itterations = 0; //DO NOT TOUCH!
     }
-    if(map_received and RRT_created) {
+    if(map_received and RRT_created){
       if(!fetched_path){   
         setPath();
       }
-      if(fetched_path and goalNode != nullptr){
+      if(fetched_path and goalNode != nullptr){  
         itterations++;
         evaluateCurrentPoint(&chosen_path_pub);
       }
       if((goalNode == nullptr and GOALS_generated)){
-        // Prints for the current path can be added here
+        //Prints for the current path can be added here
         if(initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not recoveryUnderway){
-          tuneGeneration(myMap, false, true, false, position_x, position_y, position_z, DEPTH_VALUE);
+          tuneGeneration(myMap, false, true, false, position_x, position_y, position_z, PLANNING_DEPTH);
           for(int i = 0; i < 3; i++){
             generateGoals(myMap, false);
             generateRRT(position_x, position_y, position_z);
@@ -1741,30 +1554,23 @@ int main(int argc, char *argv[])
           }
         }
         if((initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not recoveryUnderway)){
-          
-          std::cout << "I am going GLOBAL .... " << std::endl;
-          
           globalStrategy();
-
-          std::cout << "Global re-position SUCCESS  ... ^_^  " << std::endl;
         }
       }
     }
-
-    
-    // for (auto check_it = CHOSEN_PATH.begin(); check_it != CHOSEN_PATH.end(); check_it++) {
-
-    //     cout << "\nLOCAL PATH POINTS___X = " << (*check_it)->point->x() << endl;
-    //     cout << "\nLOCAL PATH POINTS___Y = " << (*check_it)->point->y() << endl;
-    //     cout << "\nLOCAL PATH POINTS___Z = " << (*check_it)->point->z() << endl;
-    //     cout << "\n----------------------------" << endl;
-    //   }
     high_resolution_clock::time_point stop_total = high_resolution_clock::now();
-    auto duration_total = duration_cast<microseconds>(stop_total - start_total);
+    auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
     // cout << "\nExecution time: " << duration_total.count() << " micro seconds for " << myGoals.size() << " path/s." << endl;
+    
+    std_msgs::Float64MultiArray planning_time;
 
+    planning_time.data = {duration_total.count(), ros::Time::now().toSec()};
+    if (!duration_total.count() == 0) {
+      execution_time_pub.publish(planning_time);
+    }
+    
     updatePathTaken();
-    visualize(&points_pub, &reserved_goals_pub, &chosen_path_visualization_pub, &all_path_pub, &goal_pub, &hits_pub, &taken_path_pub, &map_pub, &position_pub);
+    visualize(&points_pub, &output_path_pub, &chosen_path_visualization_pub, &all_path_pub, &goal_pub, &hits_pub, &taken_path_pub, &map_pub, &position_pub);
     ros::spinOnce();
     rate.sleep();
   }
@@ -1772,3 +1578,7 @@ int main(int argc, char *argv[])
 }
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+          // ***** fix path length after NMPC calculation ** //
+
+          // ***** computation time plot ** //

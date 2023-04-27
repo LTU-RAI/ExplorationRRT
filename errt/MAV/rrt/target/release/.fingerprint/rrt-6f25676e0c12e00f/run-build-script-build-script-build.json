@@ -1,1 +1,0 @@
-{"rustc":12645123470573756683,"features":"","target":0,"profile":0,"path":0,"deps":[[684422997283056400,"build_script_build",false,12172791685280437970]],"local":[{"RerunIfChanged":{"output":"release/build/rrt-6f25676e0c12e00f/output","paths":["src/lib.rs","rrt_bindings.h","rrt_bindings.hpp"]}}],"rustflags":[],"metadata":0,"config":0,"compile_kind":0}

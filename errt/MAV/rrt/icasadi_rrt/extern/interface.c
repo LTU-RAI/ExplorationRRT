@@ -22,7 +22,7 @@
  *   + n1: 0
  *   + n2: 0
  *
- * Generated at: 2023-02-13 09:08:23.478273
+ * Generated at: 2023-03-29 15:14:59.112549
  *
  */
 #include <stdlib.h>
@@ -57,7 +57,7 @@
 /*
  * CasADi interface for the cost function
  */
-extern int phi_DzTrIEitxRCBzMifHCSn(
+extern int phi_ZMaTNnoaSrhtLBUOtArK(
     const casadi_real** arg, 
     casadi_real** res, 
     casadi_int* iw, 
@@ -67,7 +67,7 @@ extern int phi_DzTrIEitxRCBzMifHCSn(
 /*
  * CasADi interface for the gradient of the cost
  */
-extern int grad_phi_DzTrIEitxRCBzMifHCSn(
+extern int grad_phi_ZMaTNnoaSrhtLBUOtArK(
     const casadi_real** arg, 
     casadi_real** res, 
     casadi_int* iw, 
@@ -77,7 +77,7 @@ extern int grad_phi_DzTrIEitxRCBzMifHCSn(
 /*
  * CasADi interface for the gradient of mapping F1
  */
-extern int mapping_f1_DzTrIEitxRCBzMifHCSn(
+extern int mapping_f1_ZMaTNnoaSrhtLBUOtArK(
     const casadi_real** arg, 
     casadi_real** res, 
     casadi_int* iw, 
@@ -87,7 +87,7 @@ extern int mapping_f1_DzTrIEitxRCBzMifHCSn(
 /*
  * CasADi interface for the gradient of mapping F2
  */
-extern int mapping_f2_DzTrIEitxRCBzMifHCSn(
+extern int mapping_f2_ZMaTNnoaSrhtLBUOtArK(
     const casadi_real** arg, 
     casadi_real** res, 
     casadi_int* iw, 
@@ -231,7 +231,7 @@ int cost_function_rrt(const casadi_real** arg, casadi_real** res) {
     copy_args_into_uxip_space(arg);
 
     result_space_cost[0] = res[0];
-    return phi_DzTrIEitxRCBzMifHCSn(
+    return phi_ZMaTNnoaSrhtLBUOtArK(
         args__,
         result_space_cost,
         allocated_i_workspace_cost,
@@ -249,7 +249,7 @@ int grad_cost_function_rrt(const casadi_real** arg, casadi_real** res) {
               uxip_space + NU_RRT + NXI_RRT};  /* :p   */
     copy_args_into_uxip_space(arg);
     result_space_grad[0] = res[0];
-    return grad_phi_DzTrIEitxRCBzMifHCSn(
+    return grad_phi_ZMaTNnoaSrhtLBUOtArK(
         args__,
         result_space_grad,
         allocated_i_workspace_grad,
@@ -273,10 +273,10 @@ int mapping_f1_function_rrt(const casadi_real** arg, casadi_real** res) {
      */
     result_space_f1[0] = res[0];
     /*
-     * Call auto-generated function mapping_f1_DzTrIEitxRCBzMifHCSn
+     * Call auto-generated function mapping_f1_ZMaTNnoaSrhtLBUOtArK
      * Implemented in: icasadi/extern/auto_casadi_mapping_f1.c
      */
-    return mapping_f1_DzTrIEitxRCBzMifHCSn(
+    return mapping_f1_ZMaTNnoaSrhtLBUOtArK(
         args__,
         result_space_f1,
         allocated_i_workspace_f1,
@@ -300,10 +300,10 @@ int mapping_f2_function_rrt(const casadi_real** arg, casadi_real** res) {
      */
     result_space_f2[0] = res[0];
     /*
-     * Call auto-generated function mapping_f2_DzTrIEitxRCBzMifHCSn
+     * Call auto-generated function mapping_f2_ZMaTNnoaSrhtLBUOtArK
      * Implemented in: icasadi/extern/auto_casadi_mapping_f2.c
      */
-    return mapping_f2_DzTrIEitxRCBzMifHCSn(
+    return mapping_f2_ZMaTNnoaSrhtLBUOtArK(
         args__,
         result_space_f2,
         allocated_i_workspace_f2,

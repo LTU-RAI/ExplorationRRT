@@ -2,11 +2,11 @@ _comment: auto-generated file; do not modify
 build:
   build_dir: MAV
   build_mode: release
-  cost_function_name: phi_DzTrIEitxRCBzMifHCSn
-  grad_function_name: grad_phi_DzTrIEitxRCBzMifHCSn
-  id: DzTrIEitxRCBzMifHCSn
-  mapping_f1: mapping_f1_DzTrIEitxRCBzMifHCSn
-  mapping_f2: mapping_f2_DzTrIEitxRCBzMifHCSn
+  cost_function_name: phi_ZMaTNnoaSrhtLBUOtArK
+  grad_function_name: grad_phi_ZMaTNnoaSrhtLBUOtArK
+  id: ZMaTNnoaSrhtLBUOtArK
+  mapping_f1: mapping_f1_ZMaTNnoaSrhtLBUOtArK
+  mapping_f2: mapping_f2_ZMaTNnoaSrhtLBUOtArK
   open_version: null
   opengen_version: 0.6.11
   target_system: null
