@@ -1,0 +1,14 @@
+cargo:rerun-if-changed=build.rs
+cargo:rustc-cfg=linux_raw
+cargo:rustc-cfg=asm
+cargo:rustc-cfg=linux_like
+cargo:rerun-if-env-changed=CARGO_CFG_RUSTIX_USE_EXPERIMENTAL_ASM
+cargo:rerun-if-env-changed=CARGO_CFG_RUSTIX_USE_LIBC
+cargo:rerun-if-env-changed=CARGO_FEATURE_USE_LIBC
+cargo:rerun-if-env-changed=CARGO_FEATURE_RUSTC_DEP_OF_STD
+cargo:rerun-if-env-changed=CARGO_CFG_MIRI
+cargo:rerun-if-env-changed=CARGO_ENCODED_RUSTFLAGS
+cargo:rerun-if-env-changed=RUSTC
+cargo:rerun-if-env-changed=TARGET
+cargo:rerun-if-env-changed=RUSTC_WRAPPER
+cargo:rerun-if-env-changed=PROFILE

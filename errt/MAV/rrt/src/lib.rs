@@ -2,7 +2,6 @@
 // Auto-generated file by OptimizationEngine
 // See https://alphaville.github.io/optimization-engine/
 //
-// Generated at: 2023-03-29 15:14:59.141528
 //
 
 use libc::{c_double, c_ulong, c_ulonglong};
@@ -39,11 +38,13 @@ const MAX_DURATION_MICROS: u64 = 40000;
 const PENALTY_UPDATE_FACTOR: f64 = 2.0;
 
 /// Initial penalty
-const INITIAL_PENALTY_PARAMETER: f64 = 1000.0;
+const INITIAL_PENALTY_PARAMETER: Option<f64> = Some(1000.0);
 
 /// Sufficient decrease coefficient
 const SUFFICIENT_INFEASIBILITY_DECREASE_COEFFICIENT: f64 = 0.1;
 
+/// Whether preconditioning should be applied
+const DO_PRECONDITIONING: bool = false;
 
 // ---Public Constants-----------------------------------------------------------------------------------
 
@@ -252,7 +253,7 @@ pub unsafe extern "C" fn rrt_solve(
 pub unsafe extern "C" fn rrt_free(instance: *mut rrtCache) {
     // Add impl
     assert!(!instance.is_null());
-    Box::from_raw(instance);
+    drop(Box::from_raw(instance));
 }
 
 
@@ -291,8 +292,27 @@ pub fn initialize_solver() -> AlmCache {
     AlmCache::new(panoc_cache, RRT_N1, RRT_N2)
 }
 
+/// If preconditioning has been applied, then at the end (after a solution has been obtained)
+/// we need to undo the scaling and update the cost function
+fn unscale_result(solver_status: &mut Result<AlmOptimizerStatus, SolverError>) {
+    if let Ok(sss) = solver_status {
+        let w_cost : f64 = icasadi_rrt::get_w_cost();
+        sss.update_cost(sss.cost() / w_cost);
+    }
+}
 
 /// Solver interface
+///
+/// ## Arguments
+/// - `p`: static parameter vector of the optimization problem
+/// - `alm_cache`: Instance of AlmCache
+/// - `u`: Initial guess
+/// - `y0` (optional) initial vector of Lagrange multipliers
+/// - `c0` (optional) initial penalty
+///
+/// ## Returns
+/// This function returns either an instance of AlmOptimizerStatus with information about the
+/// solution, or a SolverError object if something goes wrong
 pub fn solve(
     p: &[f64],
     alm_cache: &mut AlmCache,
@@ -303,6 +323,19 @@ pub fn solve(
 
     assert_eq!(p.len(), RRT_NUM_PARAMETERS, "Wrong number of parameters (p)");
     assert_eq!(u.len(), RRT_NUM_DECISION_VARIABLES, "Wrong number of decision variables (u)");
+
+    // Start by initialising the optimiser interface (e.g., set w=1)
+    icasadi_rrt::init_rrt();
+
+    let mut rho_init : f64 = 1.0;
+    if DO_PRECONDITIONING {
+        // Compute the preconditioning parameters (w's)
+        // The scaling parameters will be stored internally in `interface.c`
+        icasadi_rrt::precondition(u, p);
+
+        // Compute initial penalty
+        icasadi_rrt::initial_penalty(u, p, & mut rho_init);
+    }
 
     let psi = |u: &[f64], xi: &[f64], cost: &mut f64| -> Result<(), SolverError> {
         icasadi_rrt::cost(u, xi, p, cost);
@@ -335,18 +368,22 @@ pub fn solve(
         .with_max_duration(std::time::Duration::from_micros(MAX_DURATION_MICROS))
         .with_max_outer_iterations(MAX_OUTER_ITERATIONS)
         .with_max_inner_iterations(MAX_INNER_ITERATIONS)
-        .with_initial_penalty(c0.unwrap_or(INITIAL_PENALTY_PARAMETER))
+        .with_initial_penalty(c0.unwrap_or(INITIAL_PENALTY_PARAMETER.unwrap_or(rho_init)))
         .with_penalty_update_factor(PENALTY_UPDATE_FACTOR)
         .with_sufficient_decrease_coefficient(SUFFICIENT_INFEASIBILITY_DECREASE_COEFFICIENT);
 
-    // solve the problem using `u` an the initial condition `u` and
+    // solve the problem using `u`, the initial condition `u`, and
     // initial vector of Lagrange multipliers, if provided;
     // returns the problem status (instance of `AlmOptimizerStatus`)
     if let Some(y0_) = y0 {
         let mut alm_optimizer = alm_optimizer.with_initial_lagrange_multipliers(y0_);
-        alm_optimizer.solve(u)
+        let mut solution_status = alm_optimizer.solve(u);
+        unscale_result(&mut solution_status);
+        solution_status
     } else {
-        alm_optimizer.solve(u)
+        let mut solution_status = alm_optimizer.solve(u);
+        unscale_result(&mut solution_status);
+        solution_status
     }
 
 }

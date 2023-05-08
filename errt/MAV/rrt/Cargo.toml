@@ -5,8 +5,6 @@
 #
 # See https://alphaville.github.io/optimization-engine/
 #
-# Generated at: 2023-03-29 15:14:59.075156
-#
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 [package]
 name = "rrt"

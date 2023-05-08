@@ -1,6 +1,5 @@
 ///
 /// Auto-generated TCP server for optimizer: rrt
-/// Generated at: 2023-03-29 15:17:28.966915
 ///
 use optimization_engine::alm::*;
 use serde::{Deserialize, Serialize};

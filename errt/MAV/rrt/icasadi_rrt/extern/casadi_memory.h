@@ -13,7 +13,6 @@
  *   + version: 0.0.0
  *   + licence: MIT
  *
- * Generated at: 2023-03-29 15:14:59.104701
  *
  */
 
@@ -24,7 +23,7 @@
  */
 #define COST_SZ_ARG_RRT 3
 #define COST_SZ_IW_RRT 0
-#define COST_SZ_W_RRT 22
+#define COST_SZ_W_RRT 23
 #define COST_SZ_RES_RRT 1
 
 /*
@@ -32,7 +31,7 @@
  */
 #define GRAD_SZ_ARG_RRT 3
 #define GRAD_SZ_IW_RRT 0
-#define GRAD_SZ_W_RRT 797
+#define GRAD_SZ_W_RRT 798
 #define GRAD_SZ_RES_RRT 1
 
 /*
@@ -50,3 +49,37 @@
 #define F2_SZ_IW_RRT 0
 #define F2_SZ_W_RRT 1
 #define F2_SZ_RES_RRT 1
+
+/*
+ * w_cost sizes
+ */
+#define W_COST_SZ_ARG_RRT 2
+#define W_COST_SZ_IW_RRT 0
+#define W_COST_SZ_W_RRT 799
+#define W_COST_SZ_RES_RRT 1
+
+/*
+ * w1 sizes
+ * Preconditioning of F1
+ */
+#define W1_SZ_ARG_RRT 2
+#define W1_SZ_IW_RRT 0
+#define W1_SZ_W_RRT 1
+#define W1_SZ_RES_RRT 1
+
+/*
+ * w2 sizes
+ * Preconditioning of F2
+ */
+#define W2_SZ_ARG_RRT 2
+#define W2_SZ_IW_RRT 0
+#define W2_SZ_W_RRT 1
+#define W2_SZ_RES_RRT 1
+
+/*
+ * initial_penalty sizes
+ */
+#define INIT_PENALTY_SZ_ARG_RRT 2
+#define INIT_PENALTY_SZ_IW_RRT 0
+#define INIT_PENALTY_SZ_W_RRT 26
+#define INIT_PENALTY_SZ_RES_RRT 1
