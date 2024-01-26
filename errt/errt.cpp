@@ -1063,7 +1063,7 @@ void setPath(){
       allowNewPath = true;
       totalCost = std::numeric_limits<float>::max();
     }else{
-      totalCost = goalNode->sumDistance() * SCALER_DISTANCE - SCALER_INFORMATION_GAIN * (goalNode->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, false, false));
+      totalCost = goalNode->sumDistance() * SCALER_DISTANCE - SCALER_INFORMATION_GAIN * (goalNode->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, true, false));
     }
   }else{
     totalCost = std::numeric_limits<float>::max();
@@ -1074,12 +1074,18 @@ void setPath(){
     initialGoalInfo = 0;
     for(std::list<node*>::iterator it_goal = myGoals.begin(); it_goal != myGoals.end(); it_goal++){
       if((*it_goal)->myParent != nullptr){
-        linSpace(*it_goal, DISTANCE_BETWEEN_NODES);
+        //linSpace(*it_goal, SENSOR_RANGE / 2);
         auto pathImprovement_start = high_resolution_clock::now();
+
         (*it_goal)->findPathImprovement(*it_goal, myMap, DISTANCE_BETWEEN_NODES, RADIOUS, pathImprovement_start, PATH_IMPROVEMENT_MAX);
+        double informationGain = SCALER_INFORMATION_GAIN * ((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, false, false));
+
+        linSpace(*it_goal, DISTANCE_BETWEEN_NODES);
+        auto pathImprovement_start_2 = high_resolution_clock::now();
+        (*it_goal)->findPathImprovement(*it_goal, myMap, DISTANCE_BETWEEN_NODES, RADIOUS, pathImprovement_start_2, PATH_IMPROVEMENT_MAX);
         double distanceCost = (*it_goal)->sumDistance() * SCALER_DISTANCE;
         // double informationGain = SCALER_INFORMATION_GAIN * log((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, true, false));
-        double informationGain = SCALER_INFORMATION_GAIN * ((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, true, false));
+        // double informationGain = SCALER_INFORMATION_GAIN * ((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, false, false));
         linSpace(*it_goal, DISTANCE_BETWEEN_NODES);
 	
         typedef rrtCache* (*arbitrary)();
