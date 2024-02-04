@@ -1,1 +1,0 @@
-cargo:rerun-if-changed=/home/hulkpc/.cargo/registry/src/github.com-1ecc6299db9ec823/cbindgen-0.20.0/tests/rust

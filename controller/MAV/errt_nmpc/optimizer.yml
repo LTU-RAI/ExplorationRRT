@@ -1,0 +1,24 @@
+_comment: auto-generated file; do not modify
+build:
+  build_dir: MAV
+  build_mode: release
+  open_version: null
+  opengen_version: 0.7.1
+  target_system: null
+meta:
+  authors:
+  - John Smith
+  licence: MIT
+  optimizer_name: errt_nmpc
+  version: 0.0.0
+solver:
+  constraints_tolerance: 0.0001
+  lbfgs_memory: 10
+  max_duration_micros: 40000
+  max_inner_iterations: 500
+  max_outer_iterations: 5
+  penalty_weight_update_factor: 2.0
+  tolerance: 0.0001
+tcp:
+  ip: 127.0.0.1
+  port: 2769
