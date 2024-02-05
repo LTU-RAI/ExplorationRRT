@@ -1,0 +1,40 @@
+# ~/.tmuxinator/errt.yml 
+
+name: errt
+root: ~/
+windows:
+  - stage_main:
+      layout: even-horizontal 
+      panes:
+        - ufomap:
+          - cd catkin_workspaces/exploration_ws
+          - source devel/setup.bash
+          - sleep 2  
+          - mon launch errt server.launch 
+        - errt:
+          - cd catkin_workspaces/exploration_ws
+          - source devel/setup.bash
+          - sleep 6 
+          - mon launch errt rrt.launch
+
+  - publishers:
+      # layout: main-vertical 
+      layout: tiled 
+      panes:
+        - rotors:
+          - cd catkin_workspaces/exploration_ws
+          - source devel/setup.bash
+          - sleep 1  
+          - roslaunch rotors_gazebo errt_mav.launch 
+        - takeoff:
+          - cd catkin_workspaces/exploration_ws
+          - source devel/setup.bash
+          - sleep 2  
+        - controller:  
+          - cd catkin_workspaces/exploration_ws
+          - source devel/setup.bash
+          - cd src/ExplorationRRT/controller
+          - sleep 4
+          - python3 errt_nmpc.py
+        - roscore: 
+          - roscore 

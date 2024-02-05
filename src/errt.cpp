@@ -172,6 +172,10 @@ struct node{
               myHits.push_back(end_point);
             }
           }
+
+          // info gain check if more than sum distance. 
+
+
           if(myParent != nullptr and not excludePath){
             myParent->findInformationGain(SCALER_AABB, givenVertical, givenHorizontal, givenMin, givenMax, map, excludePath, findAnyInfo);
           }
@@ -1059,6 +1063,8 @@ void setPath(){
   bool setDistance = false;
   if(goalNode != nullptr){
     goalNode->clearInformationGain();
+
+
     if((sqrt(pow(position_x - goalNode->point->x(), 2) + pow(position_y - goalNode->point->y(), 2) + pow(position_z - goalNode->point->z(), 2)) < NEXT_PATH_DISTANCE)){
       allowNewPath = true;
       totalCost = std::numeric_limits<float>::max();
@@ -1073,7 +1079,22 @@ void setPath(){
     std::list<double> PATH_CONTAINER{};
     initialGoalInfo = 0;
     for(std::list<node*>::iterator it_goal = myGoals.begin(); it_goal != myGoals.end(); it_goal++){
-      if((*it_goal)->myParent != nullptr){
+
+      if((*it_goal)->myParent != nullptr ) {
+
+        // TODO @aakapatel 
+        // Find informatationgain only for the goals not directly in line of sight of the drone 
+        //
+        // ufo::math::Vector3 current_point (position_x, position_y, position_z);
+        // ufo::math::Vector3 goal_point ((*it_goal)->point->x(), (*it_goal)->point->y(), (*it_goal)->point->z());
+        // // ufo::geometry::OBB obb = makeOBB(start_point, random_point, OBB_RADIUS);
+        // ufo::geometry::LineSegment myLine(current_point, goal_point);
+        // if(!isInCollision(myMap, myLine, true, false, true, PLANNING_DEPTH)) {
+        //   
+        //   ROS_WARN_STREAM ("check 0");
+        //   it_goal++;
+        // }
+
         //linSpace(*it_goal, SENSOR_RANGE / 2);
         auto pathImprovement_start = high_resolution_clock::now();
 
@@ -1223,6 +1244,9 @@ void setPath(){
           }
           vref_itterator = CHOSEN_PATH_VREF.begin();
         }
+      
+
+
       }
     }
     if(not recoveryUnderway){

@@ -168,10 +168,10 @@ Visualization Manager:
     - Class: UFOMap
       Enabled: true
       Information:
-        "# Inner Nodes": 105,129
+        "# Inner Nodes": 43,409
         "# Leaf Nodes": 0
         Resolution: 8 cm
-        Size: 2.41 MiB
+        Size: 1,017.40 KiB
       Min. Depth: 0
       Name: UFOMap
       Occupancy Thresholds:
@@ -224,7 +224,7 @@ Visualization Manager:
       Marker Topic: /CHOSEN_RRT_PATH_VISUALIZATION
       Name: Marker
       Namespaces:
-        {}
+        points: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -232,7 +232,7 @@ Visualization Manager:
       Marker Topic: /RRT_GOALS
       Name: Marker
       Namespaces:
-        {}
+        points: true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -268,13 +268,13 @@ Visualization Manager:
       Queue Size: 100
       Value: false
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /HITS
       Name: Marker
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -355,7 +355,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 18.907855987548828
+      Distance: 15.328869819641113
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -363,17 +363,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -16.465667724609375
-        Y: -5.651509761810303
-        Z: 6.074212551116943
+        X: 4.173352241516113
+        Y: 0.21838846802711487
+        Z: 10.529885292053223
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6647965908050537
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 3.657625913619995
+      Yaw: 3.157625675201416
     Saved: ~
 Window Geometry:
   Displays:
@@ -391,5 +391,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 2538
-  X: 5131
+  X: 11
   Y: 11
