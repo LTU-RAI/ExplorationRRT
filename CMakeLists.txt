@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(errt)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(octomap_DIR "/opt/ros/noetic/share/octomap")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+##set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
+
+find_package(catkin_simple REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package (PCL 1.10 REQUIRED)
+
+set(PCL_INCLUDE_DIRS /usr/include/pcl-1.10 /usr/include/eigen3/)
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -14,14 +25,45 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   roslib
   dynamic_reconfigure
+  geometry_msgs
+  octomap_msgs
+  octomap_ros
+  mav_msgs
+  mav_planning_msgs
+  std_srvs
+  roscpp
+  pcl_ros
+  tf_conversions
+  std_msgs
+  nav_msgs
+  move_base_msgs
+  actionlib
+  actionlib_msgs
+  message_generation
+  ufomap_mapping
+  roscpp_serialization
+
+
 )
 find_package(ufomap REQUIRED)
 
-include_directories(${catkin_INCLUDE_DIRS} MAV MAV/rrt/target/release) 
+find_package(catkin_simple REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(roscpp_serialization REQUIRED)
 
+include_directories(${catkin_INCLUDE_DIRS} MAV MAV/rrt/target/release) 
+include_directories(${PCL_INCLUDE_DIRS})
+include_directories(${EIGEN3_INCLUDE_DIR} ${CHOLMOD_INCLUDE_DIR})
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+include_directories(
+    ${catkin_INCLUDE_DIRS}
+    $(OCTOMAP_INCLUDE_DIRS)
+    include/
+    ${Eigen_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed

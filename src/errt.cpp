@@ -22,6 +22,85 @@
 #include "std_msgs/Float64MultiArray.h"
 
 
+#include <geometry_msgs/Point.h>
+#include "std_msgs/Int64.h"
+#include <ros/message_traits.h>
+#include <ros/serialization.h>
+#include <stdio.h>
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+#include <eigen3/Eigen/Dense>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <nav_msgs/Odometry.h>
+#include <ros/ros.h>
+#include <bits/stdc++.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <message_filters/subscriber.h>
+#include <std_msgs/ColorRGBA.h>
+#include <tf/transform_listener.h>
+#include <tf/message_filter.h>
+#include <nav_msgs/Odometry.h>
+#include <pcl/point_types.h>
+#include <pcl/conversions.h>
+#include <pcl_ros/transforms.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <octomap_msgs/Octomap.h>
+#include <octomap_msgs/GetOctomap.h>
+#include <octomap_msgs/BoundingBoxQuery.h>
+#include <octomap_msgs/conversions.h>
+#include <octomap_ros/conversions.h>
+#include <octomap/octomap.h>
+#include <octomap/OcTreeKey.h>
+#include <visualization_msgs/MarkerArray.h>
+#include <nav_msgs/OccupancyGrid.h>
+#include <std_msgs/String.h>
+#include <ufo/math/vector3.h>
+#include <ros/ros.h>
+#include <list>
+#include <chrono>
+#include <visualization_msgs/Marker.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Path.h>
+#include <nav_msgs/Odometry.h>
+#include <math.h>
+#include <dlfcn.h>
+#include <stdlib.h>
+#include <tf/tf.h>
+#include <ros/package.h>
+#include <ros/console.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Vector3Stamped.h>
+#include <limits>
+#include <set>
+#include <utility>
+#include <algorithm>
+#include <iterator>
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <cmath>
+#include <string>
+#include <climits>
+#include <memory>
+#include <fstream>
+#include <variant>
+#include <mav_msgs/Status.h>
+#include <mav_msgs/conversions.h>
+#include <mav_msgs/default_topics.h>
+#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+#include <geometry_msgs/PoseArray.h>
+
+
+
 using namespace std::chrono;
 using namespace std;
 using namespace std::this_thread;
@@ -146,7 +225,7 @@ struct node{
             if(!isInCollision(map, myLine, true, false, false, INFO_GAIN_CHECK_DEPTH)){
               if(findAnyInfo){
                 return 1;
-              }
+          }
               myHits.push_back(end_point);
             }
           }
@@ -327,6 +406,10 @@ struct node{
 // Variables
 
 // Variables
+
+int n_seq_;
+double dt_ = 0.1;
+
 int NUMBER_OF_NODES;
 int NUMBER_OF_GOALS;
 int NUMBER_OF_ITTERATIONS;
@@ -936,7 +1019,7 @@ void findShortestPath(){
 
       high_resolution_clock::time_point stop_total = high_resolution_clock::now();
     auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    cout << "\n FIND SHORTEST Execution time: " << duration_total.count() << " micro seconds " << endl;
+    cout << "\n FIND SHORTEST PATH Execution time: " << duration_total.count() << " ms " << endl;
 }
 
 // Generates goals.
