@@ -168,10 +168,10 @@ Visualization Manager:
     - Class: UFOMap
       Enabled: true
       Information:
-        "# Inner Nodes": 43,409
+        "# Inner Nodes": 183,457
         "# Leaf Nodes": 0
         Resolution: 8 cm
-        Size: 1,017.40 KiB
+        Size: 4.20 MiB
       Min. Depth: 0
       Name: UFOMap
       Occupancy Thresholds:
@@ -244,7 +244,7 @@ Visualization Manager:
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
       Line Style: Billboards
-      Line Width: 0.4000000059604645
+      Line Width: 0.05000000074505806
       Name: Path
       Offset:
         X: 0
@@ -284,19 +284,19 @@ Visualization Manager:
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
       Line Style: Billboards
-      Line Width: 0.10000000149011612
+      Line Width: 0.15000000596046448
       Name: Path
       Offset:
         X: 0
         Y: 0
         Z: 0
       Pose Color: 255; 85; 255
-      Pose Style: None
+      Pose Style: Arrows
       Queue Size: 10
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /chosen_path
+      Topic: /command_path
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -327,6 +327,30 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: ""
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -355,7 +379,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 15.328869819641113
+      Distance: 9.030351638793945
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -363,17 +387,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 4.173352241516113
-        Y: 0.21838846802711487
-        Z: 10.529885292053223
+        X: 2.363868236541748
+        Y: 0.25324177742004395
+        Z: 5.6614274978637695
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.2897965908050537
       Target Frame: <Fixed Frame>
-      Yaw: 3.157625675201416
+      Yaw: 3.1476266384124756
     Saved: ~
 Window Geometry:
   Displays:

@@ -506,6 +506,12 @@ std::list<ufo::math::Vector3> hits{};
 std::list<node*> VISITED_POINTS{};
 std::list<node*>::iterator path_itterator;
 
+
+ros::Publisher m_trajectory_Publisher;
+ros::Publisher m_command_Path_Publisher;
+nav_msgs::Path command_path;
+
+
 // End of variables
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
 // Functions
@@ -549,9 +555,148 @@ void linSpace(node* givenNode, float givenDistance){
   }
 }
 
+void segmentPath(const nav_msgs::Path &path,
+                 nav_msgs::Path &path_seg)
+{
+  path_seg.poses.clear();
+  double v_max_ = 1;
+  double yaw_rate_max_ = 0.1;
+  if (path.poses.size() == 0)
+    return;
+  if (path.poses.size() == 1)
+    path_seg.poses.push_back(path.poses[0]);
+
+  for (int i = 0; i < (path.poses.size() - 1); ++i)
+  {
+    // Interpolate each segment.
+    Eigen::Vector3d start(path.poses[i].pose.position.x, path.poses[i].pose.position.y,
+                          path.poses[i].pose.position.z);
+    Eigen::Vector3d end(path.poses[i + 1].pose.position.x, path.poses[i + 1].pose.position.y,
+                        path.poses[i + 1].pose.position.z);
+    Eigen::Vector3d distance = end - start;
+    double yaw_start = tf::getYaw(path.poses[i].pose.orientation);
+    double yaw_end = tf::getYaw(path.poses[i + 1].pose.orientation);
+    double yaw_direction = yaw_end - yaw_start;
+    if (yaw_direction > M_PI)
+    {
+      yaw_direction -= 2.0 * M_PI;
+    }
+    if (yaw_direction < -M_PI)
+    {
+      yaw_direction += 2.0 * M_PI;
+    }
+
+    double dist_norm = distance.norm();
+    double disc = std::min(dt_ * v_max_ / dist_norm,
+                           dt_ * yaw_rate_max_ / abs(yaw_direction));
+
+    bool int_flag = true;
+
+    if (int_flag)
+    {
+      for (double it = 0.0; it <= 1.0; it += disc)
+      {
+        tf::Vector3 origin((1.0 - it) * start[0] + it * end[0],
+                           (1.0 - it) * start[1] + it * end[1],
+                           (1.0 - it) * start[2] + it * end[2]);
+        double yaw = yaw_start + yaw_direction * it;
+        if (yaw > M_PI)
+          yaw -= 2.0 * M_PI;
+        if (yaw < -M_PI)
+          yaw += 2.0 * M_PI;
+        tf::Quaternion quat;
+        quat.setEuler(0.0, 0.0, yaw);
+        tf::Pose poseTF(quat, origin);
+        geometry_msgs::Pose pose;
+        tf::poseTFToMsg(poseTF, pose);
+        geometry_msgs::PoseStamped pose_stamped;
+        pose_stamped.pose.position = pose.position;
+        pose_stamped.pose.orientation = pose.orientation;
+        path_seg.poses.push_back(pose_stamped);
+      }
+    }
+  }
+}
+
+
+void generateTrajectory () {
+
+  nav_msgs::Path my_path;
+  my_path.poses.clear();
+
+  geometry_msgs::PoseStamped new_pose;
+
+  for (auto i = CHOSEN_PATH.begin(); i != CHOSEN_PATH.end(); i++) {
+    
+    new_pose.pose.position.x = (*i)->point->x();
+    new_pose.pose.position.y = (*i)->point->y();
+    new_pose.pose.position.z = (*i)->point->z();
+
+    new_pose.pose.orientation.x = 0;
+    new_pose.pose.orientation.y = 0;
+    new_pose.pose.orientation.z = 0;
+    new_pose.pose.orientation.w = 1;
+
+    my_path.poses.push_back(new_pose);
+  }
+
+  nav_msgs::Path new_path;
+  new_path.poses.clear();
+  
+  segmentPath(my_path, new_path);
+
+  n_seq_++;
+  trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
+  mav_msgs::EigenTrajectoryPoint trajectory_point_;
+  trajectory_msgs::MultiDOFJointTrajectoryPoint trajectory_point_msg_;
+  std::vector<geometry_msgs::Pose> executing_path_;
+
+  trajectory_array_.header.seq = n_seq_;
+  trajectory_array_.header.stamp = ros::Time::now();
+  trajectory_array_.header.frame_id = "world";
+  trajectory_array_.points.clear();
+  double time_sum = 0;
+
+  geometry_msgs::PoseStamped pose_ref;
+  command_path.poses.clear();
+  pose_ref.header.frame_id = "world";
+  command_path.header.frame_id = "world";
+
+  for (int i = 0; i < new_path.poses.size(); i++)
+  {
+
+    double yaw = tf::getYaw(new_path.poses[i].pose.orientation);
+    Eigen::Vector3d p(new_path.poses[i].pose.position.x, new_path.poses[i].pose.position.y,
+                      new_path.poses[i].pose.position.z);
+    trajectory_point_.position_W.x() = p.x();
+    trajectory_point_.position_W.y() = p.y();
+    trajectory_point_.position_W.z() = p.z();
+    trajectory_point_.setFromYaw(yaw);
+    pose_ref = new_path.poses[i];
+
+    mav_msgs::msgMultiDofJointTrajectoryPointFromEigen(
+        trajectory_point_, &trajectory_point_msg_);
+    time_sum += dt_;
+    trajectory_point_msg_.time_from_start = ros::Duration(time_sum);
+    // trajectory_array_.points.insert(trajectory_array_.points.begin(),trajectory_point_msg_);
+    trajectory_array_.points.push_back(trajectory_point_msg_);
+
+    // TODO Need to optimize this insertion! may be assign new_path directly to command path?
+
+    command_path.poses.push_back(pose_ref);
+  }
+  m_trajectory_Publisher.publish(trajectory_array_);
+  m_command_Path_Publisher.publish(command_path);
+
+}
+
+
 // Evaluates the current point in the current path.
 // This includes deciding when to change the current target to the next node in the path and when to calculate a new path.
 void evaluateCurrentPoint(ros::Publisher* chosen_path_pub){
+  
+  // generateTrajectory ();
+  
   if((sqrt(pow(position_x - goalNode->point->x(), 2) + pow(position_y - goalNode->point->y(), 2) + pow(position_z - goalNode->point->z(), 2)) < NEXT_PATH_DISTANCE)){
     itterations = 0;
     fetched_path = false;
@@ -597,6 +742,9 @@ void evaluateCurrentPoint(ros::Publisher* chosen_path_pub){
     chosen_path_pub->publish(nextPoint);
   }
 }
+
+
+
 
 // Builds and publishes the visualization messages.
 void visualize(ros::Publisher* points_pub, ros::Publisher* output_path_pub, ros::Publisher* chosen_path_visualization_pub, ros::Publisher* all_path_pub, ros::Publisher* goal_pub, ros::Publisher* hits_pub, ros::Publisher* taken_path_pub, ros::Publisher* map_pub, ros::Publisher* position_pub){
@@ -1373,6 +1521,7 @@ void setPath(){
   };
 }
 
+
 // Generates the RRT
 // Generates the nodes in the RRT-tree and connects them to a already existing parent.
 // The root of the node exists at the current position of the plant.
@@ -1602,6 +1751,10 @@ int main(int argc, char *argv[])
   ros::Publisher position_pub = nh.advertise<visualization_msgs::Marker>("POSITION", 1);
   ros::Publisher taken_path_pub = nh.advertise<visualization_msgs::Marker>("PATH_TAKEN", 1);
   ros::Publisher execution_time_pub = nh.advertise<std_msgs::Float64MultiArray>("/errt_execution_time", 1);
+  
+  m_command_Path_Publisher = nh.advertise<nav_msgs::Path>("/command_path", 1, true);
+
+  m_trajectory_Publisher = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>("/hummingbird/command/trajectory", 1, true);
   ros::Rate rate(10);
   
   // Initial point
@@ -1685,6 +1838,8 @@ int main(int argc, char *argv[])
   // 4) Evaluates the current point.
   // 5) Trigger global strategy if necessary.
   while(ros::ok()){
+
+
     high_resolution_clock::time_point start_total = high_resolution_clock::now();
     if(map_received and not GOALS_generated and position_received){
       if(CHOSEN_PATH.empty()){
@@ -1732,15 +1887,18 @@ int main(int argc, char *argv[])
 
     high_resolution_clock::time_point stop_total = high_resolution_clock::now();
     auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    cout << "\nSET PATH time: " << duration_total.count() << " mili seconds for " << endl;
+    cout << "\nSET PATH time: " << duration_total.count() << " ms \n" << endl;
     
 
       }
       if(fetched_path and goalNode != nullptr){  
         itterations++;
+        
+        // generateTrajectory ();
+
         evaluateCurrentPoint(&chosen_path_pub);
       }
-      if((goalNode == nullptr and GOALS_generated)){
+      if((goalNode == nullptr and GOALS_generated)) {
         //Prints for the current path can be added here
         if(initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not recoveryUnderway){
           tuneGeneration(myMap, false, true, false, position_x, position_y, position_z, PLANNING_DEPTH);
