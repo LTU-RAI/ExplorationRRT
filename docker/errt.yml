@@ -35,6 +35,7 @@ windows:
           - source devel/setup.bash
           - cd src/ExplorationRRT/controller
           - sleep 4
-          - python3 errt_nmpc.py
+          # - python3 errt_nmpc.py
+        - roslaunch mav_linear_mpc mav_linear_mpc_sim.launch mav_name:=hummingbird
         - roscore: 
           - roscore 
