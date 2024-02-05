@@ -108,7 +108,7 @@ def callback_pot(data):
     #print(yaw_v)
 
 def callback_lio(data):
-    global xpos, ypos,zpos,vx, vy, vz,yaw_v
+    global xpos, ypos,zpos,vx, vy, vz, yaw_v, start_flag
     xpos = data.pose.pose.position.x
     ypos = data.pose.pose.position.y
     zpos = data.pose.pose.position.z
@@ -120,6 +120,7 @@ def callback_lio(data):
     vy = data.twist.twist.linear.y
     vz = data.twist.twist.linear.z
     [roll_v, pitch_v, yaw_v] = quaternion_to_euler(qx,qy,qz,qw)
+    start_flag = 1
     #print([qx, qy, qz, qw])
     #print(yaw_v)
 

@@ -1,0 +1,38 @@
+# ~/.tmuxinator/errt.yml 
+
+define: &set_start "rostopic pub /hummingbird/set_start \"initialize: true\" " 
+
+name: errt
+root: ~/
+windows:
+  - stage_main:
+      layout: even-horizontal 
+      panes:
+        - stage_interface:
+          - cde
+          - sleep 2  
+          - mon launch stage_planner stage_interface.launch 
+        - graph_management:
+          - cde 
+          - sleep 6 
+          - mon launch stage_planner graph_management.launch
+
+  - publishers:
+      # layout: main-vertical 
+      layout: tiled 
+      panes:
+        - rotors:
+          - cde
+          - sleep 1  
+          - roslaunch rotors_gazebo errt_mav.launch 
+        - takeoff:
+          - cde 
+          - sleep 8 
+          - *initialize_stage 
+        - controller:  
+          - cde
+          - cd src/ExplorationRRT/controller
+          - sleep 4
+          - python3 errt_nmpc.py
+        - roscore: 
+          - roscore 
