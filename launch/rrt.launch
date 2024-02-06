@@ -28,7 +28,7 @@
   <param name="SCALER_DISTANCE_" type="double" value="2" />			<!-- The scaler for the distance cost during path evaluation -->
   <param name="SCALER_INFORMATION_GAIN_" type="double" value="0.2" />	<!-- The scaler for the information gain during path evaluation -->
   <param name="SCALER_ACTUATION_" type="double" value="0.1" />	<!-- The scaler for the actuation cost during path evaluation -->
-  <param name="NEXT_PATH_DISTANCE_" type="double" value="1.5" />		<!-- The distance from the current goal at which a new path will be calculated -->
+  <param name="NEXT_PATH_DISTANCE_" type="double" value="1" />		<!-- The distance from the current goal at which a new path will be calculated -->
   <param name="NEXT_POINT_DISTANCE_" type="double" value="0.3" />		<!-- The distance from the current point at which the next point in the path will be set to current point -->
   <param name="PATH_IMPROVEMENT_MAX_" type="double" value="3000" />		<!-- The maximum amount of micro seconds which can be spent improving a single path before starting to exit the function -->
   <param name="GLOBAL_STRATEGY_THRESHOLD_" type="double" value="1" />	<!-- The threshold at which the global strategy will be used instead of the local strategy; This also acts as the cutoff point for accepted accepted paths by the local planner -->

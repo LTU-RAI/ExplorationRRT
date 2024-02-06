@@ -408,7 +408,7 @@ struct node{
 // Variables
 
 int n_seq_;
-double dt_ = 0.1;
+double dt_ = 1;
 
 int NUMBER_OF_NODES;
 int NUMBER_OF_GOALS;
@@ -577,7 +577,7 @@ void segmentPath(const nav_msgs::Path &path,
 {
   path_seg.poses.clear();
   double v_max_ = 0.5;
-  double yaw_rate_max_ = 0.1;
+  double yaw_rate_max_ = 0.05;
   if (path.poses.size() == 0)
     return;
   if (path.poses.size() == 1)
@@ -643,7 +643,7 @@ void generateTrajectory () {
 
   geometry_msgs::PoseStamped new_pose;
 
-  for (auto i = CHOSEN_PATH.begin(); i != CHOSEN_PATH.end(); i++) {
+  for (auto i = std::next(CHOSEN_PATH.begin(), 2); i != CHOSEN_PATH.end(); i++) {
     
     new_pose.pose.position.x = (*i)->point->x();
     new_pose.pose.position.y = (*i)->point->y();
@@ -1444,7 +1444,7 @@ void setPath(){
           u[3*i + 2] = 0;
         }
         
-        double init_penalty = 0;
+        double init_penalty = 1;
         void *handle = dlopen((ros::package::getPath("errt")  + "/MAV/rrt/target/release/librrt.so").c_str(), RTLD_LAZY);
         if (!handle) {
           fprintf(stderr, "%s\n", dlerror());
