@@ -693,7 +693,7 @@ void generateTrajectory () {
 
 // Evaluates the current point in the current path.
 // This includes deciding when to change the current target to the next node in the path and when to calculate a new path.
-void evaluateCurrentPoint(ros::Publisher* chosen_path_pub){
+void evaluateCurrentPoint(ros::Publisher* chosen_path_pub) {
   
   // generateTrajectory ();
   
@@ -1854,7 +1854,7 @@ int main(int argc, char *argv[])
 
     high_resolution_clock::time_point stop_total = high_resolution_clock::now();
     auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    cout << "\nGEN GOALS time: " << duration_total.count() << " mili seconds for " << endl;
+    // cout << "\nGEN GOALS time: " << duration_total.count() << " mili seconds for " << endl;
     }
     if(map_received and not RRT_created and GOALS_generated){
       if(CHOSEN_PATH.empty()){
@@ -1872,7 +1872,7 @@ int main(int argc, char *argv[])
 
     high_resolution_clock::time_point stop_total = high_resolution_clock::now();
     auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    cout << "\nGEN RRT AGAIN -- time: " << duration_total.count() << " mili seconds for " << endl;
+    // cout << "\nGEN RRT AGAIN -- time: " << duration_total.count() << " mili seconds for " << endl;
       
       }
       if(RRT_created){
