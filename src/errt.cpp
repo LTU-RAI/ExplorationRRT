@@ -510,7 +510,7 @@ std::list<node*>::iterator path_itterator;
 ros::Publisher m_trajectory_Publisher;
 ros::Publisher m_command_Path_Publisher;
 nav_msgs::Path command_path;
-
+trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
 
 // End of variables
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
@@ -559,7 +559,7 @@ void segmentPath(const nav_msgs::Path &path,
                  nav_msgs::Path &path_seg)
 {
   path_seg.poses.clear();
-  double v_max_ = 1;
+  double v_max_ = 0.5;
   double yaw_rate_max_ = 0.1;
   if (path.poses.size() == 0)
     return;
@@ -685,26 +685,34 @@ void generateTrajectory () {
 
     command_path.poses.push_back(pose_ref);
   }
-  m_trajectory_Publisher.publish(trajectory_array_);
-  m_command_Path_Publisher.publish(command_path);
 
 }
 
+
+void publishTrajectory () {
+
+    m_trajectory_Publisher.publish(trajectory_array_);
+    m_command_Path_Publisher.publish(command_path);
+}
 
 // Evaluates the current point in the current path.
 // This includes deciding when to change the current target to the next node in the path and when to calculate a new path.
 void evaluateCurrentPoint(ros::Publisher* chosen_path_pub) {
   
   // generateTrajectory ();
-  
-  if((sqrt(pow(position_x - goalNode->point->x(), 2) + pow(position_y - goalNode->point->y(), 2) + pow(position_z - goalNode->point->z(), 2)) < NEXT_PATH_DISTANCE)){
+
+  if ((sqrt(pow(position_x - goalNode->point->x(), 2) + pow(position_y - goalNode->point->y(), 2) + pow(position_z - goalNode->point->z(), 2)) < NEXT_PATH_DISTANCE)) {
     itterations = 0;
     fetched_path = false;
     RRT_created = false;
     GOALS_generated = false;
     position_received = false;
     allowNewPath = true;
-  }
+  
+  } 
+  
+  /*
+
   if((sqrt(pow(position_x - currentTarget->point->x(), 2) + pow(position_y - currentTarget->point->y(), 2) + pow(position_z - currentTarget->point->z(), 2)) < NEXT_POINT_DISTANCE) and path_itterator != --CHOSEN_PATH.end()){
     advance_index++;
     path_itterator = CHOSEN_PATH.begin();
@@ -741,6 +749,10 @@ void evaluateCurrentPoint(ros::Publisher* chosen_path_pub) {
     nextPoint.header.frame_id = MAP_FRAME_ID;
     chosen_path_pub->publish(nextPoint);
   }
+
+  */
+
+
 }
 
 
@@ -1777,6 +1789,12 @@ int main(int argc, char *argv[])
     CHOSEN_PATH_VREF.push_back(0);
     CHOSEN_PATH_VREF.push_back(0);
     vref_itterator = CHOSEN_PATH_VREF.begin();
+  
+
+    generateTrajectory();
+    m_trajectory_Publisher.publish(trajectory_array_);
+    m_command_Path_Publisher.publish(command_path);
+
   }
   
   ros::param::get("/MAP_FRAME_ID_", MAP_FRAME_ID);
@@ -1900,6 +1918,9 @@ int main(int argc, char *argv[])
 
         setPath();
 
+        generateTrajectory();
+
+        publishTrajectory ();
         high_resolution_clock::time_point stop_total = high_resolution_clock::now();
         auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
         cout << "\nSET PATH time: " << duration_total.count() << " ms \n" << endl;
@@ -1910,8 +1931,6 @@ int main(int argc, char *argv[])
 
         itterations++;
         
-        // generateTrajectory ();
-
         evaluateCurrentPoint(&chosen_path_pub);
 
       }
