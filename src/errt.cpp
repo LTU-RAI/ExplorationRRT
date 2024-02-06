@@ -646,7 +646,7 @@ void generateTrajectory () {
   segmentPath(my_path, new_path);
 
   n_seq_++;
-  trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
+  // trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
   mav_msgs::EigenTrajectoryPoint trajectory_point_;
   trajectory_msgs::MultiDOFJointTrajectoryPoint trajectory_point_msg_;
   std::vector<geometry_msgs::Pose> executing_path_;
@@ -1841,63 +1841,84 @@ int main(int argc, char *argv[])
 
 
     high_resolution_clock::time_point start_total = high_resolution_clock::now();
-    if(map_received and not GOALS_generated and position_received){
-      if(CHOSEN_PATH.empty()){
+
+    if (map_received and not GOALS_generated and position_received) {
+
+      if (CHOSEN_PATH.empty()) {
+
         tuneGeneration(myMap, false, true, false, position_x, position_y, position_z, PLANNING_DEPTH);
-      }else{
+
+      } else {
+
         tuneGeneration(myMap, false, true, false, (*(--CHOSEN_PATH.end()))->point->x(), (*(--CHOSEN_PATH.end()))->point->y(), (*(--CHOSEN_PATH.end()))->point->z(), PLANNING_DEPTH);
+
       }
 
-        high_resolution_clock::time_point start_total = high_resolution_clock::now();
+      high_resolution_clock::time_point start_total = high_resolution_clock::now();
 
       generateGoals(myMap, true);
 
-    high_resolution_clock::time_point stop_total = high_resolution_clock::now();
-    auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    // cout << "\nGEN GOALS time: " << duration_total.count() << " mili seconds for " << endl;
-    }
-    if(map_received and not RRT_created and GOALS_generated){
-      if(CHOSEN_PATH.empty()){
+      // high_resolution_clock::time_point stop_total = high_resolution_clock::now();
+      // auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
+      // cout << "\nGEN GOALS time: " << duration_total.count() << " mili seconds for " << endl;
 
+    }
+
+    if(map_received and not RRT_created and GOALS_generated){
+
+      if(CHOSEN_PATH.empty()){
 
         generateRRT(position_x, position_y, position_z);
 
-
-
-      }else{
+      } else {
 
         high_resolution_clock::time_point start_total = high_resolution_clock::now();
 
         generateRRT((*(--CHOSEN_PATH.end()))->point->x(), (*(--CHOSEN_PATH.end()))->point->y(), (*(--CHOSEN_PATH.end()))->point->z());
 
-    high_resolution_clock::time_point stop_total = high_resolution_clock::now();
-    auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    // cout << "\nGEN RRT AGAIN -- time: " << duration_total.count() << " mili seconds for " << endl;
-      
+        // high_resolution_clock::time_point stop_total = high_resolution_clock::now();
+        // auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
+        // cout << "\nGEN RRT AGAIN -- time: " << duration_total.count() << " mili seconds for " << endl;
+
       }
-      if(RRT_created){
+
+      if (RRT_created) {
+
         findShortestPath();
+
       }
+
       itterations = 0; //DO NOT TOUCH!
+
     }
-    if(map_received and RRT_created){
-      if(!fetched_path){   
+
+    if (map_received and RRT_created) {
+
+      if (!fetched_path) {   
+
         high_resolution_clock::time_point start_total = high_resolution_clock::now();
+
         setPath();
 
-    high_resolution_clock::time_point stop_total = high_resolution_clock::now();
-    auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    cout << "\nSET PATH time: " << duration_total.count() << " ms \n" << endl;
-    
+        high_resolution_clock::time_point stop_total = high_resolution_clock::now();
+        auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
+        cout << "\nSET PATH time: " << duration_total.count() << " ms \n" << endl;
 
       }
-      if(fetched_path and goalNode != nullptr){  
+
+      if (fetched_path and goalNode != nullptr) {  
+
         itterations++;
         
         // generateTrajectory ();
 
         evaluateCurrentPoint(&chosen_path_pub);
+
       }
+
+
+
+
       if((goalNode == nullptr and GOALS_generated)) {
         //Prints for the current path can be added here
         if(initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not recoveryUnderway){
@@ -1912,14 +1933,17 @@ int main(int argc, char *argv[])
             }
           }
         }
-        if((initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not recoveryUnderway)){
-          globalStrategy();
-        }
+        // if((initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not recoveryUnderway)){
+        //   globalStrategy();
+        // }
       }
+    
+
     }
+    
     high_resolution_clock::time_point stop_total = high_resolution_clock::now();
     auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    // cout << "\nExecution time: " << duration_total.count() << " micro seconds for " << myGoals.size() << " path/s." << endl;
+    // cout << "\nExecution time: " << duration_total.count() << " ms for " << myGoals.size() << " path/s." << endl;
     
     std_msgs::Float64MultiArray planning_time;
 
