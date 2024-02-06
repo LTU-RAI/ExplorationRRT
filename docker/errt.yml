@@ -1,5 +1,6 @@
 # ~/.tmuxinator/errt.yml 
 
+define: &takeoff "rosservice call /hummingbird/takeoff \"{}\" " 
 name: errt
 root: ~/
 windows:
@@ -14,7 +15,7 @@ windows:
         - errt:
           - cd catkin_workspaces/exploration_ws
           - source devel/setup.bash
-          - sleep 6 
+          - sleep 7 
           - mon launch errt rrt.launch
 
   - publishers:
@@ -29,12 +30,13 @@ windows:
         - takeoff:
           - cd catkin_workspaces/exploration_ws
           - source devel/setup.bash
-          - sleep 2  
+          - sleep 5
+          - *takeoff
         - controller:  
           - cd catkin_workspaces/exploration_ws
           - source devel/setup.bash
           # - cd src/ExplorationRRT/controller
-          - sleep 4
+          - sleep 3
           # - python3 errt_nmpc.py
           - roslaunch mav_linear_mpc mav_linear_mpc_sim.launch mav_name:=hummingbird
         - roscore: 

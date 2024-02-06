@@ -516,6 +516,23 @@ trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
 // Functions
 
+
+
+Eigen::Quaternion<float> Euler2Quaternion(Eigen::Vector3d v)
+{
+  float roll = v.x();
+  float pitch = v.y();
+  float yaw = v.z();
+
+  Eigen::Quaternion<float> q;
+
+  q = Eigen::AngleAxisf(roll, Eigen::Vector3f::UnitX()) *
+    Eigen::AngleAxisf(pitch, Eigen::Vector3f::UnitY()) *
+    Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitZ());
+
+  return q;
+}
+
 ufo::geometry::OBB makeOBB(ufo::math::Vector3 source, ufo::math::Vector3 goal, float radius)
 {
   ufo::math::Vector3 direction = goal - source;
@@ -640,11 +657,35 @@ void generateTrajectory () {
     my_path.poses.push_back(new_pose);
   }
 
+  nav_msgs::Path seg_path;
+  seg_path.poses.clear();
+  
   nav_msgs::Path new_path;
   new_path.poses.clear();
   
-  segmentPath(my_path, new_path);
+  segmentPath(my_path, seg_path);
 
+  for (int i = 0; i < seg_path.poses.size() - 1; i++)
+  {
+  
+    geometry_msgs::PoseStamped p;
+    float angle = atan2(seg_path.poses[i + 1].pose.position.y - seg_path.poses[i].pose.position.y,
+                        seg_path.poses[i + 1].pose.position.x - seg_path.poses[i].pose.position.x);
+    Eigen::Vector3d v(0, 0, angle);
+    Eigen::Quaternion<float> q = Euler2Quaternion(v);
+
+    p.pose.position.x = seg_path.poses[i].pose.position.x;
+    p.pose.position.y = seg_path.poses[i].pose.position.y;
+    p.pose.position.z = seg_path.poses[i].pose.position.z;
+    p.pose.orientation.x = q.x();
+    p.pose.orientation.y = q.y();
+    p.pose.orientation.z = q.z();
+    p.pose.orientation.w = q.w();
+
+
+    new_path.poses.push_back(p);
+  
+  }
   n_seq_++;
   // trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
   mav_msgs::EigenTrajectoryPoint trajectory_point_;
@@ -710,7 +751,10 @@ void evaluateCurrentPoint(ros::Publisher* chosen_path_pub) {
     allowNewPath = true;
   
   } 
-  
+ 
+
+  // @NOTE : uncomment the code block below when running experiment on shafter to use nmpc reference instead of trajectory tracking. 
+
   /*
 
   if((sqrt(pow(position_x - currentTarget->point->x(), 2) + pow(position_y - currentTarget->point->y(), 2) + pow(position_z - currentTarget->point->z(), 2)) < NEXT_POINT_DISTANCE) and path_itterator != --CHOSEN_PATH.end()){

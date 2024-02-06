@@ -100,6 +100,9 @@ RUN echo LS_COLORS=$LS_COLORS:\'di=1\;33:ln=36\' >> ~/.bashrc \
 RUN echo "source /home/aakapatel/catkin_workspaces/exploration_ws/devel/setup.bash --extend" >> /home/aakapatel/.bashrc
 
 RUN echo "source $HOME/.cargo/env " >> /home/aakapatel/.bashrc
+RUN echo "alias err=\"sudo catkin build errt\" " >> /home/aakapatel/.bashrc
+RUN echo "alias tmkill=\"tmux kill-session\" " >> /home/aakapatel/.bashrc
+RUN echo "alias cde=\"cd catkin_workspaces/exploration_ws \" " >> /home/aakapatel/.bashrc
 
 WORKDIR /home/aakapatel/.gazebo/
 

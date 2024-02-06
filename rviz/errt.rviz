@@ -168,10 +168,10 @@ Visualization Manager:
     - Class: UFOMap
       Enabled: true
       Information:
-        "# Inner Nodes": 72,673
+        "# Inner Nodes": 584,361
         "# Leaf Nodes": 0
         Resolution: 8 cm
-        Size: 1.66 MiB
+        Size: 13.37 MiB
       Min. Depth: 0
       Name: UFOMap
       Occupancy Thresholds:
@@ -224,7 +224,7 @@ Visualization Manager:
       Marker Topic: /CHOSEN_RRT_PATH_VISUALIZATION
       Name: Marker
       Namespaces:
-        {}
+        points: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -232,7 +232,7 @@ Visualization Manager:
       Marker Topic: /RRT_GOALS
       Name: Marker
       Namespaces:
-        {}
+        points: true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -284,14 +284,14 @@ Visualization Manager:
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
       Line Style: Billboards
-      Line Width: 0.15000000596046448
+      Line Width: 0.10000000149011612
       Name: Path
       Offset:
         X: 0
         Y: 0
         Z: 0
       Pose Color: 255; 85; 255
-      Pose Style: Arrows
+      Pose Style: None
       Queue Size: 10
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
@@ -379,7 +379,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.6213669776916504
+      Distance: 5.58476448059082
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -387,17 +387,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.15486745536327362
-        Y: 0.9329093098640442
-        Z: 30.167287826538086
+        X: -0.48973163962364197
+        Y: 5.226974010467529
+        Z: 14.159573554992676
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.1047965288162231
       Target Frame: hummingbird/base_link
-      Yaw: 1.7426247596740723
+      Yaw: 1.582624912261963
     Saved: ~
 Window Geometry:
   Displays:
