@@ -71,8 +71,12 @@ RUN rosdep update \
 RUN git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepack  \
         && git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect
 COPY --chown=user:user ./.tmux.conf /home/aakapatel/.tmux.conf
+COPY --chown=user:user ./statusline.conf /home/aakapatel/statusline.conf
+COPY --chown=user:user ./utility.conf /home/aakapatel/utility.conf
+COPY --chown=user:user ./macos.conf /home/aakapatel/macos.conf
 COPY --chown=user:user ./.powerline.sh /home/aakapatel/.powerline.sh
 COPY --chown=user:user ./errt.yml /home/aakapatel/.config/tmuxinator/errt.yml
+COPY --chown=user:user ./stage_planning.yml /home/aakapatel/.config/tmuxinator/stage_planning.yml
 
 
 # Install Rust using rustup
@@ -103,16 +107,16 @@ RUN echo "alias cde=\"cd catkin_workspaces/exploration_ws \" " >> /home/aakapate
 #Available gazebo models for faster world loading. for the moment they are stored in local directory. 
 # @TODO need to find a way to gitify this!
 
+# WORKDIR /home/aakapatel/.config/ 
+# RUN mkdir -p tmux
+# COPY tmux /home/aakapatel/.config/tmux 
+
 WORKDIR /home/aakapatel/.gazebo/
-
 RUN mkdir -p models
-
 COPY models /home/aakapatel/.gazebo/models
 
 WORKDIR /home/aakapatel/ 
-
 RUN mkdir -p .ignition
-
 COPY ignition_models /home/aakapatel/.ignition/
 
 WORKDIR /home/aakapatel/catkin_workspaces/exploration_ws/

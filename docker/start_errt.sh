@@ -1,6 +1,11 @@
 #!/bin/bash
 
-docker run -it --rm --name stage --gpus all --runtime=nvidia \                                                                                                                                 took 16s
+XAUTH=/path/to/Xauthority
+
+docker run -it --rm \
+    --name errt \
+    --gpus all \
+    --runtime=nvidia \
     --net=host \
     -e DISPLAY=$DISPLAY \
     --env="NVIDIA_DRIVER_CAPABILITIES=all" \

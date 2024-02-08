@@ -1,0 +1,37 @@
+# ~/.tmuxinator/stage_planning.yml 
+tmux_options: '-2'
+define: &initialize_stage "rosservice call /initialize_planner \"initialize: true\" " 
+
+name: stage_planning
+root: ~/
+windows:
+  - stage_main:
+      layout: even-horizontal 
+      panes:
+        - stage_interface:
+          - cde
+          - sleep 2  
+          - mon launch stage_planner stage_interface.launch 
+        - graph_management:
+          - cde 
+          - sleep 6 
+          - mon launch stage_planner graph_management.launch
+
+  - publishers:
+      # layout: main-vertical 
+      layout: tiled 
+      panes:
+        - rotors:
+          - cde
+          - sleep 1  
+          - roslaunch rotors_gazebo custom_drone.launch 
+        - initialization:
+          - cde 
+          - sleep 8 
+          - *initialize_stage 
+        - controller:  
+          - cde 
+          - sleep 4
+          - roslaunch mav_linear_mpc mav_linear_mpc_sim.launch mav_name:=hummingbird
+        - roscore: 
+          - roscore 

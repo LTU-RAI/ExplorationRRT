@@ -1,5 +1,5 @@
 # ~/.tmuxinator/errt.yml 
-
+tmux_options: '-2'
 define: &takeoff "rosservice call /hummingbird/takeoff \"{}\" " 
 name: errt
 root: ~/
