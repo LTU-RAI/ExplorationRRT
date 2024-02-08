@@ -3,7 +3,6 @@ FROM osrf/ros:noetic-desktop-full-focal
 # Therefore, the following commands are executed as root up until the
 # USER user statement.
 
-# We love UTF :) 
 ENV LANG C.UTF-8
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
@@ -51,9 +50,6 @@ RUN set -x \
   && apt-get install -y ros-noetic-gmapping ros-noetic-slam-gmapping ros-noetic-openslam-gmapping \
 	&& pip3 install powerline-shell dearpygui \
 	&& rm -rf /var/lib/apt/lists/* \
-	# && useradd -ms /bin/bash aakapatel \
-	# && echo "aakapatel:aakapatel" | chpasswd && adduser aakapatel sudo \
-	# && echo "aakapatel ALL=(ALL) NOPASSWD: ALL " >> /etc/sudoers
   && useradd -m -s /bin/bash aakapatel \
     && echo 'aakapatel ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers
 
@@ -96,13 +92,16 @@ RUN echo LS_COLORS=$LS_COLORS:\'di=1\;33:ln=36\' >> ~/.bashrc \
         && touch ~/.sudo_as_admin_successful # To surpress the sudo message at run.
 
 
-
+# some automatic sourcing for convenience.
 RUN echo "source /home/aakapatel/catkin_workspaces/exploration_ws/devel/setup.bash --extend" >> /home/aakapatel/.bashrc
 
 RUN echo "source $HOME/.cargo/env " >> /home/aakapatel/.bashrc
 RUN echo "alias err=\"sudo catkin build errt\" " >> /home/aakapatel/.bashrc
 RUN echo "alias tmkill=\"tmux kill-session\" " >> /home/aakapatel/.bashrc
 RUN echo "alias cde=\"cd catkin_workspaces/exploration_ws \" " >> /home/aakapatel/.bashrc
+
+#Available gazebo models for faster world loading. for the moment they are stored in local directory. 
+# @TODO need to find a way to gitify this!
 
 WORKDIR /home/aakapatel/.gazebo/
 
