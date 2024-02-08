@@ -1,3 +1,0 @@
-cargo:rerun-if-changed=src/lib.rs
-cargo:rerun-if-changed=rrt_bindings.h
-cargo:rerun-if-changed=rrt_bindings.hpp
