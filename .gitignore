@@ -1,4 +1,4 @@
 docker/ignition_models
 docker/models
-MAV
-__pycache__
+MAV/
+__pycache__/
