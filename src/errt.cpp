@@ -113,6 +113,7 @@ public:
   ufo::math::Vector3 *point;
   node *myParent = nullptr;
   double distanceToParent = -1;
+  std::vector<ufo::math::Vector3> unknowns_in_sight_;
   std::list<struct node *> myChilds{};
   std::list<struct node *> myPath{};
   std::list<ufo::math::Vector3> myHits{};
@@ -168,6 +169,50 @@ public:
     }
     return;
   }
+
+
+
+  void extractUnknownVoxelsInsideFrustum (ufo::map::OccupancyMapColor const &map) {
+
+    unknowns_in_sight_.clear();
+    ufo::geometry::Sphere sphere (*point, 4);
+
+    std::vector<ufo::math::Vector3> unknown_voxels;
+
+    for (auto it = map.beginLeaves(sphere, false, false,
+                                     true, false, PLANNING_DEPTH),
+    it_end = map.endLeaves();
+    it != it_end; ++it) {
+      if (it.isUnknown()) {
+
+        ufo::math::Vector3 free_voxel (it.getX(), it.getY(), it.getZ());
+        unknown_voxels.push_back(free_voxel);
+      }
+    }
+
+    double hFOV = 2*M_PI;
+    double vFOV = M_PI/4;
+    double range = 4;
+
+    // TODO @ can use OMP to parallalize the following 3 loops 
+
+    for (ufo::math::Vector3 voxel : unknown_voxels) {
+
+      ufo::math::Vector3 toPoint = voxel - *point;
+      double h_angle = std::atan2(toPoint.y(), toPoint.x());
+      double v_angle = std::atan2(toPoint.z(), toPoint.norm());
+
+      if (std::abs(h_angle) <= hFOV / 2 and 
+        std::abs(v_angle) <= vFOV / 2 and 
+        toPoint.norm() <= range) {
+
+        unknowns_in_sight_.push_back(voxel);
+      }
+    }
+
+  }
+
+
 
   int findInformationGain(float SCALER_AABB, float givenHorizontal,
                           float givenVertical, float givenMin, float givenMax,
@@ -560,6 +605,9 @@ trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // // Functions
 
+
+
+
 Eigen::Quaternion<float> Euler2Quaternion(Eigen::Vector3d v) {
   float roll = v.x();
   float pitch = v.y();
@@ -849,11 +897,46 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
                ros::Publisher *chosen_path_visualization_pub,
                ros::Publisher *all_path_pub, ros::Publisher *goal_pub,
                ros::Publisher *hits_pub, ros::Publisher *taken_path_pub,
-               ros::Publisher *map_pub, ros::Publisher *position_pub) {
+               ros::Publisher *map_pub, ros::Publisher *position_pub,
+               ros::Publisher *unknowns_pub) {
   visualization_msgs::Marker RRT_points, RRT_line_list, CHOSEN_PATH_points,
   CHOSEN_PATH_line_list, PATH_points, PATH_line_list, GOAL_points,
-  HITS_points, TAKEN_PATH_points, TAKEN_PATH_line_list, POSITION_point;
+  HITS_points, TAKEN_PATH_points, TAKEN_PATH_line_list, POSITION_point, unknowns;
   // Visualize each itteration
+
+  node *currentNode = new node(position_x, position_y, position_z);
+  currentNode->extractUnknownVoxelsInsideFrustum (myMap);
+  
+  if (!currentNode->unknowns_in_sight_.empty()) {
+
+  
+      unknowns.header.frame_id = MAP_FRAME_ID;
+      unknowns.ns = "points";
+      unknowns.action = visualization_msgs::Marker::ADD;
+      unknowns.pose.orientation.w = 1.0;
+      unknowns.id = 0;
+      unknowns.type = visualization_msgs::Marker::CUBE_LIST;
+      unknowns.scale.x = 0.2;
+      unknowns.scale.y = 0.2;
+      unknowns.scale.z = 0.2;
+      unknowns.color.r = 1.0;
+      unknowns.color.g = 1.0;
+      unknowns.color.b = 1.0;
+      unknowns.color.a = 0.6;
+      std::vector<ufo::math::Vector3>::iterator it_comeon_visualizer22;
+      for (it_comeon_visualizer22 = currentNode->unknowns_in_sight_.begin();
+      it_comeon_visualizer22 != currentNode->unknowns_in_sight_.end(); it_comeon_visualizer22++) {
+        geometry_msgs::Point p;
+        p.x = (*it_comeon_visualizer22).x();
+        p.y = (*it_comeon_visualizer22).y();
+        p.z = (*it_comeon_visualizer22).z();
+        unknowns.points.push_back(p);
+      }
+      unknowns_pub->publish(unknowns);
+
+
+  }
+
   if (position_received) {
     POSITION_point.header.frame_id = MAP_FRAME_ID;
     POSITION_point.ns = "points";
@@ -1997,6 +2080,9 @@ int main(int argc, char *argv[]) {
   // Subscribers and publishers
   ros::init(argc, argv, "RRT_TREE");
   ros::NodeHandle nh;
+
+  ros::Publisher unknowns_pub =
+    nh.advertise<visualization_msgs::Marker>("UNKNOWN_NODES", 1);
   ros::Publisher points_pub =
     nh.advertise<visualization_msgs::Marker>("RRT_NODES", 1);
   ros::Publisher chosen_path_visualization_pub =
@@ -2185,6 +2271,13 @@ int main(int argc, char *argv[]) {
         generateTrajectory();
 
         publishTrajectory();
+
+        // ufo::math::Vector3 curr (position_x, position_y, position_z);
+        // std::vector<ufo::math::Vector3> unknowns;
+        // extractUnknownVoxelsInsideFrustum(curr, unknowns);
+
+        // ROS_INFO_STREAM ("\n INF -- Free voxels > current pos : " << unknowns.size() << "\n");
+
         high_resolution_clock::time_point stop_total =
           high_resolution_clock::now();
         auto duration_total =
@@ -2239,7 +2332,7 @@ int main(int argc, char *argv[]) {
     updatePathTaken();
     visualize(&points_pub, &output_path_pub, &chosen_path_visualization_pub,
               &all_path_pub, &goal_pub, &hits_pub, &taken_path_pub, &map_pub,
-              &position_pub);
+              &position_pub, &unknowns_pub);
     ros::spinOnce();
     rate.sleep();
   }
