@@ -169,10 +169,10 @@ Visualization Manager:
     - Class: UFOMap
       Enabled: true
       Information:
-        "# Inner Nodes": 204,009
+        "# Inner Nodes": 1
         "# Leaf Nodes": 0
         Resolution: 8 cm
-        Size: 4.67 MiB
+        Size: 24 bytes
       Min. Depth: 0
       Name: UFOMap
       Occupancy Thresholds:
@@ -225,7 +225,7 @@ Visualization Manager:
       Marker Topic: /CHOSEN_RRT_PATH_VISUALIZATION
       Name: Marker
       Namespaces:
-        points: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -233,7 +233,7 @@ Visualization Manager:
       Marker Topic: /RRT_GOALS
       Name: Marker
       Namespaces:
-        points: true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -273,7 +273,7 @@ Visualization Manager:
       Marker Topic: /HITS
       Name: Marker
       Namespaces:
-        points: true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -353,13 +353,13 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /UNKNOWN_NODES
       Name: Marker
       Namespaces:
-        points: true
+        {}
       Queue Size: 100
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -388,7 +388,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 13.287324905395508
+      Distance: 9.236944198608398
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -396,17 +396,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.72872394323349
-        Y: 4.085623264312744
-        Z: 13.148037910461426
+        X: -0.27864497900009155
+        Y: 9.085138320922852
+        Z: 8.286725997924805
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.3547965288162231
+      Pitch: 0.7547969818115234
       Target Frame: hummingbird/base_link
-      Yaw: 1.5626249313354492
+      Yaw: 1.5526249408721924
     Saved: ~
 Window Geometry:
   Displays:

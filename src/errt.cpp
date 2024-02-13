@@ -115,6 +115,7 @@ public:
   double distanceToParent = -1;
   std::vector<ufo::math::Vector3> unknowns_in_sight_;
   std::list<struct node *> myChilds{};
+  std::list<struct node *> myParents{};
   std::list<struct node *> myPath{};
   std::list<ufo::math::Vector3> myHits{};
   double distanceToGoal;
@@ -125,7 +126,7 @@ public:
   }
   ufo::math::Vector3 *getNodePointer() { return point; }
   void addChild(node *newChild) { myChilds.push_back(newChild); }
-  void addParent(node *newParent) { myParent = newParent; }
+  void addParent(node *newParent) { myParent = newParent; myParents.push_back(newParent); }
   void changeDistanceToGoal(double newDistance) {
     distanceToGoal = newDistance;
   }
@@ -206,7 +207,12 @@ public:
         std::abs(v_angle) <= vFOV / 2 and 
         toPoint.norm() <= range) {
 
-        unknowns_in_sight_.push_back(voxel);
+        ufo::geometry::LineSegment myLine(*point, voxel);
+        if (!isInCollision(map, myLine, true, false, false,
+                           PLANNING_DEPTH)) {
+          unknowns_in_sight_.push_back(voxel);
+        }
+
       }
     }
 
@@ -221,119 +227,58 @@ public:
     if (myHits.empty() or findAnyInfo) {
       // Setting up targets, X / Y targets in either positive (P) or negative
       // (N) direction
-      ufo::math::Vector3 targetXP(point->x() + 1, point->y(), point->z());
-      ufo::math::Vector3 targetXN(point->x() - 1, point->y(), point->z());
-      ufo::math::Vector3 targetYP(point->x(), point->y() + 1, point->z());
-      ufo::math::Vector3 targetYN(point->x(), point->y() - 1, point->z());
-      ufo::math::Vector3 upwards(point->x(), point->y(), point->z() + 1);
+    // myHits.clear();
+    ufo::geometry::Sphere sphere (*point, 4);
 
-      // Angles
-      double vertical_angle = givenVertical;
-      double horizontal_angle = givenHorizontal;
+    std::list<ufo::math::Vector3> unknown_voxels;
 
-      // Distances
-      double near_distance = givenMin;
-      double far_distance = givenMax;
+    for (auto it = map.beginLeaves(sphere, false, false,
+                                     true, false, PLANNING_DEPTH),
+    it_end = map.endLeaves();
+    it != it_end; ++it) {
+      if (it.isUnknown()) {
 
-      // Frustums
-      ufo::geometry::Frustum frustXP(*point, targetXP, upwards, vertical_angle,
-                                     horizontal_angle, near_distance,
-                                     far_distance);
-      ufo::geometry::Frustum frustXN(*point, targetXN, upwards, vertical_angle,
-                                     horizontal_angle, near_distance,
-                                     far_distance);
-      ufo::geometry::Frustum frustYP(*point, targetYP, upwards, vertical_angle,
-                                     horizontal_angle, near_distance,
-                                     far_distance);
-      ufo::geometry::Frustum frustYN(*point, targetYN, upwards, vertical_angle,
-                                     horizontal_angle, near_distance,
-                                     far_distance);
-      int checks = 0;
-      for (auto it = map.beginLeaves(frustXP, false, false, true, false,
-                                     INFO_GAIN_CHECK_DEPTH),
-      it_end = map.endLeaves();
-      it != it_end; ++it) {
-        ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
-        ufo::geometry::LineSegment myLine(*point, end_point);
-        checks++;
-        if (!isInCollision(map, myLine, true, false, false,
-                           INFO_GAIN_CHECK_DEPTH)) {
-          if (findAnyInfo) {
-            return 1;
-          }
-          myHits.push_back(end_point);
-        }
+        ufo::math::Vector3 free_voxel (it.getX(), it.getY(), it.getZ());
+        unknown_voxels.push_back(free_voxel);
       }
-      for (auto it = map.beginLeaves(frustXN, false, false, true, false,
-                                     INFO_GAIN_CHECK_DEPTH),
-      it_end = map.endLeaves();
-      it != it_end; ++it) {
-        ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
-        ufo::geometry::LineSegment myLine(*point, end_point);
-        checks++;
+    }
+
+    double hFOV = 2*M_PI;
+    double vFOV = M_PI/4;
+    double range = 4;
+
+    // TODO @ can use OMP to parallalize the following 3 loops 
+
+    for (ufo::math::Vector3 voxel : unknown_voxels) {
+
+      ufo::math::Vector3 toPoint = voxel - *point;
+      double h_angle = std::atan2(toPoint.y(), toPoint.x());
+      double v_angle = std::atan2(toPoint.z(), toPoint.norm());
+
+      if (std::abs(h_angle) <= hFOV / 2 and 
+        std::abs(v_angle) <= vFOV / 2 and 
+        toPoint.norm() <= range) {
+
+        ufo::geometry::LineSegment myLine(*point, voxel);
         if (!isInCollision(map, myLine, true, false, false,
-                           INFO_GAIN_CHECK_DEPTH)) {
-          if (findAnyInfo) {
-            return 1;
-          }
-          myHits.push_back(end_point);
+                           PLANNING_DEPTH)) {
+          myHits.push_back(voxel);
         }
+
       }
-      for (auto it = map.beginLeaves(frustYP, false, false, true, false,
-                                     INFO_GAIN_CHECK_DEPTH),
-      it_end = map.endLeaves();
-      it != it_end; ++it) {
-        ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
-        ufo::geometry::LineSegment myLine(*point, end_point);
-        checks++;
-        if (!isInCollision(map, myLine, true, false, false,
-                           INFO_GAIN_CHECK_DEPTH)) {
-          if (findAnyInfo) {
-            return 1;
-          }
-          myHits.push_back(end_point);
-        }
-      }
-      for (auto it = map.beginLeaves(frustYN, false, false, true, false,
-                                     INFO_GAIN_CHECK_DEPTH),
-      it_end = map.endLeaves();
-      it != it_end; ++it) {
-        ufo::math::Vector3 end_point(it.getX(), it.getY(), it.getZ());
-        ufo::geometry::LineSegment myLine(*point, end_point);
-        checks++;
-        if (!isInCollision(map, myLine, true, false, false,
-                           INFO_GAIN_CHECK_DEPTH)) {
-          if (findAnyInfo) {
-            return 1;
-          }
-          myHits.push_back(end_point);
-        }
-      }
+    }
 
       // info gain check if more than sum distance.
 
       if (myParent != nullptr and not excludePath) {
+      // if (myParent != nullptr) {
         myParent->findInformationGain(SCALER_AABB, givenVertical,
                                       givenHorizontal, givenMin, givenMax, map,
                                       excludePath, findAnyInfo);
       }
-    } else {
-      std::list<ufo::math::Vector3>::iterator it_hits;
-      for (it_hits = myHits.begin(); it_hits != myHits.end();) {
-        ufo::geometry::LineSegment myLine2(*point, *it_hits);
-        if (isInCollision(map, myLine2, true, false, false,
-                          INFO_GAIN_CHECK_DEPTH)) {
-          it_hits = myHits.erase(it_hits);
-        } else {
-          if (isInCollision(map, *it_hits, false, true, false,
-                            INFO_GAIN_CHECK_DEPTH)) {
-            it_hits = myHits.erase(it_hits);
-          } else {
-            it_hits++;
-          };
-        };
-      };
-    }
+
+
+    } 
     std::list<ufo::math::Vector3> myTotalHits{};
     addHits(&myTotalHits);
     int hits = myTotalHits.size();
@@ -1105,7 +1050,22 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
     }
     if (goalNode != nullptr) {
       hits.clear();
-      goalNode->addHits(&hits);
+      // goalNode->addHits(&hits);
+      
+      for (auto node : goalNode->myParents) {
+        
+        if (node != nullptr) {
+
+          node->addHits(&hits);
+        }
+      }
+
+
+      // node* parent_node = goalNode->myParent;
+      // if (parent_node != nullptr) {
+      //   parent_node->addHits(&hits);
+      //   parent_node = parent_node->myParent;
+      // }
       HITS_points.header.frame_id = MAP_FRAME_ID;
       HITS_points.ns = "points";
       HITS_points.action = visualization_msgs::Marker::ADD;
@@ -2271,12 +2231,6 @@ int main(int argc, char *argv[]) {
         generateTrajectory();
 
         publishTrajectory();
-
-        // ufo::math::Vector3 curr (position_x, position_y, position_z);
-        // std::vector<ufo::math::Vector3> unknowns;
-        // extractUnknownVoxelsInsideFrustum(curr, unknowns);
-
-        // ROS_INFO_STREAM ("\n INF -- Free voxels > current pos : " << unknowns.size() << "\n");
 
         high_resolution_clock::time_point stop_total =
           high_resolution_clock::now();
