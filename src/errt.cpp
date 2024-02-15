@@ -228,7 +228,7 @@ public:
       // Setting up targets, X / Y targets in either positive (P) or negative
       // (N) direction
     // myHits.clear();
-    ufo::geometry::Sphere sphere (*point, 4);
+    ufo::geometry::Sphere sphere (*point, SCALER_AABB);
 
     std::list<ufo::math::Vector3> unknown_voxels;
 
@@ -245,7 +245,7 @@ public:
 
     double hFOV = 2*M_PI;
     double vFOV = M_PI/4;
-    double range = 4;
+    double range = SCALER_AABB;
 
     // TODO @ can use OMP to parallalize the following 3 loops 
 
@@ -291,7 +291,7 @@ public:
       myParent->clearInformationGain();
     }
   }
-
+  //this function dos nothing but if i remove it the code breaks
   void addHits(std::list<ufo::math::Vector3> *hitList) {
     bool add = true;
     for (auto it = myHits.begin(), it_end = myHits.end(); it != it_end; ++it) {
@@ -443,7 +443,8 @@ public:
 // Variables
 
 int n_seq_;
-double dt_ = 1;
+double dt_ = 0.1;
+// double dt_ = 1;
 
 int NUMBER_OF_NODES;
 int NUMBER_OF_GOALS;
@@ -618,7 +619,8 @@ void linSpace(node *givenNode, float givenDistance) {
 
 void segmentPath(const nav_msgs::Path &path, nav_msgs::Path &path_seg) {
   path_seg.poses.clear();
-  double v_max_ = 0.5;
+  double v_max_ = 1.5;
+  // double v_max_ = 0.5;
   double yaw_rate_max_ = 0.05;
   if (path.poses.size() == 0)
     return;
@@ -1050,15 +1052,15 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
     }
     if (goalNode != nullptr) {
       hits.clear();
-      // goalNode->addHits(&hits);
+      goalNode->addHits(&hits);
       
-      for (auto node : goalNode->myParents) {
-        
-        if (node != nullptr) {
-
-          node->addHits(&hits);
-        }
-      }
+      // for (auto node : goalNode->myParents) {
+      //   
+      //   if (node != nullptr) {
+      //
+      //     node->addHits(&hits);
+      //   }
+      // }
 
 
       // node* parent_node = goalNode->myParent;
