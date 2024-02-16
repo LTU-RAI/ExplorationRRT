@@ -224,65 +224,82 @@ public:
                           float givenVertical, float givenMin, float givenMax,
                           ufo::map::OccupancyMapColor const &map,
                           bool excludePath, bool findAnyInfo) {
-    if (myHits.empty() or findAnyInfo) {
-      // Setting up targets, X / Y targets in either positive (P) or negative
-      // (N) direction
-    // myHits.clear();
-    ufo::geometry::Sphere sphere (*point, SCALER_AABB);
+    
+    // high_resolution_clock::time_point start_total = high_resolution_clock::now();
 
-    std::list<ufo::math::Vector3> unknown_voxels;
+    for (auto i = myParents.begin(); i != myParents.end(); i++) {
 
-    for (auto it = map.beginLeaves(sphere, false, false,
-                                     true, false, PLANNING_DEPTH),
-    it_end = map.endLeaves();
-    it != it_end; ++it) {
-      if (it.isUnknown()) {
 
-        ufo::math::Vector3 free_voxel (it.getX(), it.getY(), it.getZ());
-        unknown_voxels.push_back(free_voxel);
-      }
-    }
+      if (myHits.empty() or findAnyInfo) {
 
-    double hFOV = 2*M_PI;
-    double vFOV = M_PI/4;
-    double range = SCALER_AABB;
+        ufo::geometry::Sphere sphere (*point, SCALER_AABB);
 
-    // TODO @ can use OMP to parallalize the following 3 loops 
+        std::list<ufo::math::Vector3> unknown_voxels;
 
-    for (ufo::math::Vector3 voxel : unknown_voxels) {
+        for (auto it = map.beginLeaves(sphere, false, false,
+                                       true, false, PLANNING_DEPTH),
+        it_end = map.endLeaves();
+        it != it_end; ++it) {
+          if (it.isUnknown()) {
 
-      ufo::math::Vector3 toPoint = voxel - *point;
-      double h_angle = std::atan2(toPoint.y(), toPoint.x());
-      double v_angle = std::atan2(toPoint.z(), toPoint.norm());
-
-      if (std::abs(h_angle) <= hFOV / 2 and 
-        std::abs(v_angle) <= vFOV / 2 and 
-        toPoint.norm() <= range) {
-
-        ufo::geometry::LineSegment myLine(*point, voxel);
-        if (!isInCollision(map, myLine, true, false, false,
-                           PLANNING_DEPTH)) {
-          myHits.push_back(voxel);
+            ufo::math::Vector3 free_voxel (it.getX(), it.getY(), it.getZ());
+            unknown_voxels.push_back(free_voxel);
+          }
         }
 
-      }
+        double hFOV = 2*M_PI;
+        double vFOV = M_PI/4;
+        double range = SCALER_AABB;
+
+        // TODO @ can use OMP to parallalize the following 3 loops 
+
+        for (ufo::math::Vector3 voxel : unknown_voxels) {
+
+          ufo::math::Vector3 toPoint = voxel - *point;
+          double h_angle = std::atan2(toPoint.y(), toPoint.x());
+          double v_angle = std::atan2(toPoint.z(), toPoint.norm());
+
+          if (std::abs(h_angle) <= hFOV / 2 and 
+            std::abs(v_angle) <= vFOV / 2 and 
+            toPoint.norm() <= range) {
+
+            ufo::geometry::LineSegment myLine(*point, voxel);
+            if (!isInCollision(map, myLine, true, false, false,
+                               PLANNING_DEPTH)) {
+              myHits.push_back(voxel);
+            }
+
+          }
+        }
+
+        // info gain check if more than sum distance.
+
+        // if (myParent != nullptr and not excludePath) {
+        //   
+        //   myParent->findInformationGain(SCALER_AABB, givenVertical,
+        //                                 givenHorizontal, givenMin, givenMax, map,
+        //                                 excludePath, findAnyInfo);
+        // }
+
+
+      } 
+
+      std::list<ufo::math::Vector3> myTotalHits{};
+      addHits(&myTotalHits);
+      int hits = myTotalHits.size();
+      return hits;
+
+    
+
     }
 
-      // info gain check if more than sum distance.
 
-      if (myParent != nullptr and not excludePath) {
-      // if (myParent != nullptr) {
-        myParent->findInformationGain(SCALER_AABB, givenVertical,
-                                      givenHorizontal, givenMin, givenMax, map,
-                                      excludePath, findAnyInfo);
-      }
+      // high_resolution_clock::time_point stop_total = high_resolution_clock::now();
+      // auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
+      // ROS_INFO_STREAM("\n FIND INFORMATION GAIN TIME : " << duration_total.count() << " ms \n");
 
 
-    } 
-    std::list<ufo::math::Vector3> myTotalHits{};
-    addHits(&myTotalHits);
-    int hits = myTotalHits.size();
-    return hits;
+
   }
 
   void clearInformationGain() {
@@ -780,6 +797,8 @@ void publishTrajectory() {
 void evaluateCurrentPoint(ros::Publisher *chosen_path_pub) {
 
   // generateTrajectory ();
+  
+  // ROS_INFO_STREAM ("Goal -- Number of parents : " << goalNode->myParents.size() << "\n");
 
   if ((sqrt(pow(position_x - goalNode->point->x(), 2) +
             pow(position_y - goalNode->point->y(), 2) +
@@ -2238,8 +2257,7 @@ int main(int argc, char *argv[]) {
           high_resolution_clock::now();
         auto duration_total =
           duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-        cout << "\nSET PATH time: " << duration_total.count() << " ms \n"
-          << endl;
+        ROS_INFO_STREAM("\nSET PATH time: " << duration_total.count() << " ms \n");
       }
 
       if (fetched_path and goalNode != nullptr) {
