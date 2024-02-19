@@ -460,8 +460,8 @@ public:
 // Variables
 
 int n_seq_;
-double dt_ = 0.1;
-// double dt_ = 1;
+// double dt_ = 0.1;
+double dt_ = 1;
 
 int NUMBER_OF_NODES;
 int NUMBER_OF_GOALS;
@@ -636,8 +636,8 @@ void linSpace(node *givenNode, float givenDistance) {
 
 void segmentPath(const nav_msgs::Path &path, nav_msgs::Path &path_seg) {
   path_seg.poses.clear();
-  double v_max_ = 1.5;
-  // double v_max_ = 0.5;
+  // double v_max_ = 1.5;
+  double v_max_ = 0.5;
   double yaw_rate_max_ = 0.05;
   if (path.poses.size() == 0)
     return;
