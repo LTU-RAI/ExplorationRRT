@@ -227,7 +227,7 @@ public:
     
     // high_resolution_clock::time_point start_total = high_resolution_clock::now();
 
-    for (auto i = myParents.begin(); i != myParents.end(); i++) {
+    for (auto i = myParents.begin(); i != myParents.end(); i = std::next(i, 4)) {
 
 
       if (myHits.empty() or findAnyInfo) {

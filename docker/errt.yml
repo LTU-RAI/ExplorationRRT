@@ -15,7 +15,7 @@ windows:
         - errt:
           - cd catkin_workspaces/exploration_ws
           - source devel/setup.bash
-          - sleep 7 
+          - sleep 8 
           - mon launch errt rrt.launch
 
   - publishers:
@@ -30,7 +30,7 @@ windows:
         - takeoff:
           - cd catkin_workspaces/exploration_ws
           - source devel/setup.bash
-          - sleep 5
+          - sleep 7
           - *takeoff
         - controller:  
           - cd catkin_workspaces/exploration_ws
