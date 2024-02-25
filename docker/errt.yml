@@ -31,7 +31,7 @@ windows:
           - cd catkin_workspaces/exploration_ws
           - source devel/setup.bash
           - sleep 7
-          - *takeoff
+          # - *takeoff
         - controller:  
           - cd catkin_workspaces/exploration_ws
           - source devel/setup.bash

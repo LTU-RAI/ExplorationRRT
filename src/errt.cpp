@@ -96,6 +96,27 @@ using namespace std;
 using namespace std::this_thread;
 double PLANNING_DEPTH = 0;
 double INFO_GAIN_CHECK_DEPTH;
+
+// helper obb function //
+
+ufo::geometry::OBB makeOBB(ufo::math::Vector3 source, ufo::math::Vector3 goal,
+                           float radius) {
+  ufo::math::Vector3 direction = goal - source;
+  ufo::math::Vector3 center = source + (direction / 2.0);
+  double distance = direction.norm();
+  direction /= distance;
+  double yaw = -atan2(direction[1], direction[0]);
+  double pitch = -asin(direction[2]);
+  double roll = 0; // TODO: Fix
+  ufo::geometry::OBB obb(center,
+                         ufo::map::Point3(distance / 2.0, radius, radius),
+                         ufo::math::Quaternion(roll, pitch, yaw));
+
+  return obb;
+}
+
+
+
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // // Structs
 
@@ -118,6 +139,30 @@ public:
   std::list<struct node *> myParents{};
   std::list<struct node *> myPath{};
   std::list<ufo::math::Vector3> myHits{};
+  // std::vector<node *> parents_vec;
+
+  void addParents () {
+    
+    myParents.clear();
+    node* temp_parent = nullptr;
+
+    if (myParent != nullptr) {
+
+      temp_parent = myParent;
+    } 
+
+    while (temp_parent != nullptr) {
+
+      myParents.push_back(temp_parent);
+      temp_parent = temp_parent->myParent;
+
+      if (temp_parent == nullptr) {
+        break;
+      }
+    }
+    ROS_INFO_STREAM("Num of Parents : " << myParents.size() << "\n");
+  }
+
   double distanceToGoal;
   node(float x, float y, float z) { point = new ufo::math::Vector3(x, y, z); }
   node(ufo::math::Vector3 *givenPoint) {
@@ -126,7 +171,7 @@ public:
   }
   ufo::math::Vector3 *getNodePointer() { return point; }
   void addChild(node *newChild) { myChilds.push_back(newChild); }
-  void addParent(node *newParent) { myParent = newParent; myParents.push_back(newParent); }
+  void addParent(node *newParent) { myParent = newParent; }
   void changeDistanceToGoal(double newDistance) {
     distanceToGoal = newDistance;
   }
@@ -227,11 +272,12 @@ public:
     
     // high_resolution_clock::time_point start_total = high_resolution_clock::now();
 
-    for (auto i = myParents.begin(); i != myParents.end(); i = std::next(i, 4)) {
-
+      // addParents(); 
+      // for (auto i = myParents.begin(); i != myParents.end(); i++) {
 
       if (myHits.empty() or findAnyInfo) {
 
+        // ufo::geometry::Sphere sphere (*((*i)->point), SCALER_AABB);
         ufo::geometry::Sphere sphere (*point, SCALER_AABB);
 
         std::list<ufo::math::Vector3> unknown_voxels;
@@ -242,19 +288,20 @@ public:
         it != it_end; ++it) {
           if (it.isUnknown()) {
 
-            ufo::math::Vector3 free_voxel (it.getX(), it.getY(), it.getZ());
-            unknown_voxels.push_back(free_voxel);
+            ufo::math::Vector3 unknown_voxel (it.getX(), it.getY(), it.getZ());
+            unknown_voxels.push_back(unknown_voxel);
           }
         }
 
         double hFOV = 2*M_PI;
-        double vFOV = M_PI/4;
+        double vFOV = M_PI/6;
         double range = SCALER_AABB;
 
         // TODO @ can use OMP to parallalize the following 3 loops 
 
         for (ufo::math::Vector3 voxel : unknown_voxels) {
 
+          // ufo::math::Vector3 toPoint = voxel - *((*i)->point);
           ufo::math::Vector3 toPoint = voxel - *point;
           double h_angle = std::atan2(toPoint.y(), toPoint.x());
           double v_angle = std::atan2(toPoint.z(), toPoint.norm());
@@ -263,35 +310,38 @@ public:
             std::abs(v_angle) <= vFOV / 2 and 
             toPoint.norm() <= range) {
 
+
+            // ufo::geometry::OBB obb = makeOBB(*point, voxel, 0.25);
+            ufo::geometry::Sphere unk_sphere (voxel, 1.1);
+            // ufo::geometry::LineSegment myLine(*((*i)->point), voxel);
             ufo::geometry::LineSegment myLine(*point, voxel);
-            if (!isInCollision(map, myLine, true, false, false,
-                               PLANNING_DEPTH)) {
+            if (!isInCollision(map, unk_sphere, true, false, false, PLANNING_DEPTH)
+                and isInCollision(map, unk_sphere, false, true, false, PLANNING_DEPTH) 
+                and !isInCollision(map, myLine, true, false, false,
+                                    PLANNING_DEPTH)) {
               myHits.push_back(voxel);
             }
 
           }
         }
 
-        // info gain check if more than sum distance.
-
-        // if (myParent != nullptr and not excludePath) {
-        //   
-        //   myParent->findInformationGain(SCALER_AABB, givenVertical,
-        //                                 givenHorizontal, givenMin, givenMax, map,
-        //                                 excludePath, findAnyInfo);
-        // }
+        if (myParent != nullptr and not excludePath) {
+          
+          myParent->findInformationGain(SCALER_AABB, givenVertical,
+                                        givenHorizontal, givenMin, givenMax, map,
+                                        excludePath, findAnyInfo);
+        }
 
 
-      } 
+      }
+
+    // }
+
 
       std::list<ufo::math::Vector3> myTotalHits{};
       addHits(&myTotalHits);
       int hits = myTotalHits.size();
       return hits;
-
-    
-
-    }
 
 
       // high_resolution_clock::time_point stop_total = high_resolution_clock::now();
@@ -585,21 +635,6 @@ Eigen::Quaternion<float> Euler2Quaternion(Eigen::Vector3d v) {
   return q;
 }
 
-ufo::geometry::OBB makeOBB(ufo::math::Vector3 source, ufo::math::Vector3 goal,
-                           float radius) {
-  ufo::math::Vector3 direction = goal - source;
-  ufo::math::Vector3 center = source + (direction / 2.0);
-  double distance = direction.norm();
-  direction /= distance;
-  double yaw = -atan2(direction[1], direction[0]);
-  double pitch = -asin(direction[2]);
-  double roll = 0; // TODO: Fix
-  ufo::geometry::OBB obb(center,
-                         ufo::map::Point3(distance / 2.0, radius, radius),
-                         ufo::math::Quaternion(roll, pitch, yaw));
-
-  return obb;
-}
 
 // Fills in the space between nodes with new nodes.
 // This allows for simpler path building.
@@ -1697,6 +1732,15 @@ void setPath() {
         double actuationCost = SCALER_ACTUATION * cost;
         newCost = distanceCost - informationGain + actuationCost;
         ////////////////////////////////////////////////////////////////
+        
+        
+        ROS_INFO_STREAM ("\n Information gain : " << informationGain << "\n");
+        ROS_INFO_STREAM (" Distance cost : " << distanceCost << "\n");
+        ROS_INFO_STREAM (" Actuation cost : " << actuationCost << "\n");
+
+        ROS_INFO_STREAM ("\n ---------------- \n");
+
+
         std::list<double> new_p_hist;
         // new_p_hist.clear();
         // if (EVALUATE_PATH.size() < NMPC_POINTS) {

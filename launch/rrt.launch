@@ -9,24 +9,24 @@
   <param name="NUMBER_OF_ITTERATIONS_" type="int" value="5000" />		<!-- The maximum number of itterations, for when you run by itterations -->
   <param name="RESOLUTION_" type="double" value="0.35" />			<!-- The size of the voxels in ufomap -->
   <param name="PLANNING_DEPTH_" type="double" value="2" />
-  <param name="INFO_GAIN_CHECK_DEPTH_" type="double" value="3" />
+  <param name="INFO_GAIN_CHECK_DEPTH_" type="double" value="2" />
   
   <param name="MIN_INFO_GOAL_" type="double" value="1" />
   <param name="GOAL_SENSOR_RANGE_" type="double" value="3" />
 
   <!-- RRT-tree parameters -->
-  <param name="DISTANCE_BETWEEN_NODES_" type="double" value="0.4" />		<!-- The distance between nodes in a finished path -->
+  <param name="DISTANCE_BETWEEN_NODES_" type="double" value="0.5" />		<!-- The distance between nodes in a finished path -->
   <param name="DISTANCE_BETWEEN_GOALS_" type="double" value="0.2" />		<!-- The minimum guranteed distance between generated goals -->
   <param name="MINIMUM_DISTANCE_TO_GOAL_" type="double" value="1" />	<!-- The minimum guaranteed distance between generated goals and the root -->
   <param name="RADIOUS_" type="double" value="0.2" />			<!-- The radious for sphere checks -->
   <param name="OBB_CHECK_RADIUS_" type="double" value="0.2" />
   <param name="GOAL_CHECK_DIST_" type="double" value="2" />
   
-  <param name="SCALER_AABB_" type="double" value="10" />			<!-- The bounding box 'radius', signifying the border between local and global space -->
+  <param name="SCALER_AABB_" type="double" value="12" />			<!-- The bounding box 'radius', signifying the border between local and global space -->
   
   <!-- Tuning parameters -->
-  <param name="SCALER_DISTANCE_" type="double" value="1.5" />			<!-- The scaler for the distance cost during path evaluation -->
-  <param name="SCALER_INFORMATION_GAIN_" type="double" value="0.6" />	<!-- The scaler for the information gain during path evaluation -->
+  <param name="SCALER_DISTANCE_" type="double" value="2" />			<!-- The scaler for the distance cost during path evaluation -->
+  <param name="SCALER_INFORMATION_GAIN_" type="double" value="1" />	<!-- The scaler for the information gain during path evaluation -->
   <param name="SCALER_ACTUATION_" type="double" value="0.1" />	<!-- The scaler for the actuation cost during path evaluation -->
   <param name="NEXT_PATH_DISTANCE_" type="double" value="1" />		<!-- The distance from the current goal at which a new path will be calculated -->
   <param name="NEXT_POINT_DISTANCE_" type="double" value="0.3" />		<!-- The distance from the current point at which the next point in the path will be set to current point -->
@@ -42,7 +42,7 @@
   
   <!-- NMPC parameters -->
   <param name="NMPC_POINTS_" type="int" value="50" />			<!-- The amount of points in the NMPC -->
-  <param name="NMPC_DT_" type="double" value="0.4" />			<!-- The amount of time between points -->
+  <param name="NMPC_DT_" type="double" value="0.5" />			<!-- The amount of time between points -->
   <param name="POSITION_TRACKING_WEIGHT_X_" type="double" value="0" />	<!-- Add description here -->
   <param name="POSITION_TRACKING_WEIGHT_Y_" type="double" value="0" />	<!-- Add description here -->
   <param name="POSITION_TRACKING_WEIGHT_Z_" type="double" value="0" />	<!-- Add description here -->
@@ -63,7 +63,7 @@
 
   <node pkg="errt" type="errt_node" name="errt_node" output="screen" required="true">
     <remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"/>				<!-- The odometry topic subscribed to -->
-    <remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map_depth_3"/>			<!-- The ufomap topic subscribed to -->
+    <remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"/>			<!-- The ufomap topic subscribed to -->
     <remap from="REFERENCE_OUT_" to="/hummingbird/reference"/>					<!-- The topic to post the control reference to -->
   </node>
 
