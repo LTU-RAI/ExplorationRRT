@@ -275,10 +275,11 @@ public:
       // addParents(); 
       // for (auto i = myParents.begin(); i != myParents.end(); i++) {
 
-      if (myHits.empty() or findAnyInfo) {
+      // if (myHits.empty() or findAnyInfo) {
+      if (myHits.empty()) {
 
         // ufo::geometry::Sphere sphere (*((*i)->point), SCALER_AABB);
-        ufo::geometry::Sphere sphere (*point, SCALER_AABB);
+        ufo::geometry::Sphere sphere (*point, SCALER_AABB/4);
 
         std::list<ufo::math::Vector3> unknown_voxels;
 
@@ -295,7 +296,7 @@ public:
 
         double hFOV = 2*M_PI;
         double vFOV = M_PI/6;
-        double range = SCALER_AABB;
+        double range = SCALER_AABB/4;
 
         // TODO @ can use OMP to parallalize the following 3 loops 
 
@@ -312,7 +313,7 @@ public:
 
 
             // ufo::geometry::OBB obb = makeOBB(*point, voxel, 0.25);
-            ufo::geometry::Sphere unk_sphere (voxel, 1.1);
+            ufo::geometry::Sphere unk_sphere (voxel, 1);
             // ufo::geometry::LineSegment myLine(*((*i)->point), voxel);
             ufo::geometry::LineSegment myLine(*point, voxel);
             if (!isInCollision(map, unk_sphere, true, false, false, PLANNING_DEPTH)
@@ -1523,7 +1524,7 @@ void generateGoals(ufo::map::OccupancyMapColor const &map,
   ufo::math::Vector3 goal;
   srand(time(0));
   itterations = 0;
-  while ((myGoals.size() < NUMBER_OF_GOALS) and (itterations < 10000)) {
+  while ((myGoals.size() < NUMBER_OF_GOALS) and (itterations < 20000)) {
     float x = lowest_x + abs(1024 * rand() / (RAND_MAX + 1.0)) * SCALER_X;
     float y = lowest_y + abs(1024 * rand() / (RAND_MAX + 1.0)) * SCALER_Y;
     float z = lowest_z + abs(1024 * rand() / (RAND_MAX + 1.0)) * SCALER_Z;
@@ -1561,10 +1562,10 @@ void generateGoals(ufo::map::OccupancyMapColor const &map,
           }
 
           // if(foundInfo == MIN_INFO_GOAL){
-          if (foundInfo >= MIN_INFO_GOAL) {
+          // if (foundInfo >= MIN_INFO_GOAL) {
             node *newGoal = new node(x, y, z);
             myGoals.push_back(newGoal);
-          }
+          // }
         }
       };
       itterations++;
@@ -2322,9 +2323,9 @@ int main(int argc, char *argv[]) {
             generateRRT(position_x, position_y, position_z);
             allowNewPath = true;
             setPath();
-            if (initialGoalInfo > GLOBAL_STRATEGY_THRESHOLD) {
-              break;
-            }
+            // if (initialGoalInfo > GLOBAL_STRATEGY_THRESHOLD) {
+            //   break;
+            // }
           }
         }
         // if((initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not
