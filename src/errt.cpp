@@ -272,14 +272,18 @@ public:
     
     // high_resolution_clock::time_point start_total = high_resolution_clock::now();
 
-      // addParents(); 
-      // for (auto i = myParents.begin(); i != myParents.end(); i++) {
+      if (myParents.empty()) {
+        return 0;
+      }
 
       // if (myHits.empty() or findAnyInfo) {
+      
+      for (auto i = myParents.begin(); i != myParents.end(); i++) {
+
       if (myHits.empty()) {
 
-        // ufo::geometry::Sphere sphere (*((*i)->point), SCALER_AABB);
-        ufo::geometry::Sphere sphere (*point, SCALER_AABB/4);
+        ufo::geometry::Sphere sphere (*((*i)->point), SCALER_AABB);
+        // ufo::geometry::Sphere sphere (*point, SCALER_AABB/4);
 
         std::list<ufo::math::Vector3> unknown_voxels;
 
@@ -302,8 +306,8 @@ public:
 
         for (ufo::math::Vector3 voxel : unknown_voxels) {
 
-          // ufo::math::Vector3 toPoint = voxel - *((*i)->point);
-          ufo::math::Vector3 toPoint = voxel - *point;
+          ufo::math::Vector3 toPoint = voxel - *((*i)->point);
+          // ufo::math::Vector3 toPoint = voxel - *point;
           double h_angle = std::atan2(toPoint.y(), toPoint.x());
           double v_angle = std::atan2(toPoint.z(), toPoint.norm());
 
@@ -314,8 +318,8 @@ public:
 
             // ufo::geometry::OBB obb = makeOBB(*point, voxel, 0.25);
             ufo::geometry::Sphere unk_sphere (voxel, 1);
-            // ufo::geometry::LineSegment myLine(*((*i)->point), voxel);
-            ufo::geometry::LineSegment myLine(*point, voxel);
+            ufo::geometry::LineSegment myLine(*((*i)->point), voxel);
+            // ufo::geometry::LineSegment myLine(*point, voxel);
             if (!isInCollision(map, unk_sphere, true, false, false, PLANNING_DEPTH)
                 and isInCollision(map, unk_sphere, false, true, false, PLANNING_DEPTH) 
                 and !isInCollision(map, myLine, true, false, false,
@@ -326,16 +330,17 @@ public:
           }
         }
 
-        if (myParent != nullptr and not excludePath) {
-          
-          myParent->findInformationGain(SCALER_AABB, givenVertical,
-                                        givenHorizontal, givenMin, givenMax, map,
-                                        excludePath, findAnyInfo);
-        }
+        // if (myParent != nullptr and not excludePath) {
+        //   myParent->findInformationGain(SCALER_AABB, givenVertical,
+        //                                 givenHorizontal, givenMin, givenMax, map,
+        //                                 excludePath, findAnyInfo);
+        // }
 
 
       }
 
+    }
+    
     // }
 
 
@@ -343,13 +348,6 @@ public:
       addHits(&myTotalHits);
       int hits = myTotalHits.size();
       return hits;
-
-
-      // high_resolution_clock::time_point stop_total = high_resolution_clock::now();
-      // auto duration_total = duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-      // ROS_INFO_STREAM("\n FIND INFORMATION GAIN TIME : " << duration_total.count() << " ms \n");
-
-
 
   }
 
@@ -1145,30 +1143,49 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       hits_pub->publish(HITS_points);
     }
     if (goalNode != nullptr) {
-      TAKEN_PATH_points.header.frame_id = MAP_FRAME_ID;
+      TAKEN_PATH_points.header.frame_id = TAKEN_PATH_line_list.header.frame_id = MAP_FRAME_ID;
       TAKEN_PATH_points.ns = "points";
-      TAKEN_PATH_points.action = visualization_msgs::Marker::ADD;
+      TAKEN_PATH_line_list.ns = "lines";
+      TAKEN_PATH_points.action = TAKEN_PATH_line_list.action = visualization_msgs::Marker::ADD;
       TAKEN_PATH_points.pose.orientation.w = 1.0;
+      TAKEN_PATH_line_list.pose.orientation.w = 1.0;
       TAKEN_PATH_points.id = 0;
-      TAKEN_PATH_points.type = visualization_msgs::Marker::POINTS;
-      TAKEN_PATH_points.scale.x = 0.2;
-      TAKEN_PATH_points.scale.y = 0.2;
+      TAKEN_PATH_line_list.id = 0;
+      TAKEN_PATH_points.type = visualization_msgs::Marker::SPHERE_LIST;
+      TAKEN_PATH_line_list.type = visualization_msgs::Marker::LINE_LIST;
+      TAKEN_PATH_points.scale.x = 0.1;
+      TAKEN_PATH_line_list.scale.x = 0.1;
+      TAKEN_PATH_points.scale.y = 0.1;
+      TAKEN_PATH_line_list.scale.y = 0.1;
       // TAKEN_PATH_points.scale.z = 0.2;
-      TAKEN_PATH_points.color.b = 1;
-      TAKEN_PATH_points.color.g = 1;
-      TAKEN_PATH_points.color.r = 1;
+      TAKEN_PATH_points.color.b = 0;
+      TAKEN_PATH_points.color.g = 0;
+      TAKEN_PATH_points.color.r = 0.7;
       TAKEN_PATH_points.color.a = 0.8;
+      TAKEN_PATH_line_list.color.b = 0;
+      TAKEN_PATH_line_list.color.g = 0;
+      TAKEN_PATH_line_list.color.r = 0.7;
+      TAKEN_PATH_line_list.color.a = 0.8;
       std::list<node *>::iterator taken_path_visualizer;
-      for (taken_path_visualizer = VISITED_POINTS.begin();
-      taken_path_visualizer != VISITED_POINTS.end();
+      for (taken_path_visualizer = goalNode->myParents.begin();
+      taken_path_visualizer != goalNode->myParents.end();
       taken_path_visualizer++) {
         geometry_msgs::Point p;
         p.x = (*taken_path_visualizer)->point->x();
         p.y = (*taken_path_visualizer)->point->y();
         p.z = (*taken_path_visualizer)->point->z();
         TAKEN_PATH_points.points.push_back(p);
+
+        if ((*taken_path_visualizer)->myParent != nullptr) {
+          TAKEN_PATH_line_list.points.push_back(p);
+          p.x = (*taken_path_visualizer)->myParent->point->x();
+          p.y = (*taken_path_visualizer)->myParent->point->y();
+          p.z = (*taken_path_visualizer)->myParent->point->z();
+          TAKEN_PATH_line_list.points.push_back(p);
+        }
       }
       taken_path_pub->publish(TAKEN_PATH_points);
+      taken_path_pub->publish(TAKEN_PATH_line_list);
     }
     ufomap_msgs::UFOMapStamped::Ptr msg(new ufomap_msgs::UFOMapStamped);
     bool compress = false;
@@ -1616,6 +1633,10 @@ void setPath() {
     for (std::list<node *>::iterator it_goal = myGoals.begin();
     it_goal != myGoals.end(); it_goal++) {
 
+      if (*it_goal != nullptr) {
+        (*it_goal)->addParents();
+      }
+
       if ((*it_goal)->myParent != nullptr) {
 
         // linSpace(*it_goal, SENSOR_RANGE / 2);
@@ -1713,7 +1734,7 @@ void setPath() {
         rrt_clearer rrt_free;
         *(void **)(&rrt_free) = dlsym(handle, "rrt_free");
 
-        ROS_INFO_STREAM("Calculating .. " << init_penalty);
+        ROS_INFO_STREAM(" Calculating .. " << init_penalty);
 
         rrtSolverStatus status = rrt_solve(cache, u, p, 0, &init_penalty);
 

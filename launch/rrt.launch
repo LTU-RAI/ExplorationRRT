@@ -15,7 +15,7 @@
   <param name="GOAL_SENSOR_RANGE_" type="double" value="3" />
 
   <!-- RRT-tree parameters -->
-  <param name="DISTANCE_BETWEEN_NODES_" type="double" value="0.5" />		<!-- The distance between nodes in a finished path -->
+  <param name="DISTANCE_BETWEEN_NODES_" type="double" value="0.4" />		<!-- The distance between nodes in a finished path -->
   <param name="DISTANCE_BETWEEN_GOALS_" type="double" value="0.2" />		<!-- The minimum guranteed distance between generated goals -->
   <param name="MINIMUM_DISTANCE_TO_GOAL_" type="double" value="1" />	<!-- The minimum guaranteed distance between generated goals and the root -->
   <param name="RADIOUS_" type="double" value="0.5" />			<!-- The radious for sphere checks -->
@@ -42,7 +42,7 @@
   
   <!-- NMPC parameters -->
   <param name="NMPC_POINTS_" type="int" value="50" />			<!-- The amount of points in the NMPC -->
-  <param name="NMPC_DT_" type="double" value="0.5" />			<!-- The amount of time between points -->
+  <param name="NMPC_DT_" type="double" value="0.1" />			<!-- The amount of time between points -->
   <param name="POSITION_TRACKING_WEIGHT_X_" type="double" value="0" />	<!-- Add description here -->
   <param name="POSITION_TRACKING_WEIGHT_Y_" type="double" value="0" />	<!-- Add description here -->
   <param name="POSITION_TRACKING_WEIGHT_Z_" type="double" value="0" />	<!-- Add description here -->
