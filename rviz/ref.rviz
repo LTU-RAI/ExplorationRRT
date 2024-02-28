@@ -25,6 +25,7 @@ Panels:
         - /PointCloud23
         - /Marker7
         - /Path4
+        - /Path5
       Splitter Ratio: 0.5
     Tree Height: 844
   - Class: rviz/Selection
@@ -133,11 +134,11 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: false
-    - Alpha: 0.10999999940395355
+    - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 3.0291614532470703
-        Min Value: -0.0429234504699707
+        Max Value: 26.886425018310547
+        Min Value: -0.47545814514160156
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -154,7 +155,7 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.014999999664723873
+      Size (m): 0.009999999776482582
       Style: Boxes
       Topic: /hummingbird/velodyne_points
       Unreliable: false
@@ -228,7 +229,7 @@ Visualization Manager:
       Marker Topic: /CHOSEN_RRT_PATH_VISUALIZATION
       Name: Marker
       Namespaces:
-        points: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -236,7 +237,7 @@ Visualization Manager:
       Marker Topic: /RRT_GOALS
       Name: Marker
       Namespaces:
-        points: true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -272,13 +273,13 @@ Visualization Manager:
       Queue Size: 100
       Value: false
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /HITS
       Name: Marker
       Namespaces:
-        points: true
+        {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -288,7 +289,7 @@ Visualization Manager:
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
       Line Style: Billboards
-      Line Width: 0.20000000298023224
+      Line Width: 0.10000000149011612
       Name: Path
       Offset:
         X: 0
@@ -303,11 +304,11 @@ Visualization Manager:
       Topic: /command_path
       Unreliable: false
       Value: true
-    - Alpha: 0.18000000715255737
+    - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 15.449999809265137
-        Min Value: -0.75
+        Max Value: 8.100000381469727
+        Min Value: -0.8999999761581421
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -323,9 +324,9 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
-      Size (Pixels): 2
-      Size (m): 0.20000000298023224
-      Style: Points
+      Size (Pixels): 3
+      Size (m): 0.6000000238418579
+      Style: Boxes
       Topic: /octomap_point_cloud_centers
       Unreliable: false
       Use Fixed Frame: true
@@ -372,7 +373,7 @@ Visualization Manager:
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
       Line Style: Billboards
-      Line Width: 0.10000000149011612
+      Line Width: 0.4000000059604645
       Name: Path
       Offset:
         X: 0
@@ -385,6 +386,30 @@ Visualization Manager:
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
       Topic: /state_history
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: ""
       Unreliable: false
       Value: true
   Enabled: true
@@ -415,7 +440,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 39.668243408203125
+      Distance: 231.69491577148438
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -423,9 +448,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.7921722531318665
-        Y: -6.919556617736816
-        Z: 0.7416621446609497
+        X: 135.732421875
+        Y: 5.011525630950928
+        Z: 2.7085392475128174
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -433,7 +458,7 @@ Visualization Manager:
       Near Clip Distance: 0.009999999776482582
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 3.1426093578338623
+      Yaw: 1.5676368474960327
     Saved: ~
 Window Geometry:
   Displays:

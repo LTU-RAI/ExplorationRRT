@@ -97,6 +97,7 @@ using namespace std::this_thread;
 double PLANNING_DEPTH = 0;
 double INFO_GAIN_CHECK_DEPTH;
 
+double SENSOR_RANGE;
 // helper obb function //
 
 ufo::geometry::OBB makeOBB(ufo::math::Vector3 source, ufo::math::Vector3 goal,
@@ -282,8 +283,8 @@ public:
 
       if (myHits.empty()) {
 
-        ufo::geometry::Sphere sphere (*((*i)->point), SCALER_AABB);
-        // ufo::geometry::Sphere sphere (*point, SCALER_AABB/4);
+        // ufo::geometry::Sphere sphere (*((*i)->point), SCALER_AABB);
+        ufo::geometry::Sphere sphere (*point, SENSOR_RANGE);
 
         std::list<ufo::math::Vector3> unknown_voxels;
 
@@ -299,8 +300,8 @@ public:
         }
 
         double hFOV = 2*M_PI;
-        double vFOV = M_PI/6;
-        double range = SCALER_AABB/4;
+        double vFOV = M_PI/4;
+        double range = SENSOR_RANGE;
 
         // TODO @ can use OMP to parallalize the following 3 loops 
 
@@ -315,9 +316,8 @@ public:
             std::abs(v_angle) <= vFOV / 2 and 
             toPoint.norm() <= range) {
 
-
             // ufo::geometry::OBB obb = makeOBB(*point, voxel, 0.25);
-            ufo::geometry::Sphere unk_sphere (voxel, 1);
+            ufo::geometry::Sphere unk_sphere (voxel, 2);
             ufo::geometry::LineSegment myLine(*((*i)->point), voxel);
             // ufo::geometry::LineSegment myLine(*point, voxel);
             if (!isInCollision(map, unk_sphere, true, false, false, PLANNING_DEPTH)
@@ -552,7 +552,6 @@ bool newPath = false;
 bool allowNewPath = true;
 bool recoveryUnderway = false;
 bool visualizeNewData = true;
-double SENSOR_RANGE;
 double SENSOR_MIN;
 double SENSOR_VERTICAL;
 double SENSOR_HORIZONTAL;
@@ -671,7 +670,7 @@ void linSpace(node *givenNode, float givenDistance) {
 void segmentPath(const nav_msgs::Path &path, nav_msgs::Path &path_seg) {
   path_seg.poses.clear();
   // double v_max_ = 1.5;
-  double v_max_ = 0.5;
+  double v_max_ = 1;
   double yaw_rate_max_ = 0.05;
   if (path.poses.size() == 0)
     return;
@@ -1568,15 +1567,15 @@ void generateGoals(ufo::map::OccupancyMapColor const &map,
 
           int foundInfo;
 
-          if (MIN_INFO_GOAL == 1) {
-            foundInfo = goal.findInformationGain(
-              SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN,
-              GOAL_SENSOR_RANGE, myMap, false, true);
-          } else {
-            foundInfo = goal.findInformationGain(
-              SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN,
-              GOAL_SENSOR_RANGE, myMap, false, false);
-          }
+          // if (MIN_INFO_GOAL == 1) {
+          //   foundInfo = goal.findInformationGain(
+          //     SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN,
+          //     GOAL_SENSOR_RANGE, myMap, false, true);
+          // } else {
+          //   foundInfo = goal.findInformationGain(
+          //     SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN,
+          //     GOAL_SENSOR_RANGE, myMap, false, false);
+          // }
 
           // if(foundInfo == MIN_INFO_GOAL){
           // if (foundInfo >= MIN_INFO_GOAL) {
