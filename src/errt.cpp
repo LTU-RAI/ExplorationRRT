@@ -276,15 +276,35 @@ public:
       if (myParents.empty()) {
         return 0;
       }
-
+      
+    double dist = 0;
+    node * check_node = nullptr;
+    check_node = *(myParents.begin());
+    bool check_dist_pass = false;
       // if (myHits.empty() or findAnyInfo) {
       
       for (auto i = myParents.begin(); i != myParents.end(); i++) {
+      
+      if (i != myParents.begin()) {
+        
+        ufo::math::Vector3 v1 = *((*i)->point);
+        ufo::math::Vector3 v2 = *(check_node->point);
+        dist = (v1 - v2).norm();
+        if (dist > 4) {
+          check_node = *i;
+          check_dist_pass = true;
+        } else {
+          check_dist_pass = false;
+        }
 
-      if (myHits.empty()) {
+      }
 
-        // ufo::geometry::Sphere sphere (*((*i)->point), SCALER_AABB);
-        ufo::geometry::Sphere sphere (*point, SENSOR_RANGE);
+
+      // if (myHits.empty() or check_status) {
+      if (check_dist_pass) {
+
+        ufo::geometry::Sphere sphere (*((*i)->point), SENSOR_RANGE);
+        // ufo::geometry::Sphere sphere (*point, SENSOR_RANGE);
 
         std::list<ufo::math::Vector3> unknown_voxels;
 
@@ -326,28 +346,15 @@ public:
                                     PLANNING_DEPTH)) {
               myHits.push_back(voxel);
             }
-
           }
         }
-
-        // if (myParent != nullptr and not excludePath) {
-        //   myParent->findInformationGain(SCALER_AABB, givenVertical,
-        //                                 givenHorizontal, givenMin, givenMax, map,
-        //                                 excludePath, findAnyInfo);
-        // }
-
-
       }
-
     }
     
-    // }
-
-
-      std::list<ufo::math::Vector3> myTotalHits{};
-      addHits(&myTotalHits);
-      int hits = myTotalHits.size();
-      return hits;
+    std::list<ufo::math::Vector3> myTotalHits{};
+    addHits(&myTotalHits);
+    int hits = myTotalHits.size();
+    return hits;
 
   }
 
@@ -1103,23 +1110,16 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       goal_pub->publish(GOAL_points);
     }
     if (goalNode != nullptr) {
-      hits.clear();
-      goalNode->addHits(&hits);
+     
+
       
-      // for (auto node : goalNode->myParents) {
-      //   
-      //   if (node != nullptr) {
-      //
-      //     node->addHits(&hits);
-      //   }
-      // }
+      // hits.clear();
+      // (*i)->addHits(&hits);
 
-
-      // node* parent_node = goalNode->myParent;
-      // if (parent_node != nullptr) {
-      //   parent_node->addHits(&hits);
-      //   parent_node = parent_node->myParent;
-      // }
+      
+      
+      // hits.clear();
+      // goalNode->addHits(&hits);
       HITS_points.header.frame_id = MAP_FRAME_ID;
       HITS_points.ns = "points";
       HITS_points.action = visualization_msgs::Marker::ADD;
@@ -1131,8 +1131,11 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       HITS_points.color.r = 1.0f;
       HITS_points.color.a = 1.0;
       std::list<ufo::math::Vector3>::iterator it_comeon_visualizer4;
-      for (it_comeon_visualizer4 = hits.begin();
-      it_comeon_visualizer4 != hits.end(); it_comeon_visualizer4++) {
+
+      // for (auto i = goalNode->myParents.begin(); i != goalNode->myParents.end(); i++) {
+
+      for (it_comeon_visualizer4 = goalNode->myHits.begin();
+      it_comeon_visualizer4 != goalNode->myHits.end(); it_comeon_visualizer4++) {
         geometry_msgs::Point p;
         p.x = it_comeon_visualizer4->x();
         p.y = it_comeon_visualizer4->y();
@@ -1140,7 +1143,8 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
         HITS_points.points.push_back(p);
       }
       hits_pub->publish(HITS_points);
-    }
+      // }
+      }
     if (goalNode != nullptr) {
       TAKEN_PATH_points.header.frame_id = TAKEN_PATH_line_list.header.frame_id = MAP_FRAME_ID;
       TAKEN_PATH_points.ns = "points";
@@ -1372,7 +1376,7 @@ void globalStrategy() {
 // occupied and unknown space.
 void findShortestPath() {
 
-  high_resolution_clock::time_point start_total = high_resolution_clock::now();
+  // high_resolution_clock::time_point start_total = high_resolution_clock::now();
 
   for (std::list<node *>::iterator it_goals = myGoals.begin();
   it_goals != myGoals.end(); it_goals++) {
@@ -1442,11 +1446,11 @@ void findShortestPath() {
     }
   }
 
-  high_resolution_clock::time_point stop_total = high_resolution_clock::now();
-  auto duration_total =
-    duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-  cout << "\n FIND SHORTEST PATH Execution time: " << duration_total.count()
-    << " ms " << endl;
+  // high_resolution_clock::time_point stop_total = high_resolution_clock::now();
+  // auto duration_total =
+  //   duration_cast<std::chrono::milliseconds>(stop_total - start_total);
+  // cout << "\n FIND SHORTEST PATH Execution time: " << duration_total.count()
+  //   << " ms " << endl;
 }
 
 // Generates goals.
@@ -1629,8 +1633,11 @@ void setPath() {
   if (allowNewPath) {
     std::list<double> PATH_CONTAINER{};
     initialGoalInfo = 0;
-    for (std::list<node *>::iterator it_goal = myGoals.begin();
-    it_goal != myGoals.end(); it_goal++) {
+    
+
+
+
+    for (std::list<node *>::iterator it_goal = myGoals.begin(); it_goal != myGoals.end(); it_goal++) {
 
       if (*it_goal != nullptr) {
         (*it_goal)->addParents();
@@ -1644,17 +1651,23 @@ void setPath() {
         (*it_goal)->findPathImprovement(*it_goal, myMap, DISTANCE_BETWEEN_NODES,
                                         RADIOUS, pathImprovement_start,
                                         PATH_IMPROVEMENT_MAX);
-        double informationGain =
-          SCALER_INFORMATION_GAIN *
-          ((*it_goal)->findInformationGain(
-            SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN,
-            SENSOR_RANGE, myMap, false, false));
 
         linSpace(*it_goal, DISTANCE_BETWEEN_NODES);
         auto pathImprovement_start_2 = high_resolution_clock::now();
         (*it_goal)->findPathImprovement(*it_goal, myMap, DISTANCE_BETWEEN_NODES,
                                         RADIOUS, pathImprovement_start_2,
                                         PATH_IMPROVEMENT_MAX);
+        
+        linSpace(*it_goal, DISTANCE_BETWEEN_NODES);
+        double informationGain =
+          SCALER_INFORMATION_GAIN *
+          ((*it_goal)->findInformationGain(
+            SCALER_AABB, SENSOR_HORIZONTAL, SENSOR_VERTICAL, SENSOR_MIN,
+            SENSOR_RANGE, myMap, false, false));
+
+
+
+
         double distanceCost = (*it_goal)->sumDistance() * SCALER_DISTANCE;
         // double informationGain = SCALER_INFORMATION_GAIN *
         // log((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL,
@@ -1662,7 +1675,6 @@ void setPath() {
         // double informationGain = SCALER_INFORMATION_GAIN *
         // ((*it_goal)->findInformationGain(SCALER_AABB, SENSOR_HORIZONTAL,
         // SENSOR_VERTICAL, SENSOR_MIN, SENSOR_RANGE, myMap, false, false));
-        linSpace(*it_goal, DISTANCE_BETWEEN_NODES);
 
         typedef rrtCache *(*arbitrary)();
         typedef rrtSolverStatus (*arbitrary2)(void *, double *, double *,
@@ -2318,11 +2330,11 @@ int main(int argc, char *argv[]) {
 
         publishTrajectory();
 
-        high_resolution_clock::time_point stop_total =
-          high_resolution_clock::now();
-        auto duration_total =
-          duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-        ROS_INFO_STREAM("\nSET PATH time: " << duration_total.count() << " ms \n");
+        // high_resolution_clock::time_point stop_total =
+        //   high_resolution_clock::now();
+        // auto duration_total =
+        //   duration_cast<std::chrono::milliseconds>(stop_total - start_total);
+        // ROS_INFO_STREAM("\nSET PATH time: " << duration_total.count() << " ms \n");
       }
 
       if (fetched_path and goalNode != nullptr) {
@@ -2358,14 +2370,15 @@ int main(int argc, char *argv[]) {
     high_resolution_clock::time_point stop_total = high_resolution_clock::now();
     auto duration_total =
       duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-    // cout << "\nExecution time: " << duration_total.count() << " ms for " <<
-    // myGoals.size() << " path/s." << endl;
 
     std_msgs::Float64MultiArray planning_time;
 
     planning_time.data = {duration_total.count(), ros::Time::now().toSec()};
     if (!duration_total.count() == 0) {
+
       execution_time_pub.publish(planning_time);
+      cout << "\nExecution time: " << duration_total.count() << " ms for " <<
+        myGoals.size() << " path/s." << endl;
     }
 
     updatePathTaken();

@@ -73,6 +73,7 @@ RUN git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepack  \
 COPY --chown=user:user ./.tmux.conf /home/aakapatel/.tmux.conf
 COPY --chown=user:user ./statusline.conf /home/aakapatel/statusline.conf
 COPY --chown=user:user ./utility.conf /home/aakapatel/utility.conf
+COPY --chown=user:user ./macos.conf /home/aakapatel/macos.conf
 COPY --chown=user:user ./.powerline.sh /home/aakapatel/.powerline.sh
 COPY --chown=user:user ./errt.yml /home/aakapatel/.config/tmuxinator/errt.yml
 COPY --chown=user:user ./stage_planning.yml /home/aakapatel/.config/tmuxinator/stage_planning.yml
