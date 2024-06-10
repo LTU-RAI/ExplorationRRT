@@ -18,7 +18,7 @@ This section will detail some of the critical launch parameters of interest for 
 
 The ROS topics in ERRT that can be configured can be found in errt.launch:
 <remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"/> - The robot odometry topic \\
-** <remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"/> ** - The UFOmap topic. Maps at different depths can also be used.
+remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"/ - The UFOmap topic. Maps at different depths can also be used.
 ** <remap from="REFERENCE_OUT_" to="/hummingbird/reference"/>	** - Momentary pose references along the trajectory. These are updated by the condition of the robot position being closer to the current reference than PATH_UPDATE_DIST_. 
 **  <remap from="PATH_OUT_" to="/hummingbird/command/trajectory"/> ** Path topic as a MultiDOFJointTrajectory message - Set up with the message type to be synced with the RotorS trajectory tracking controller.
 
