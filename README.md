@@ -18,13 +18,13 @@ This section will detail some of the critical launch parameters of interest for 
 
 The ROS topics in ERRT that can be configured can be found in errt.launch:
 
-\it{remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"} - The robot odometry topic 
+**remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"** - The robot odometry topic 
 
-remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map" - The UFOmap topic. Maps at different depths can also be used.
+**remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"** - The UFOmap topic. Maps at different depths can also be used.
 
-remap from="REFERENCE_OUT_" to="/hummingbird/reference" - Momentary pose references along the trajectory. These are updated by the condition of the robot position being closer to the current reference than PATH_UPDATE_DIST_. 
+**remap from="REFERENCE_OUT_" to="/hummingbird/reference"** - Momentary pose references along the trajectory. These are updated by the condition of the robot position being closer to the current reference than PATH_UPDATE_DIST_. 
 
-remap from="PATH_OUT_" to="/hummingbird/command/trajectory" Path topic as a MultiDOFJointTrajectory message - Set up with the message type to be synced with the RotorS trajectory tracking controller.
+**remap from="PATH_OUT_" to="/hummingbird/command/trajectory"** - Path topic as a MultiDOFJointTrajectory message - Set up with the message type to be synced with the RotorS trajectory tracking controller.
 
 There are also many visualization topics included in the ERRT program such as the RRT (whole tree), GOALS, HITS (predicted exploration), PATHS (all paths), and SELECTED_PATH. These are set up in the rviz/errt.rviz.
 
