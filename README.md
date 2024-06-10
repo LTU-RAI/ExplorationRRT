@@ -18,6 +18,8 @@ This section will detail some of the critical launch parameters of interest for 
 
 ## ROS Topics
 
+The Following ROS topics can be found in the launch/errt.launch file. 
+
 **remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"** - The robot odometry topic 
 
 **remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"** - The UFOmap topic. Maps at different depths can also be used.
