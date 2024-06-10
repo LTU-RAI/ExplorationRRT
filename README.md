@@ -16,7 +16,7 @@ When using the framework in academic publications, please cite our published wor
 # Fundamentals & Critical launch parameters
 This section will detail some of the critical launch parameters of interest for the user - focusing on baseline configuration params, and those that can have a large impact on using ERRT different environments. The relevant launch files launch/errt.launch, and launch/server.launch (for UFOmap) has more details for every configuration parameter. 
 
-The ROS topics in ERRT that can be configured can be found in errt.launch:
+##ROS Topics
 
 **remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"** - The robot odometry topic 
 
