@@ -27,7 +27,7 @@
   <param name="SENSOR_MIN_" type="double" value="0.4" />			<!-- The distance at which the sensor will exclude hits, as to not include occupation hits from the drone itself -->
   <param name="SENSOR_VERTICAL_" type="double" value="0.393" />		<!-- The vertical angle cut-off (half FoV) for the LiDAR, used for information gain calculation bounding boxes, given in radians. Ex. Ouster 45deg FoV -> 0.393rad (x2) -->
   <param name="INFO_GAIN_DEPTH_" type="double" value="2" /> <!-- The depth in the OcTree for information gain calculations -->
-  
+  <param name="INFO_CALC_DIST_" type="double" value="6" <!-- The distance between nodes where information gain calculations are performed - small values can lead to high computations but significant overlap between checks.  
 
   <!-- Tuning parameters -->
   <param name="K_DIST_" type="double" value="0.3" />			<!-- The scaler for the distance cost during path evaluation -->
