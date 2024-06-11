@@ -52,7 +52,7 @@ This section will detail a number of tuning parameters in launch/errt.launch and
 
 **K_Dist, K_Info, K_u** - Gains related to the distance cost, information gain, and actuation cost along candidate branches. Changing these will change which types of trajectories will be favored. Note: the information gain is calculated from the *number* of unknown voxels in sensor view so **K_Info** might need to be edited with significant changes to **resolution** or **INFO_GAIN_DEPTH_**. 
 
-**INITIAL_POINT_** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
+**INITIAL_POINT_** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, set by subsequent *x,y,z*-coordinates. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
 
 # Running the framework
 
