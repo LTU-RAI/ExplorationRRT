@@ -39,7 +39,7 @@
 
   <!-- NMPC parameters. Recommended to not touch. -->
   <param name="NMPC_HORIZON_" type="int" value="50" />			<!-- Horizon in the NMPC problem. If edited must then also be specified in the NMPC module builder -->
-  <param name="NMPC_DT_" type="double" value="0.4" />			<!-- Sampling time of the NMPC problem. This also specifies the desired dt to reach each path segment set by DISTANCE_BETWEEN_NODES_ ->
+  <param name="NMPC_DT_" type="double" value="0.4" />			<!-- Sampling time of the NMPC problem. This also specifies the desired dt to reach each path segment set by DISTANCE_BETWEEN_NODES_ -->
   <param name="POSITION_TRACKING_WEIGHT_X_" type="double" value="0" />	<!-- Qx -->
   <param name="POSITION_TRACKING_WEIGHT_Y_" type="double" value="0" />
   <param name="POSITION_TRACKING_WEIGHT_Z_" type="double" value="0" />
