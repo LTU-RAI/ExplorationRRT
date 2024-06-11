@@ -18,7 +18,7 @@ This section will detail some of the critical launch parameters of interest for 
 
 ## ROS Topics
 
-The Following ROS topics can be found in the launch/errt.launch file. 
+The Following ROS topic configurations can be found in the launch/errt.launch file. 
 
 **remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"** - The robot odometry topic 
 
@@ -30,8 +30,29 @@ The Following ROS topics can be found in the launch/errt.launch file.
 
 There are also many visualization topics included in the ERRT program such as the RRT (whole tree), GOALS, HITS (predicted exploration), PATHS (all paths), and SELECTED_PATH. These are set up in the rviz/errt.rviz.
 
+## Tuning Parameters
 
+This section will detail a number of tuning parameters in launch/errt.launch and launch/server.launch (UFOmap). The related launch files detail all possible tuning and configuration parameters. 
 
+**resolution** - Found in server.launch. The resolution of the UFOmap. 
+
+**PLANNING_DEPTH_** and **INFO_GAIN_DEPTH_** - The depth of the Octree in UFOmap practically means merging occupied voxels into larger ones. This significantly speeds up various volumetric occupancy checks. ERRT is configured to use a small **resolution** of ~0.05-0.15m but performing computationally demanding actions such as information gain calculations at a set depth in the Octree. 
+
+**V_LOCAL_** - The side length of the bounding box that defines the local sampling space for generating the RRT.
+
+**NUMBER_OF_NODES_** - The size of the RRT as the exit condition to stop tree expansion. 
+
+**NUMBER_OF_GOALS_** - The number of candidate goals to be generated and consequently the number of candidate trajectories that will be investigated. Large effect on computation time. 
+
+**SENSOR_RANGE_** - The range of the LiDAR model used to compute predicted information gain along candidate branches. Must be set lower than the **max_range** in server.launch. Recommended to use a much smaller range than the real range of the sensor for both parameters - both for computation effort and to guarantee useful, dense, and consistent data integration into the UFOmap. 
+
+**SENSOR_VERTICAL_** - The vertical cutoff angle in radians for the LiDAR model as half the vertical field of view. Should match the onboard LiDAR on the robot. Ex. Ouster 32-beam 45deg FoV -> **SENSOR_VERTICAL** = 0.393
+
+**INFO_CALC_DIST_** - The distance between nodes in candidate branches where information gain calculations will be performed. Too small values lead to big overlap between checks, and a significant increase in computation time. 
+
+**K_Dist, K_Info, K_u** - Gains related to the distance cost, information gain, and actuation cost along candidate branches. Changing these will change which types of trajectories will be favored. Note: the information gain is calculated from the *number* of unknown voxels in sensor view so **K_Info** might need to be edited with significant changes to **resolution** or **INFO_GAIN_DEPTH_**. 
+
+**INITIAL_POINT_** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
 
 # Running the framework
 
