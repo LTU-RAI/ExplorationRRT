@@ -6,19 +6,18 @@
   <!-- Candidate goal parameters --> 
   <param name="MIN_INFO_GOAL_" type="double" value="1" />       <!-- The minimum information gain for a candidate goal. Any value but 1 increases the information gain calculations for each sampled candidate goal and can lead to higher computation time -->   
   <param name="GOAL_SENSOR_RANGE_" type="double" value="3" /> <!-- Separate sensor range for "MIN_INFO_GOAL_" calculation. Preferably set lower than SENSOR_RANGE to promote candidate goals to be generated closer to unknown space --> 
+  <param name="NUMBER_OF_GOALS_" type="int" value="60" />			<!-- Number of candidate goals to be generated -->
+  <param name="MIN_DIST_TO_GOAL_" type="double" value="1" />	<!-- The minimum distance between candidate goals and the robot position -->
+  <param name="DIST_GOALS_" type="double" value="0.2" />		<!-- The minimum distance between different generated candidate goals -->
 
   <!-- RRT parameters -->
   <param name="RUN_BY_NODES_" type="bool" value="true" />			<!-- Run by number_of_nodes if true and by number_of_itterations if false. Recommended as True -->
   <param name="NUMBER_OF_NODES_" type="int" value="2000" />			<!-- Size of the tree as the exit condition for tree expansion -->
   <param name="NUMBER_OF_ITERATIONS_" type="int" value="10000" />		<!-- The number of iterations, only used if RUN_BY_NODES_ is false -->
-  <param name="NUMBER_OF_GOALS_" type="int" value="60" />			<!-- Number of selected candidate goals -->
 
   <param name="RESOLUTION_" type="double" value="0.25" />			<!-- REMOVE?? Set to the same as UFOmap resolution -->
   <param name="PLANNING_DEPTH_" type="double" value="2" />   <!-- The depth in the OcTree for performing volumetric collision checks in the UFOmap.-->
-  <param name="INFO_GAIN_CHECK_DEPTH_" type="double" value="2" /> <!-- The depth in the OcTree for information gain calculations -->
-  <param name="DIST_BETWEEN_NODES_" type="double" value="0.4" />		<!-- The set distance between poses in a candidate branch - this must be synced with NMPC_DT_ for the speed profile as v_desired = DISTANCE_BETWEEN_NODES_ / NMPC_DT_ -->
-  <param name="DIST_BETWEEN_GOALS_" type="double" value="0.2" />		<!-- The minimum distance between different generated candidate goals -->
-  <param name="MINIMUM_DIST_TO_GOAL_" type="double" value="1" />	<!-- The minimum distance between candidate goals and the robot position -->
+  <param name="DIST_NODES_" type="double" value="0.4" />		<!-- The set distance between poses in a candidate branch - this must be synced with NMPC_DT_ for the speed profile as v_desired = DISTANCE_BETWEEN_NODES_ / NMPC_DT_ -->
   <param name="ROBOT_SIZE" type="double" value="0.4" />			<!-- The radius of volumetric collision checks for robot-safe tree generation -->
   <param name="GOAL_CONN_DIST_" type="double" value="2" />    <!-- Maximum distance for attempting to connect candidate goals to tree nodes --> 
   <param name="V_LOCAL_" type="double" value="20" />			<!-- The Bounding box side length denoting the local sampling space -->
@@ -27,6 +26,7 @@
   <param name="SENSOR_RANGE_" type="double" value="10" />			<!-- The range of the lidar sensor, used for information gain calculations. Set lower than sensor range in UFOmap. -->
   <param name="SENSOR_MIN_" type="double" value="0.4" />			<!-- The distance at which the sensor will exclude hits, as to not include occupation hits from the drone itself -->
   <param name="SENSOR_VERTICAL_" type="double" value="0.393" />		<!-- The vertical angle cut-off (half FoV) for the LiDAR, used for information gain calculation bounding boxes, given in radians. Ex. Ouster 45deg FoV -> 0.393rad (x2) -->
+  <param name="INFO_GAIN_DEPTH_" type="double" value="2" /> <!-- The depth in the OcTree for information gain calculations -->
   
 
   <!-- Tuning parameters -->
@@ -61,7 +61,7 @@
   <node pkg="errt" type="errt_node" name="errt_node" output="screen" required="true">
     <remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"/>				<!-- The odometry topic -->
     <remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"/>			<!-- The ufomap topic -->
-    <remap from="REFERENCE_OUT_" to="/hummingbird/reference"/>					<!-- References along trajectory, updated by condition: PATH_UPDATE_DIST_-->
+    <remap from="REFERENCE_OUT_" to="/hummingbird/reference"/>					<!-- References along trajectory, updated by  PATH_UPDATE_DIST_-->
     <remap from="PATH_OUT_" to="/hummingbird/command/trajectory"/>					<!-- Path topic as a MultiDOFJointTrajectory message - sent to trajectory tracking controller -->
   </node>
 
