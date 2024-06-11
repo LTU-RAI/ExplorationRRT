@@ -36,7 +36,7 @@ This section will detail a number of tuning parameters in launch/errt.launch and
 
 **resolution** - Found in server.launch. The resolution of the UFOmap. 
 
-**PLANNING_DEPTH_** and **INFO_GAIN_DEPTH_** - The depth of the Octree in UFOmap practically means merging occupied voxels into larger ones. This significantly speeds up various volumetric occupancy checks. ERRT is configured to use a small **resolution** of ~0.05-0.15m but performing computationally demanding actions such as information gain calculations at a set depth in the Octree. 
+**PLANNING_DEPTH_** and **INFO_GAIN_DEPTH_** - The depth of the Octree in UFOmap practically means merging voxels into larger ones. This significantly speeds up various volumetric occupancy checks. ERRT is configured to use a small **resolution** of ~0.05-0.15m but performing computationally demanding actions such as information gain calculations at a set depth in the Octree. 
 
 **V_LOCAL_** - The side length of the bounding box that defines the local sampling space for generating the RRT.
 
