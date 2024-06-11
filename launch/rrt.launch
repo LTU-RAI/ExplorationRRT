@@ -30,10 +30,10 @@
   <param name="INFO_CALC_DIST_" type="double" value="6" /> <!-- The distance between nodes where information gain calculations are performed - small values can lead to high computations but significant overlap between checks.  
 
   <!-- Tuning parameters -->
-  <param name="K_DIST_" type="double" value="0.3" />			<!-- The scaler for the distance cost during path evaluation -->
-  <param name="K_INFO_" type="double" value="0.4" />	<!-- The scaler for the information gain during path evaluation -->
-  <param name="K_U_" type="double" value="0.1" />	<!-- The scaler for the actuation cost during path evaluation -->
-  <param name="RECALC_DIST_" type="double" value="2" />		<!-- The distance from the current goal at which a new path will be calculated -->
+  <param name="K_DIST_" type="double" value="0.3" />			<!-- Gain for the distance cost during candidate branch evaluation -->
+  <param name="K_INFO_" type="double" value="0.4" />	<!-- Gain for the information gain during candidate branch evaluation -->
+  <param name="K_U_" type="double" value="0.1" />	<!-- Gain for the actuation cost during candidate branch evaluation -->
+  <param name="RECALC_DIST_" type="double" value="2" />		<!-- Distance from the end-segment of the current trajectory at which a new trajectory calculation is initiated, for smooth trajectory transistions. -->
   <param name="PATH_UPDATE_DIST_" type="double" value="0.3" />		<!-- The distance from the current robot pose at which the trajectory segment updates and is sent to the pose ref topic -->
   <param name="PATH_IMPROVEMENT_MAX_" type="double" value="3000" />		<!-- The maximum amount of micro seconds which can be spent improving a single path -->
 
