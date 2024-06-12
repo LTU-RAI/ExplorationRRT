@@ -13,7 +13,8 @@ The docker is pre-configured to load the DARPA SubT Cave World consisting of wid
 
 When using the framework in academic publications, please cite our published work as: 
 
-![errt_urban_graph_top](https://github.com/LTU-RAI/ExplorationRRT/assets/49238097/fbae6c98-e886-4231-b5ef-d9a6d5675933)
+![image(15)](https://github.com/LTU-RAI/ExplorationRRT/assets/49238097/ed52dec3-6133-4387-a20a-fe6a104cbb18)
+
 
 # Installation 
 
