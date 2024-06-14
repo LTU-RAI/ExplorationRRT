@@ -8,13 +8,13 @@
 
   <node pkg="ufomap_mapping" type="ufomap_mapping_server_node" name="ufomap_mapping_server_node" required="true">
 		
-		<param name="cloud_in" value="/hummingbird/velodyne_points" />
+    <param name="cloud_in" value="/hummingbird/ouster/points" />
 
 		<!-- <param name="cloud_in" value="/velodyne_points" /> -->
 
 		<param name="frame_id" type="string" value="world" />
 
-		<remap from="cloud_in" to="/hummingbird/velodyne_points" />
+		<remap from="cloud_in" to="/hummingbird/ouster/points" />
 
 		<!-- <remap from="cloud_in" to="/velodyne_points" /> -->
 
@@ -61,7 +61,7 @@
 		
 		<!-- data source to integrate (PointCloud2) -->
                 <!-- <remap from="cloud_in" to="/os_cloud_node/points" /> -->
-		<remap from="cloud_in" to="/hummingbird/velodyne_points" />
+		<remap from="cloud_in" to="/hummingbird/ouster/points" />
 		<!-- <remap from="cloud_in" to="rmf_obelix/velodyne_points" /> -->
 
                 <param name="publish_free_space" value="true"/>

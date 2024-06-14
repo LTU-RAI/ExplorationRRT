@@ -14,7 +14,7 @@ dist_goals:                   0.2              #The minimum distance between dif
 # RRT Parameters
 
 run_by_nodes:                 true             #Run by number_of_nodes if true and by number_of_itterations if false. Recommended as True
-number_of_nodes:              2000             #Size of the tree as the exit condition for tree expansion
+number_of_nodes:              1000             #Size of the tree as the exit condition for tree expansion
 number_of_iterations:         10000            #The number of iterations, only used if RUN_BY_NODES_ is false
 planning_depth:               2                #The depth in the OcTree for performing volumetric collision checks in the UFOmap
 dist_nodes:                   0.4              #The set distance between poses in a candidate branch - this must be synced with NMPC_DT_ for the speed profile as v_desired = DISTANCE_BETWEEN_NODES_ / NMPC_DT_

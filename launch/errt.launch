@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<launch>									<!-- Parameter descriptions -->
+  
+  <env name="ROSCONSOLE_FORMAT" value="[${severity}] : ${message}"/>
+
+  <arg name="errt_config" default="$(find errt)/config/errt.yaml"/>
+
+  <node pkg="errt" type="errt_node" name="errt_node" output="screen" required="true">
+    
+    <rosparam command="load" file="$(arg errt_config)" /> 
+    
+    <remap from="ODOMETRY_IN_" to="/hummingbird/ground_truth/odometry"/>  <!-- The odometry topic -->
+    <remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"/>			  <!-- The ufomap topic -->
+    <remap from="REFERENCE_OUT_" to="/hummingbird/reference"/>					  <!-- References along trajectory, updated by  path_update_dist-->
+    <remap from="PATH_OUT_" to="/hummingbird/command/trajectory"/>				<!-- Path topic as a MultiDOFJointTrajectory message - sent to trajectory tracking controller -->
+  </node>
+
+  <node type="visualize_navigation" name="visualize_navigation" pkg="visualization_tools" />
+</launch>
