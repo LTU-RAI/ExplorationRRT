@@ -1,0 +1,91 @@
+######## ERRT Tuning Parameters #########
+#########################################
+
+# Candidate goals parameters
+
+map_frame_id:                 "world"          #UFOMAP and ERRT global frame id for visualization purpose 
+min_info_goal:                1.0              #The minimum information gain for a candidate goal. Any value but 1 increases the information gain calculations for each sampled candidate goal and can lead to higher computation time
+goal_sensor_range:            3.0              #Separate sensor range for "MIN_INFO_GOAL_" calculation. Preferably set lower than SENSOR_RANGE to promote candidate goals to be generated closer to unknown space 
+number_of_goals:              60               #Number of candidate goals to be generated
+min_dist_to_goal:             1.0              #The minimum distance between candidate goals and the robot position
+dist_goals:                   0.2              #The minimum distance between different generated candidate goals
+
+
+# RRT Parameters
+
+run_by_nodes:                 true             #Run by number_of_nodes if true and by number_of_itterations if false. Recommended as True
+number_of_nodes:              2000             #Size of the tree as the exit condition for tree expansion
+number_of_iterations:         10000            #The number of iterations, only used if RUN_BY_NODES_ is false
+planning_depth:               2                #The depth in the OcTree for performing volumetric collision checks in the UFOmap
+dist_nodes:                   0.4              #The set distance between poses in a candidate branch - this must be synced with NMPC_DT_ for the speed profile as v_desired = DISTANCE_BETWEEN_NODES_ / NMPC_DT_
+
+
+# Robot Parameters 
+
+robot_size:                   0.4              #The radius of volumetric collision checks for robot-safe tree generation
+goal_connect_dist:            2                #Maximum distance for attempting to connect candidate goals to tree nodes
+v_local:                      20               #The Bounding box side length denoting the local sampling space. Check Paper for detailed explaination. 
+sensor_range:                 10               #The effective range of the lidar sensor, used for information gain calculations. Set lower than sensor range in UFOmap.
+min_sensor_range:             0.4              #The distance at which the sensor will exclude hits, as to not include occupation hits from the drone itself
+senros_vertical_fov:          0.393            #The vertical angle cut-off (half FoV) for the LiDAR, used for information gain calculation bounding boxes, given in radians. Ex. Ouster 45deg FoV -> 0.393rad (x2)
+info_gain_depth:              2                #The depth in the OcTree for information gain calculations
+info_calc_dist:               6.0              #The distance between nodes where information gain calculations are performed - small values can lead to high computations but significant overlap between checks
+
+
+# Planning tuning parameters 
+
+k_dist:                       0.3              #Gain for the distance cost during candidate branch evaluation
+k_info:                       0.4              #Gain for the information gain during candidate branch evaluation
+k_u:                          0.1              #Gain for the actuation cost during candidate branch evaluation
+recalc_dist:                  2.0              #Distance from the end-segment of the current trajectory at which a new trajectory calculation is initiated, for smooth trajectory transistions
+path_update_dist:             0.3              #The distance from the current robot pose at which the trajectory segment updates and is sent to the pose ref topic
+path_improvement_max:         3000             #The maximum amount of micro seconds which can be spent improving a single path
+
+
+# N-MPC Tuning Parameters 
+
+nmpc_horizon:                 50               #Horizon in the NMPC problem. If edited must then also be specified in the NMPC module builder
+nmpc_dt:                      0.4              #Sampling time of the NMPC problem. This also specifies the desired dt to reach each path segment set by dist_nodes 
+position_tracking_weight_x:   0                #Qx
+position_tracking_weight_y:   0    
+position_tracking_weight_z:   0    
+angle_weight_roll:            0
+angle_weight_pitch:           0
+input_weight_thrust:          5                #Qu
+input_weight_roll:            10    
+input_weight_pitch:           10    
+input_rate_weight_thrust:     5                #Qdu
+input_rate_weight_roll:       10    
+input_rate_weight_pitch:      10    
+
+
+# Initialization parameters 
+
+start_from_waypoint:          false            #Denotes if there's a starting-point to travel to or not. Can be useful to start ERRT with an initial small map as opposed to from the ground for the first trajectory
+initial_x:                    2                #Initial point x  
+initial_x:                    0                #Initial point y
+initial_x:                    1                #Initial point z
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
