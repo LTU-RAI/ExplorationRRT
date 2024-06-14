@@ -1,4 +1,0 @@
-*.models filter=lfs diff=lfs merge=lfs -text
-*.ignition_models filter=lfs diff=lfs merge=lfs -text
-models filter=lfs diff=lfs merge=lfs -text
-ignition_models filter=lfs diff=lfs merge=lfs -text

@@ -161,7 +161,7 @@ public:
         break;
       }
     }
-    // ROS_INFO_STREAM("Num of Parents : " << myParents.size() << "\n");
+    ROS_INFO_STREAM("Num of Parents : " << myParents.size() << "\n");
   }
 
   double distanceToGoal;
