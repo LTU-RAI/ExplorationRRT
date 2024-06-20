@@ -22,7 +22,7 @@ When using the framework in academic publications, please cite our published wor
 
 ## Requirements
 
-The REF repository only requires docker. If you do not have docker installed, please follow the docker installation instructions. If you already have docker installed, you can skip this step.
+The E-RRT repository only requires docker. If you do not have docker installed, please follow the docker installation instructions. If you already have docker installed, you can skip this step.
 
 ```bash
 # Add Docker's official GPG key:
@@ -50,7 +50,7 @@ The repository contains a Dockerfile that allows the user to build a docker imag
 Clone the E-RRT project
 
 ```bash
-  git clone https://github.com/ExplorationRRT/REF.git
+  git clone https://github.com/LTU-RAI/ExplorationRRT.git
 
 ```
 
@@ -78,8 +78,8 @@ If you do not have NVIDIA GPU :
 ```bash
     ./start_errt_no_gpu.sh
 ```
-Once you are inside the docker container, please run the following command to start the REF tmux session.
-This session will launch the REF sub-modules and a Rviz window to visualize the drone exploring the cave environment. 
+Once you are inside the docker container, please run the following command to start the E-RRT tmux session.
+This session will launch the E-RRT sub-modules and a Rviz window to visualize the drone exploring the cave environment. 
 
 ```bash
 tmuxinator errt
