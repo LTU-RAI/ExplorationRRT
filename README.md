@@ -1,9 +1,14 @@
 # ExplorationRRT
+
 A Tree-based Next-best-trajectory Method for 3D UAV Exploration
 
 ![image(14)](https://github.com/LTU-RAI/ExplorationRRT/assets/49238097/98865471-765b-4a34-9b82-17dca53e53b4)
 
+##
+
 The ERRT framework is a combined Exploration-Planning algorithm for the exploration of unknown and unstructured 3D environments - in this version set up for rotorcraft UAVs. In the framework we leverage RRT tree-expansion for rapid path generation to multiple sampled candidate goals, combined with iterative path improvement modules and a NMPC to generate dynamic paths. Candidate RRT branches are then evaluated for distance, model-based actuation, and 3D LiDAR sensor based information gain along the candidate branches - not just at the end-goals or frontiers. The fundamental goal of ERRT is to find the momentary local "Next-best-trajectory" for continued and efficient exploration of unknown environments.
+
+##
 
 The framework heavily relies on the UFOmap occupancy mapper library and requires an UFOmap topic as input, together with the robot localization/odometry. As output the user can select to use a continously updated pose reference or the full trajectory to track.  
 
@@ -17,8 +22,6 @@ When using the framework in academic publications, please cite our published wor
 
 
 # Installation 
-
-*** DOCKER INSTRUCTIONS TO-DO ***
 
 ## Requirements
 

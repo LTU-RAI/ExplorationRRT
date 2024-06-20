@@ -14,6 +14,6 @@ docker run -it --rm \
     $DOCKER_VISUAL_NVIDIA \
     --env="QT_X11_NO_MITSHM=1" \
     --env="XAUTHORITY=$XAUTH" \
-    # -v /home/aakapatel/catkin_workspaces:/home/aakapatel/catkin_workspaces \
-    # -v /home/aakapatel/.gazebo/models:/home/aakpatel/.gazebo/models \
+    -v /home/aakapatel/catkin_workspaces:/home/aakapatel/catkin_workspaces \
+    -v /home/aakapatel/.gazebo/models:/home/aakpatel/.gazebo/models \
     errt_test

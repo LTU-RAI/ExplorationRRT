@@ -160,7 +160,7 @@ RUN git clone https://github.com/jimeh/tmux-themepack.git /home/$USERNAME/.tmux-
 COPY --chown=$USERNAME:$USERNAME ./.tmux.conf /home/$USERNAME/.tmux.conf
 COPY --chown=$USERNAME:$USERNAME ./statusline.conf /home/$USERNAME/statusline.conf
 COPY --chown=$USERNAME:$USERNAME ./utility.conf /home/$USERNAME/utility.conf
-COPY --chown=$USERNAME:$USERNAME ./errt.yml /home/$USERNAME/.config/tmuxinator/stage_planning.yml
+COPY --chown=$USERNAME:$USERNAME ./errt.yml /home/$USERNAME/.config/tmuxinator/errt.yml
 
 # Set some decent colors if the container needs to be accessed via /bin/bash.
 RUN echo LS_COLORS=$LS_COLORS:\'di=1\;33:ln=36\' >> ~/.bashrc \
