@@ -13,6 +13,8 @@ ENV LD_LIBRARY_PATH=/usr/lib/nvidia:$LD_LIBRARY_PATH
 # Use build argument for the username
 ARG USERNAME
 ENV USR_NAME=$USERNAME
+
+RUN echo "Current working directory after usermod:" && pwd
 # Install some handy tools.
 RUN set -x \
     && apt-get update \
@@ -100,7 +102,7 @@ RUN  git clone https://github.com/ntnu-arl/lidar_simulator.git
 RUN  git clone https://github.com/ethz-asl/mav_comm.git
 RUN  git clone https://github.com/ros-planning/navigation_msgs.git
 RUN  git clone https://github.com/ethz-asl/numpy_eigen.git
-RUN  git clone https://github.com/ros-perception/perception_pcl.git
+RUN  git clone --branch melodic-devel https://github.com/ros-perception/perception_pcl.git
 RUN  git clone https://github.com/ros/xacro.git
 RUN  git clone https://github.com/ethz-asl/catkin_boost_python_buildtool.git
 
@@ -109,7 +111,7 @@ RUN  git clone https://github.com/LTU-RAI/rotors_simulator.git
 RUN  git clone https://github.com/LTU-RAI/ufomap.git
 
 RUN git clone https://github.com/LTU-RAI/geometry2.git
-
+RUN  git clone https://github.com/aakapatel/mav_control_rw.git
 USER root
 
 WORKDIR /home/$USERNAME/catkin_ws/
@@ -130,22 +132,25 @@ RUN apt-get update && apt-get install -y \
     libqt5x11extras5-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ENV QT_X11_NO_MITSHM 1
+# ENV QT_X11_NO_MITSHM 1
 
 RUN sudo catkin build 
 
 #Clone Exploration package 
-WORKDIR /home/$USERNAME/catkin_ws/src/ExplorationRRT/
+WORKDIR /home/$USERNAME/catkin_ws/src/
 
 RUN git clone https://github.com/LTU-RAI/ExplorationRRT.git
+
+WORKDIR /home/$USERNAME/catkin_ws/src/ExplorationRRT/
+
+USER root
 
 # Build the cost gen for RRT solver. 
 RUN /bin/bash -c 'source $HOME/.cargo/env; cd /home/$USERNAME/catkin_ws/src/ExplorationRRT; python3 rrt_costgen.py'
 
-WORKDIR /home/$USERNAME/catkin_ws/src/ExplorationRRT/
-# RUN source ~/home/$USER_NAME/catkin_ws/devel/setup.bash
+WORKDIR /home/$USERNAME/catkin_ws/
 
-RUN sudo catkin build errt  
+# RUN sudo catkin build errt  
 
 WORKDIR /home/$USERNAME
 RUN mkdir -p .config/tmuxinator
@@ -182,5 +187,6 @@ WORKDIR /home/$USERNAME/catkin_ws/
 RUN echo "source $HOME/.cargo/env" >> /home/$USERNAME/.bashrc
 STOPSIGNAL SIGTERM
 
+# USER $USERNAME
 CMD sudo service ssh start && /bin/bash
 

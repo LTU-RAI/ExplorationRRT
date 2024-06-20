@@ -8,34 +8,23 @@ windows:
       layout: even-horizontal 
       panes:
         - ufomap:
-          - cd catkin_workspaces/exploration_ws
-          - source devel/setup.bash
           - sleep 2  
           - mon launch errt server.launch 
         - errt:
-          - cd catkin_workspaces/exploration_ws
-          - source devel/setup.bash
           - sleep 8 
-          - mon launch errt rrt.launch
+          - mon launch errt errt.launch
 
   - publishers:
       # layout: main-vertical 
       layout: tiled 
       panes:
         - rotors:
-          - cd catkin_workspaces/exploration_ws
-          - source devel/setup.bash
           - sleep 1  
           - roslaunch rotors_gazebo errt_mav.launch 
         - takeoff:
-          - cd catkin_workspaces/exploration_ws
-          - source devel/setup.bash
           - sleep 7
           - *takeoff
         - controller:  
-          - cd catkin_workspaces/exploration_ws
-          - source devel/setup.bash
-          # - cd src/ExplorationRRT/controller
           - sleep 3
           # - python3 errt_nmpc.py
           - roslaunch mav_linear_mpc mav_linear_mpc_sim.launch mav_name:=hummingbird

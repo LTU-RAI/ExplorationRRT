@@ -1,9 +1,10 @@
 #!/bin/bash
 
 XAUTH=/path/to/Xauthority
-
+# Allow local Docker containers to access the X server
+xhost +local:docker
 docker run -it --rm \
-    --name errt \
+    --name errt_test \
     --gpus all \
     --runtime=nvidia \
     --net=host \
@@ -13,6 +14,6 @@ docker run -it --rm \
     $DOCKER_VISUAL_NVIDIA \
     --env="QT_X11_NO_MITSHM=1" \
     --env="XAUTHORITY=$XAUTH" \
-    -v /home/aakapatel/catkin_workspaces:/home/aakapatel/catkin_workspaces \
-    -v /home/aakapatel/.gazebo/models:/home/aakpatel/.gazebo/models \
-    errt
+    # -v /home/aakapatel/catkin_workspaces:/home/aakapatel/catkin_workspaces \
+    # -v /home/aakapatel/.gazebo/models:/home/aakpatel/.gazebo/models \
+    errt_test

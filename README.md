@@ -20,6 +20,71 @@ When using the framework in academic publications, please cite our published wor
 
 *** DOCKER INSTRUCTIONS TO-DO ***
 
+## Requirements
+
+The REF repository only requires docker. If you do not have docker installed, please follow the docker installation instructions. If you already have docker installed, you can skip this step.
+
+```bash
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+```
+
+## Test E-RRT in a docker container
+The repository contains a Dockerfile that allows the user to build a docker image containing packages for exploration, planning, control and simulation environment. 
+
+Clone the E-RRT project
+
+```bash
+  git clone https://github.com/ExplorationRRT/REF.git
+
+```
+
+Go to the E-RRT directory
+
+```bash
+  cd ExplorationRRT/docker
+```
+
+Build the docker image with following command. The build process might take some time when building for first time. 
+
+```bash
+  sudo docker build --build-arg USERNAME=$(whoami) -t errt_test . 
+
+```
+
+Run the docker container with NVIDIA flags.
+
+```bash
+    ./start_errt_gpu.sh
+``` 
+
+If you do not have NVIDIA GPU :
+
+```bash
+    ./start_errt_no_gpu.sh
+```
+Once you are inside the docker container, please run the following command to start the REF tmux session.
+This session will launch the REF sub-modules and a Rviz window to visualize the drone exploring the cave environment. 
+
+```bash
+tmuxinator errt
+```
+
 # Fundamentals & Critical launch parameters
 This section will detail some of the critical launch parameters of interest for the user - focusing on baseline configuration params, and those that can have a large impact on using ERRT different environments. The relevant launch files launch/errt.launch, and launch/server.launch (for UFOmap) has more details for every configuration parameter. 
 
