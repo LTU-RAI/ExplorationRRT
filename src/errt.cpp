@@ -2162,14 +2162,14 @@ int main(int argc, char *argv[]) {
   ros::Publisher taken_path_pub =
     nh.advertise<visualization_msgs::Marker>("PATH_TAKEN", 1);
   ros::Publisher execution_time_pub =
-    nh.advertise<std_msgs::Float64MultiArray>("/errt_execution_time", 1);
+    nh.advertise<std_msgs::Float64MultiArray>("errt_execution_time", 1);
 
   m_command_Path_Publisher =
-    nh.advertise<nav_msgs::Path>("/command_path", 1, true);
+    nh.advertise<nav_msgs::Path>("command_path", 1, true);
 
   m_trajectory_Publisher =
     nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(
-      "/hummingbird/command/trajectory", 1, true);
+      "PATH_OUT_", 1, true);
   ros::Rate rate(10);
 
   // Initial point
