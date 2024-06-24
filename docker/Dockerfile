@@ -106,7 +106,7 @@ RUN  git clone https://github.com/ros/xacro.git
 RUN  git clone https://github.com/ethz-asl/catkin_boost_python_buildtool.git
 
 RUN  git clone https://github.com/LTU-RAI/darpa_subt_worlds.git
-RUN  git clone https://github.com/LTU-RAI/rotors_simulator.git
+RUN  git clone https://github.com/LTU-RAI/rotors_simulator.git && cd rotors_simulator && git pull
 RUN  git clone https://github.com/LTU-RAI/ufomap.git
 
 RUN git clone https://github.com/LTU-RAI/geometry2.git
@@ -151,6 +151,7 @@ WORKDIR /home/$USERNAME/catkin_ws/
 
 RUN sudo catkin build errt  
 
+USER $USERNAME
 WORKDIR /home/$USERNAME
 RUN mkdir -p /home/$USERNAME/.config/tmuxinator
 
@@ -176,9 +177,11 @@ RUN echo "alias tmkill=\"tmux kill-session\" " >> /home/$USERNAME/.bashrc
 
 WORKDIR /home/$USERNAME/.gazebo/
 RUN mkdir -p models
+COPY models /home/$USERNAME/.gazebo/models
 
 WORKDIR /home/$USERNAME/ 
 RUN mkdir -p .ignition
+COPY ignition_models /home/$USERNAME/.ignition/
 
 WORKDIR /home/$USERNAME/catkin_ws/
 
@@ -186,6 +189,6 @@ WORKDIR /home/$USERNAME/catkin_ws/
 RUN echo "source $HOME/.cargo/env" >> /home/$USERNAME/.bashrc
 STOPSIGNAL SIGTERM
 
-# USER $USERNAME
+# RUN groupadd -r $USERNAME && useradd -r -g $USERNAME $USERNAME
 CMD sudo service ssh start && /bin/bash
 
