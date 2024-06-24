@@ -15,5 +15,5 @@
     <remap from="PATH_OUT_" to="/hummingbird/command/trajectory"/>				<!-- Path topic as a MultiDOFJointTrajectory message - sent to trajectory tracking controller -->
   </node>
 
-  <node type="visualize_navigation" name="visualize_navigation" pkg="visualization_tools" />
+  <!-- <node type="visualize_navigation" name="visualize_navigation" pkg="visualization_tools" /> -->
 </launch>

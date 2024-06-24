@@ -67,7 +67,6 @@ RUN set -x \
     && useradd -m -s /bin/bash $USERNAME \
     && echo "$USERNAME ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && echo "$USERNAME ALL=(ALL:ALL) NOPASSWD:ALL" 
-# RUN echo "{$USERNAME}"
 
 # The OSRF container didn't link python3 to python, causing ROS scripts to fail.
 RUN ln -s /usr/bin/python3 /usr/bin/python
@@ -150,10 +149,10 @@ RUN /bin/bash -c 'source $HOME/.cargo/env; cd /home/$USERNAME/catkin_ws/src/Expl
 
 WORKDIR /home/$USERNAME/catkin_ws/
 
-# RUN sudo catkin build errt  
+RUN sudo catkin build errt  
 
 WORKDIR /home/$USERNAME
-RUN mkdir -p .config/tmuxinator
+RUN mkdir -p /home/$USERNAME/.config/tmuxinator
 
 RUN git clone https://github.com/jimeh/tmux-themepack.git /home/$USERNAME/.tmux-themepack \
     && git clone https://github.com/tmux-plugins/tmux-resurrect /home/$USERNAME/.tmux-resurrect
