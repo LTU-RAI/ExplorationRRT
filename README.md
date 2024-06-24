@@ -47,46 +47,6 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 ```
 
-## Test E-RRT in a docker container
-The repository contains a Dockerfile that allows the user to build a docker image containing packages for exploration, planning, control and simulation environment. 
-
-Clone the E-RRT project
-
-```bash
-  git clone https://github.com/LTU-RAI/ExplorationRRT.git
-
-```
-
-Go to the E-RRT directory
-
-```bash
-  cd ExplorationRRT/docker
-```
-
-Build the docker image with following command. The build process might take some time when building for first time. 
-
-```bash
-  sudo docker build --build-arg USERNAME=$(whoami) -t errt_test . 
-
-```
-
-Run the docker container with NVIDIA flags.
-
-```bash
-    ./start_errt_gpu.sh
-``` 
-
-If you do not have NVIDIA GPU :
-
-```bash
-    ./start_errt_no_gpu.sh
-```
-Once you are inside the docker container, please run the following command to start the E-RRT tmux session.
-This session will launch the E-RRT sub-modules and a Rviz window to visualize the drone exploring the cave environment. 
-
-```bash
-tmuxinator errt
-```
 
 # Fundamentals & Critical launch parameters
 This section will detail some of the critical launch parameters of interest for the user - focusing on baseline configuration params, and those that can have a large impact on using ERRT different environments. The relevant launch files launch/errt.launch, and launch/server.launch (for UFOmap) has more details for every configuration parameter. 
@@ -131,7 +91,43 @@ This section will detail a number of tuning parameters in launch/errt.launch and
 
 **INITIAL_POINT_** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, set by subsequent *x,y,z*-coordinates. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
 
-# Running the framework
+## Test E-RRT in a docker container
+The repository contains a Dockerfile that allows the user to build a docker image containing packages for exploration, planning, control and simulation environment. 
 
-*** TO-DO WITH DOCKER CONFIG ***
+Clone the E-RRT project
+
+```bash
+  git clone https://github.com/LTU-RAI/ExplorationRRT.git
+
+```
+
+Go to the E-RRT directory
+
+```bash
+  cd ExplorationRRT/docker
+```
+
+Build the docker image with following command. The build process might take some time when building for first time. 
+
+```bash
+  sudo docker build --build-arg USERNAME=$(whoami) -t errt_test . 
+
+```
+
+Run the docker container with NVIDIA flags.
+
+```bash
+    ./start_errt_gpu.sh
+``` 
+
+If you do not have NVIDIA GPU :
+
+```bash
+    ./start_errt_no_gpu.sh
+```
+Once you are inside the docker container, please run the following command to start the E-RRT tmux session.
+This session will launch the E-RRT sub-modules and a Rviz window to visualize the drone exploring the cave environment. 
+
+```bash
+tmuxinator errt
 ```
