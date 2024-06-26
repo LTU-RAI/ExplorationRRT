@@ -1815,11 +1815,19 @@ void setPath() {
         newCost = distanceCost - informationGain + actuationCost;
         ////////////////////////////////////////////////////////////////
 
+<<<<<<< HEAD
         ROS_INFO_STREAM("\n Information gain : " << informationGain << "\n");
         ROS_INFO_STREAM(" Distance cost : " << distanceCost << "\n");
         ROS_INFO_STREAM(" Actuation cost : " << actuationCost << "\n");
 
         ROS_INFO_STREAM("\n ---------------- \n");
+=======
+        ROS_DEBUG_STREAM("\n Information gain : " << informationGain << "\n");
+        ROS_DEBUG_STREAM(" Distance cost : " << distanceCost << "\n");
+        ROS_DEBUG_STREAM(" Actuation cost : " << actuationCost << "\n");
+
+        ROS_DEBUG_STREAM("\n ---------------- \n");
+>>>>>>> 6f3aff52250a7ade64b90312398d7e3ccd76f046
 
         std::list<double> new_p_hist;
         // new_p_hist.clear();
@@ -2040,7 +2048,6 @@ void generateRRT(float given_x, float given_y, float given_z) {
 };
 
 // Trajectory
-// Developed by Björn Lindqvist
 std::tuple<std::list<double>, double, std::list<double>>
 trajectory(std::list<double> x, double *u, double N, double dt,
            std::list<double> nmpc_ref) {
