@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
 
-		<arg name="resolution" default="0.1" />
+		<arg name="resolution" default="0.2" />
 		<arg name="depth_levels" default="16" />
 		<arg name="num_workers" default="10" />
 		<arg name="color" default="true" />
@@ -23,7 +23,7 @@
 		<!-- <param name="robot_frame_id" value="base_link" /> -->
 
 		<param name="num_workers" value="$(arg num_workers)" />
-		<param name="max_range" value="15" />
+		<param name="max_range" value="20" />
 		<param name="min_range" value="0.5" />
 		<param name="robot_radius" value="0.3" />
 		<param name="robot_height" value="0.3" />
