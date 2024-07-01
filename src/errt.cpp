@@ -137,7 +137,6 @@ public:
   std::list<struct node *> myParents{};
   std::list<struct node *> myPath{};
   std::list<ufo::math::Vector3> myHits{};
-  // std::vector<node *> parents_vec;
 
   void addParents() {
 
@@ -158,7 +157,6 @@ public:
         break;
       }
     }
-    // ROS_INFO_STREAM("Num of Parents : " << myParents.size() << "\n");
   }
 
   double distanceToGoal;
@@ -261,9 +259,6 @@ public:
                           ufo::map::OccupancyMapColor const &map,
                           bool excludePath, bool findAnyInfo) {
 
-    // high_resolution_clock::time_point start_total =
-    // high_resolution_clock::now();
-
     if (myParents.empty()) {
       return 0;
     }
@@ -272,7 +267,6 @@ public:
     node *check_node = nullptr;
     check_node = *(myParents.begin());
     bool check_dist_pass = false;
-    // if (myHits.empty() or findAnyInfo) {
 
     for (auto i = myParents.begin(); i != myParents.end(); i++) {
 
@@ -289,11 +283,9 @@ public:
         }
       }
 
-      // if (myHits.empty() or check_status) {
       if (check_dist_pass) {
 
         ufo::geometry::Sphere sphere(*((*i)->point), sensor_range_);
-        // ufo::geometry::Sphere sphere (*point, sensor_range_);
 
         std::list<ufo::math::Vector3> unknown_voxels;
 
@@ -312,22 +304,17 @@ public:
         double vFOV = M_PI / 4;
         double range = sensor_range_;
 
-        // TODO @ can use OMP to parallalize the following 3 loops
-
         for (ufo::math::Vector3 voxel : unknown_voxels) {
 
           ufo::math::Vector3 toPoint = voxel - *((*i)->point);
-          // ufo::math::Vector3 toPoint = voxel - *point;
           double h_angle = std::atan2(toPoint.y(), toPoint.x());
           double v_angle = std::atan2(toPoint.z(), toPoint.norm());
 
           if (std::abs(h_angle) <= hFOV / 2 and
               std::abs(v_angle) <= vFOV / 2 and toPoint.norm() <= range) {
 
-            // ufo::geometry::OBB obb = makeOBB(*point, voxel, 0.25);
             ufo::geometry::Sphere unk_sphere(voxel, 2);
             ufo::geometry::LineSegment myLine(*((*i)->point), voxel);
-            // ufo::geometry::LineSegment myLine(*point, voxel);
             if (!isInCollision(map, unk_sphere, true, false, false,
                                planning_depth_) and
                 isInCollision(map, unk_sphere, false, true, false,
@@ -353,7 +340,6 @@ public:
       myParent->clearInformationGain();
     }
   }
-  // this function dos nothing but if i remove it the code breaks
   void addHits(std::list<ufo::math::Vector3> *hitList) {
     bool add = true;
     for (auto it = myHits.begin(), it_end = myHits.end(); it != it_end; ++it) {
@@ -375,8 +361,6 @@ public:
     }
   };
 
-  // "world" -> odom_shafter
-  // "Vänd" på funktionen, försök koppla "målet" till "nuvarande nod"
   bool findPathImprovement(struct node *targetNode,
                            ufo::map::OccupancyMapColor const &map,
                            float givenDistance, float givenRadious,
@@ -404,9 +388,6 @@ public:
                                      targetNode->point->y() - point->y(),
                                      targetNode->point->z() - point->z());
         float distance = newVector.norm();
-        // float distance = sqrt(pow(targetNode->point->x() - point->x(), 2) +
-        // pow(targetNode->point->y() - point->y(), 2) +
-        // pow(targetNode->point->z() - point->z(), 2));
         float itterations = (distance / givenRadious);
         float part = givenRadious / distance;
         float xStep = (targetNode->point->x() - point->x()) * part;
@@ -506,7 +487,6 @@ public:
 // Variables
 
 int n_seq_;
-// double dt_ = 0.1;
 double dt_ = 1;
 
 int number_of_nodes_;
@@ -520,9 +500,9 @@ float dist_nodes_; // 1.0;
 float dist_goals_;
 float min_dist_to_goal_;
 float v_local_;
-float SCALER_X = v_local_;
-float SCALER_Y = v_local_;
-float SCALER_Z = v_local_;
+float SCALER_X = 0;
+float SCALER_Y = 0;
+float SCALER_Z = 0;
 float position_x = 0;
 float position_y = 0;
 float position_z = 0;
@@ -561,7 +541,6 @@ double nmpc_dt_;
 double robot_size_;
 double min_info_goal_;
 double goal_sensor_range_;
-// double robot_size_;
 double goal_connect_dist_;
 
 double position_tracking_weight_x_;
@@ -610,7 +589,7 @@ trajectory_msgs::MultiDOFJointTrajectory trajectory_array_;
 
 // End of variables
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// // Functions
+// Functions
 
 Eigen::Quaternion<float> Euler2Quaternion(Eigen::Vector3d v) {
   float roll = v.x();
@@ -661,7 +640,6 @@ void linSpace(node *givenNode, float givenDistance) {
 
 void segmentPath(const nav_msgs::Path &path, nav_msgs::Path &path_seg) {
   path_seg.poses.clear();
-  // double v_max_ = 1.5;
   double v_max_ = 1;
   double yaw_rate_max_ = 0.05;
   if (path.poses.size() == 0)
@@ -724,7 +702,7 @@ void generateTrajectory() {
 
   geometry_msgs::PoseStamped new_pose;
 
-  for (auto i = std::next(CHOSEN_PATH.begin(), 2); i != CHOSEN_PATH.end();
+  for (auto i = std::next(CHOSEN_PATH.begin(), 0); i != CHOSEN_PATH.end();
        i++) {
 
     new_pose.pose.position.x = (*i)->point->x();
@@ -880,7 +858,7 @@ void publishTrajectory() {
     trajectory_point.time_from_start = ros::Duration(t_sum);
     trajectory_array_.points.push_back(trajectory_point);
   }
-  
+
   // Publish final trajectory. Command path is only for visualization.
 
   m_trajectory_Publisher.publish(trajectory_array_);
@@ -908,8 +886,8 @@ void evaluateCurrentPoint(ros::Publisher *chosen_path_pub) {
     allowNewPath = true;
   }
 
-  // @NOTE : uncomment the code block below when running experiment on shafter
-  // to use nmpc reference instead of trajectory tracking.
+  // @NOTE : uncomment the code block below to publish REFERENCE_OUT_ on
+  // nav_msgs::Odometry to use nmpc reference instead of trajectory tracking.
 
   /*
   if ((sqrt(pow(position_x - currentTarget->point->x(), 2) +
@@ -957,7 +935,6 @@ void evaluateCurrentPoint(ros::Publisher *chosen_path_pub) {
 
 // Builds and publishes the visualization messages.
 void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
-               ros::Publisher *chosen_path_visualization_pub,
                ros::Publisher *all_path_pub, ros::Publisher *goal_pub,
                ros::Publisher *hits_pub, ros::Publisher *taken_path_pub,
                ros::Publisher *map_pub, ros::Publisher *position_pub,
@@ -999,24 +976,26 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
     unknowns_pub->publish(unknowns);
   }
 
-  if (position_received) {
-    POSITION_point.header.frame_id = map_frame_id_;
-    POSITION_point.ns = "points";
-    POSITION_point.action = visualization_msgs::Marker::ADD;
-    POSITION_point.pose.orientation.w = 1.0;
-    POSITION_point.id = 0;
-    POSITION_point.type = visualization_msgs::Marker::POINTS;
-    POSITION_point.scale.x = 0.2;
-    POSITION_point.scale.y = 0.2;
-    POSITION_point.color.g = 1.0f;
-    POSITION_point.color.a = 1.0;
-    geometry_msgs::Point p;
-    p.x = position_x;
-    p.y = position_y;
-    p.z = position_z;
-    POSITION_point.points.push_back(p);
-    position_pub->publish(POSITION_point);
-  }
+  // if (position_received) {
+  //   POSITION_point.header.frame_id = map_frame_id_;
+  //   POSITION_point.ns = "points";
+  //   POSITION_point.action = visualization_msgs::Marker::ADD;
+  //   POSITION_point.pose.orientation.w = 1.0;
+  //   POSITION_point.id = 0;
+  //   POSITION_point.type = visualization_msgs::Marker::SPHERE;
+  //   POSITION_point.scale.x = 2*robot_size_;
+  //   POSITION_point.scale.y = 2*robot_size_;
+  //   POSITION_point.scale.z = 2*robot_size_;
+  //   POSITION_point.color.g = 1.0f;
+  //   POSITION_point.color.a = 0.06;
+  //   geometry_msgs::Point p;
+  //   p.x = position_x;
+  //   p.y = position_y;
+  //   p.z = position_z;
+  //   POSITION_point.points.push_back(p);
+  //   position_pub->publish(POSITION_point);
+  // }
+
   // Visualize only once
   if (visualizeNewData) {
     if (RRT_created) {
@@ -1036,6 +1015,8 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       RRT_points.color.a = 1.0;
       RRT_line_list.color.b = 1.0;
       RRT_line_list.color.a = 1.0;
+      RRT_points.lifetime = ros::Duration(4.0);
+      RRT_line_list.lifetime = ros::Duration(4.0);
       std::list<node *>::iterator it_comeon_visualizer;
       for (it_comeon_visualizer = RRT_TREE.begin();
            it_comeon_visualizer != RRT_TREE.end(); it_comeon_visualizer++) {
@@ -1068,45 +1049,9 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
         chosen_path.poses.push_back(chosen_pose);
       }
       output_path_pub->publish(chosen_path);
-      CHOSEN_PATH_points.header.frame_id =
-          CHOSEN_PATH_line_list.header.frame_id = map_frame_id_;
-      CHOSEN_PATH_points.ns = "points";
-      CHOSEN_PATH_points.action = visualization_msgs::Marker::ADD;
-      CHOSEN_PATH_points.pose.orientation.w = 1.0;
-      CHOSEN_PATH_points.id = 0;
-      CHOSEN_PATH_line_list.id = 1;
-      CHOSEN_PATH_points.type = visualization_msgs::Marker::SPHERE_LIST;
-      CHOSEN_PATH_line_list.type = visualization_msgs::Marker::LINE_LIST;
-      CHOSEN_PATH_points.scale.x = 0.2;
-      CHOSEN_PATH_points.scale.y = 0.2;
-      CHOSEN_PATH_points.scale.y = 0.2;
-      CHOSEN_PATH_line_list.scale.x = 0.1;
-      CHOSEN_PATH_points.color.g = 0.8;
-      CHOSEN_PATH_points.color.a = 1.0;
-      CHOSEN_PATH_line_list.color.b = 1.0;
-      CHOSEN_PATH_line_list.color.a = 1.0;
-      std::list<node *>::iterator it_comeon_visualizer2;
-      for (it_comeon_visualizer2 = CHOSEN_PATH.begin();
-           it_comeon_visualizer2 != CHOSEN_PATH.end();
-           it_comeon_visualizer2++) {
-        geometry_msgs::Point p;
-        p.x = (*it_comeon_visualizer2)->point->x();
-        p.y = (*it_comeon_visualizer2)->point->y();
-        p.z = (*it_comeon_visualizer2)->point->z();
-        CHOSEN_PATH_points.points.push_back(p);
-        if ((*it_comeon_visualizer2)->myParent != nullptr) {
-          if (*it_comeon_visualizer2 != *CHOSEN_PATH.begin()) {
-            CHOSEN_PATH_line_list.points.push_back(p);
-            p.x = (*it_comeon_visualizer2)->myParent->point->x();
-            p.y = (*it_comeon_visualizer2)->myParent->point->y();
-            p.z = (*it_comeon_visualizer2)->myParent->point->z();
-            CHOSEN_PATH_line_list.points.push_back(p);
-          }
-        }
-      }
-      chosen_path_visualization_pub->publish(CHOSEN_PATH_points);
     }
     if (RRT_created) {
+
       PATH_points.header.frame_id = PATH_line_list.header.frame_id =
           map_frame_id_;
       PATH_points.ns = "points";
@@ -1121,8 +1066,10 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       PATH_line_list.scale.x = 0.1;
       PATH_points.color.g = 1.0f;
       PATH_points.color.a = 1.0;
-      PATH_line_list.color.b = 1.0;
+      PATH_line_list.color.g = 1.0;
       PATH_line_list.color.a = 1.0;
+      PATH_line_list.lifetime = ros::Duration(6.0);
+      PATH_points.lifetime = ros::Duration(6.0);
       std::list<node *>::iterator it_comeon_visualizer5;
       ALL_PATH.clear();
       for (it_comeon_visualizer5 = myGoals.begin();
@@ -1132,14 +1079,25 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       }
       std::list<node *>::iterator it_comeon_visualizer6;
       for (it_comeon_visualizer6 = ALL_PATH.begin();
-           it_comeon_visualizer6 != ALL_PATH.end(); it_comeon_visualizer6++) {
+           it_comeon_visualizer6 != std::prev(ALL_PATH.end(), 1);
+           it_comeon_visualizer6++) {
         geometry_msgs::Point p;
+        geometry_msgs::Point p1;
         p.x = (*it_comeon_visualizer6)->point->x();
         p.y = (*it_comeon_visualizer6)->point->y();
         p.z = (*it_comeon_visualizer6)->point->z();
+        auto temp_it = std::next(it_comeon_visualizer6, 1);
+        p1.x = (*temp_it)->point->x();
+        p1.y = (*temp_it)->point->y();
+        p1.z = (*temp_it)->point->z();
+
         PATH_points.points.push_back(p);
+        if (temp_it != std::prev(ALL_PATH.end(), 0)) {
+          PATH_line_list.points.push_back(p);
+          PATH_line_list.points.push_back(p1);
+        }
       }
-      all_path_pub->publish(PATH_points);
+      // all_path_pub->publish(PATH_points);
       all_path_pub->publish(PATH_line_list);
     }
     if (GOALS_generated) {
@@ -1169,10 +1127,6 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
     if (goalNode != nullptr) {
 
       // hits.clear();
-      // (*i)->addHits(&hits);
-
-      // hits.clear();
-      // goalNode->addHits(&hits);
       HITS_points.header.frame_id = map_frame_id_;
       HITS_points.ns = "points";
       HITS_points.action = visualization_msgs::Marker::ADD;
@@ -1183,10 +1137,8 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       HITS_points.scale.y = 0.2;
       HITS_points.color.r = 1.0f;
       HITS_points.color.a = 1.0;
+      HITS_points.lifetime = ros::Duration(8.0);
       std::list<ufo::math::Vector3>::iterator it_comeon_visualizer4;
-
-      // for (auto i = goalNode->myParents.begin(); i !=
-      // goalNode->myParents.end(); i++) {
 
       for (it_comeon_visualizer4 = goalNode->myHits.begin();
            it_comeon_visualizer4 != goalNode->myHits.end();
@@ -1198,7 +1150,6 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
         HITS_points.points.push_back(p);
       }
       hits_pub->publish(HITS_points);
-      // }
     }
     if (goalNode != nullptr) {
       TAKEN_PATH_points.header.frame_id = TAKEN_PATH_line_list.header.frame_id =
@@ -1217,7 +1168,6 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       TAKEN_PATH_line_list.scale.x = 0.1;
       TAKEN_PATH_points.scale.y = 0.1;
       TAKEN_PATH_line_list.scale.y = 0.1;
-      // TAKEN_PATH_points.scale.z = 0.2;
       TAKEN_PATH_points.color.b = 0;
       TAKEN_PATH_points.color.g = 0;
       TAKEN_PATH_points.color.r = 0.7;
@@ -1227,8 +1177,11 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       TAKEN_PATH_line_list.color.r = 0.7;
       TAKEN_PATH_line_list.color.a = 0.8;
       std::list<node *>::iterator taken_path_visualizer;
-      for (taken_path_visualizer = goalNode->myParents.begin();
-           taken_path_visualizer != goalNode->myParents.end();
+
+      // for (taken_path_visualizer = goalNode->myParents.begin();
+      //      taken_path_visualizer != goalNode->myParents.end();
+      for (taken_path_visualizer = VISITED_POINTS.begin();
+           taken_path_visualizer != VISITED_POINTS.end();
            taken_path_visualizer++) {
         geometry_msgs::Point p;
         p.x = (*taken_path_visualizer)->point->x();
@@ -1297,10 +1250,12 @@ void tuneGeneration(ufo::map::OccupancyMapColor const &map, bool occupied_space,
   lowest_x = std::numeric_limits<float>::max();
   lowest_y = std::numeric_limits<float>::max();
   lowest_z = std::numeric_limits<float>::max();
-  ufo::math::Vector3 minPoint(given_x - 1 * v_local_, given_y - 1 * v_local_,
-                              given_z - 1 * v_local_);
-  ufo::math::Vector3 maxPoint(given_x + 1 * v_local_, given_y + 1 * v_local_,
-                              given_z + 1 * v_local_);
+  ufo::math::Vector3 minPoint(given_x - 1 * (v_local_ / 2),
+                              given_y - 1 * (v_local_ / 2),
+                              given_z - 1 * (v_local_ / 2));
+  ufo::math::Vector3 maxPoint(given_x + 1 * (v_local_ / 2),
+                              given_y + 1 * (v_local_ / 2),
+                              given_z + 1 * (v_local_ / 2));
   ufo::geometry::AABB aabb(minPoint, maxPoint);
   for (auto it = map.beginLeaves(aabb, occupied_space, free_space,
                                  unknown_space, false, min_depth),
@@ -1347,82 +1302,6 @@ bool isInCollision(ufo::map::OccupancyMapColor const &map,
   return false;
 }
 
-// The global path planning strategy.
-// If the local path planning fails, the global planner tries to retrace to the
-// most recently not picked goal.
-void globalStrategy() {
-  for (std::list<node *>::iterator retrace_path_itterator =
-           --myReserveGoals.end();
-       retrace_path_itterator != myReserveGoals.begin();
-       retrace_path_itterator--) {
-    if (!CHOSEN_PATH.empty()) {
-      for (std::list<node *>::iterator it_clear_helper = CHOSEN_PATH.begin();
-           it_clear_helper != --CHOSEN_PATH.end(); it_clear_helper++) {
-        (*it_clear_helper)->readyForDeletion();
-        delete (*it_clear_helper);
-      }
-      CHOSEN_PATH.clear();
-      CHOSEN_PATH_VREF.clear();
-    }
-    (*retrace_path_itterator)->clearInformationGain();
-    double informationGain =
-        (*retrace_path_itterator)
-            ->findInformationGain(v_local_, SENSOR_HORIZONTAL,
-                                  sensor_vertical_fov_, min_sensor_range_,
-                                  sensor_range_, myMap, true, false);
-    if (informationGain > GLOBAL_PATH_THRESHOLD) {
-      auto pathImprovement_start = high_resolution_clock::now();
-      (*retrace_path_itterator)
-          ->findPathImprovement(*retrace_path_itterator, myMap, dist_nodes_,
-                                robot_size_, pathImprovement_start,
-                                path_improvement_max_);
-      std::list<struct node *> PATH_CONTAINER{};
-      (*retrace_path_itterator)->getPath(&PATH_CONTAINER);
-      PATH_CONTAINER.push_back(new node((*retrace_path_itterator)->point->x(),
-                                        (*retrace_path_itterator)->point->y(),
-                                        (*retrace_path_itterator)->point->z()));
-      CHOSEN_PATH.push_back(*(PATH_CONTAINER.begin()));
-      node *currentPoint = *(PATH_CONTAINER.begin());
-      node *savedPoint = nullptr;
-      int myIndex = 0;
-      int mySavedIndex = 0;
-      while (currentPoint != *(--PATH_CONTAINER.end())) {
-        std::list<node *>::iterator it_path_helper1 = PATH_CONTAINER.begin();
-        std::advance(it_path_helper1, mySavedIndex);
-        while (it_path_helper1 != PATH_CONTAINER.end()) {
-          ufo::geometry::LineSegment myLine(*(currentPoint->point),
-                                            (*(*it_path_helper1)->point));
-          if (!isInCollision(myMap, myLine, true, false, true,
-                             planning_depth_)) {
-            savedPoint = *(it_path_helper1);
-            mySavedIndex = myIndex;
-          }
-          myIndex++;
-          it_path_helper1++;
-        }
-        currentPoint = savedPoint;
-        CHOSEN_PATH.push_back(new node(savedPoint->point->x(),
-                                       savedPoint->point->y(),
-                                       savedPoint->point->z()));
-      }
-      CHOSEN_PATH.push_back(new node((*retrace_path_itterator)->point->x(),
-                                     (*retrace_path_itterator)->point->y(),
-                                     (*retrace_path_itterator)->point->z()));
-      goalNode = *retrace_path_itterator;
-      path_itterator = CHOSEN_PATH.begin();
-      currentTarget = *path_itterator;
-      advance_index = 0;
-      allowNewPath = false;
-      recoveryUnderway = true;
-      std::list<node *>::iterator erase_it = myReserveGoals.end();
-      retrace_path_itterator++;
-      myReserveGoals.erase(retrace_path_itterator, erase_it);
-      break;
-    }
-    cout << " \n----- GLOBAL ----- " << endl;
-  }
-}
-
 // Evaluates the RRT tree for the purpose of reducing the distance in a path.
 // The node with the shortest path to the root node, which the goal in question
 // can see, will be the parent of the currently evaluated goal node. The path
@@ -1430,9 +1309,6 @@ void globalStrategy() {
 // which aims to guarantee a distance of robot_size_ between the path and the
 // occupied and unknown space.
 void findShortestPath() {
-
-  // high_resolution_clock::time_point start_total =
-  // high_resolution_clock::now();
 
   for (std::list<node *>::iterator it_goals = myGoals.begin();
        it_goals != myGoals.end(); it_goals++) {
@@ -1453,35 +1329,8 @@ void findShortestPath() {
           ufo::geometry::OBB obb =
               makeOBB(*((*it_RRT)->point), *((*it_goals)->point), robot_size_);
 
-          // ufo::geometry::LineSegment myLine(*((*it_goals)->point),
-          // *((*it_RRT)->point));
-
-          // if(!isInCollision(myMap, myLine, true, false, true,
-          // planning_depth_)){
-
           if (!isInCollision(myMap, obb, true, false, true, planning_depth_)) {
             bool add = true;
-            // ufo::math::Vector3 newVector((*it_goals)->point->x() -
-            // (*it_RRT)->point->x(), (*it_goals)->point->y() -
-            // (*it_RRT)->point->y(), (*it_goals)->point->z() -
-            // (*it_RRT)->point->z()); float distance_calc = newVector.norm();
-            // float itterations = (distance_calc / dist_nodes_);
-            // float part = dist_nodes_ / distance_calc;
-            // float xStep = ((*it_goals)->point->x() - (*it_RRT)->point->x()) *
-            // part; float yStep = ((*it_goals)->point->y() -
-            // (*it_RRT)->point->y()) * part; float zStep =
-            // ((*it_goals)->point->z() - (*it_RRT)->point->z()) * part; bool
-            // add = true; for(int i = 1; i < itterations; i++){
-            //   ufo::math::Vector3 newVector =
-            //   ufo::math::Vector3((*it_RRT)->point->x() + i * xStep,
-            //   (*it_RRT)->point->y() + i * yStep, (*it_RRT)->point->z() + i *
-            //   zStep); ufo::geometry::Sphere new_sphere(newVector,
-            //   robot_size_); if(isInCollision(myMap, new_sphere, true, false,
-            //   true, planning_depth_)){
-            //     add = false;
-            //     break;
-            //   }
-            // }
 
             if (isInCollision(myMap, obb, true, false, true, planning_depth_)) {
               add = false;
@@ -1501,12 +1350,6 @@ void findShortestPath() {
       chosenNode->addChild(*it_goals);
     }
   }
-
-  // high_resolution_clock::time_point stop_total =
-  // high_resolution_clock::now(); auto duration_total =
-  //   duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-  // cout << "\n FIND SHORTEST PATH Execution time: " << duration_total.count()
-  //   << " ms " << endl;
 }
 
 // Generates goals.
@@ -1625,21 +1468,8 @@ void generateGoals(ufo::map::OccupancyMapColor const &map,
 
           int foundInfo;
 
-          // if (MIN_INFO_GOAL == 1) {
-          //   foundInfo = goal.findInformationGain(
-          //     v_local_, SENSOR_HORIZONTAL, sensor_vertical_fov_,
-          //     min_sensor_range_, goal_sensor_range_, myMap, false, true);
-          // } else {
-          //   foundInfo = goal.findInformationGain(
-          //     v_local_, SENSOR_HORIZONTAL, sensor_vertical_fov_,
-          //     min_sensor_range_, goal_sensor_range_, myMap, false, false);
-          // }
-
-          // if(foundInfo == MIN_INFO_GOAL){
-          // if (foundInfo >= MIN_INFO_GOAL) {
           node *newGoal = new node(x, y, z);
           myGoals.push_back(newGoal);
-          // }
         }
       };
       itterations++;
@@ -1696,7 +1526,6 @@ void setPath() {
 
       if ((*it_goal)->myParent != nullptr) {
 
-        // linSpace(*it_goal, sensor_range_ / 2);
         auto pathImprovement_start = high_resolution_clock::now();
 
         (*it_goal)->findPathImprovement(*it_goal, myMap, dist_nodes_,
@@ -1717,13 +1546,6 @@ void setPath() {
                 min_sensor_range_, sensor_range_, myMap, false, false));
 
         double distanceCost = (*it_goal)->sumDistance() * k_dist_;
-        // double informationGain = k_info_ *
-        // log((*it_goal)->findInformationGain(v_local_, SENSOR_HORIZONTAL,
-        // sensor_vertical_fov_, min_sensor_range_, sensor_range_, myMap, true,
-        // false)); double informationGain = k_info_ *
-        // ((*it_goal)->findInformationGain(v_local_, SENSOR_HORIZONTAL,
-        // sensor_vertical_fov_, min_sensor_range_, sensor_range_, myMap, false,
-        // false));
 
         typedef rrtCache *(*arbitrary)();
         typedef rrtSolverStatus (*arbitrary2)(void *, double *, double *,
@@ -1822,15 +1644,12 @@ void setPath() {
         ROS_DEBUG_STREAM("\n ---------------- \n");
 
         std::list<double> new_p_hist;
-        // new_p_hist.clear();
-        // if (EVALUATE_PATH.size() < nmpc_horizon_) {
         for (auto i = p_hist.begin(); i != p_hist.end(); i++) {
           if (std::distance(p_hist.begin(), i) / 3 <=
               EVALUATE_PATH.size() + 1) {
             new_p_hist.push_back(*i);
           }
         }
-        // }
 
         if (informationGain > initialGoalInfo) {
           initialGoalInfo = informationGain;
@@ -1856,9 +1675,6 @@ void setPath() {
           goalNode = *it_goal;
           newPath = true;
           PATH_CONTAINER.clear();
-          // PATH_CONTAINER.push_back(position_x);
-          // PATH_CONTAINER.push_back(position_y);
-          // PATH_CONTAINER.push_back(position_z);
           for (std::list<double>::iterator path_itterator_helper =
                    new_p_hist.begin();
                path_itterator_helper != new_p_hist.end();) {
@@ -1987,8 +1803,6 @@ void generateRRT(float given_x, float given_y, float given_z) {
       ufo::math::Vector3 start_point(parent->point->x(), parent->point->y(),
                                      parent->point->z());
       ufo::geometry::OBB obb = makeOBB(start_point, random_point, robot_size_);
-      // ufo::geometry::LineSegment myLine(random_point, start_point);
-      // if(!isInCollision(myMap, myLine, true, false, true, planning_depth_)) {
       if (!isInCollision(myMap, obb, true, false, true, planning_depth_)) {
         node *new_node = new node(x, y, z);
         new_node->addParent(parent);
@@ -2032,11 +1846,6 @@ void generateRRT(float given_x, float given_y, float given_z) {
                  "and hence can't be verified"
               << std::endl;
   }
-
-  // high_resolution_clock::time_point stop_total =
-  // high_resolution_clock::now(); auto duration_total =
-  // duration_cast<std::chrono::milliseconds>(stop_total - start_total); cout <<
-  // "\nExecution time: " << duration_total.count() << " micro seconds" << endl;
 };
 
 // Trajectory
@@ -2058,15 +1867,12 @@ trajectory(std::list<double> x, double *u, double N, double dt,
       0,
       angle_weight_roll_,
       angle_weight_pitch_}; // Position tracking weights x, y, z, 0, 0, 0, angle
-  // weights roll / pitch
-  // P = 2*Qx; #final state weight
   std::list<double> Ru = {
       input_weight_thrust_, input_weight_roll_,
       input_weight_pitch_}; // input weights (Thrust, roll, pitch)
   std::list<double> Rd = {
       input_rate_weight_thrust_, input_rate_weight_roll_,
       input_rate_weight_pitch_}; // input rate weights (thrust, roll, pitch)
-  // print(x, u, N, dt)
   std::list<double> u_old = {9.81, 0, 0};
   std::list<double> u_ref = {9.81, 0.0, 0.0};
   std::list<double>::iterator x_ref_itterator = nmpc_ref.begin();
@@ -2182,33 +1988,38 @@ typedef void (*rrt_clearer)(rrtCache *);
 
 int main(int argc, char *argv[]) {
   // Subscribers and publishers
-  ros::init(argc, argv, "RRT_TREE");
+  ros::init(argc, argv, "errt");
   ros::NodeHandle nh;
 
   ros::Publisher unknowns_pub =
       nh.advertise<visualization_msgs::Marker>("UNKNOWN_NODES", 1);
   ros::Publisher points_pub =
-      nh.advertise<visualization_msgs::Marker>("RRT_NODES", 1);
-  ros::Publisher chosen_path_visualization_pub =
-      nh.advertise<visualization_msgs::Marker>("CHOSEN_RRT_PATH_VISUALIZATION",
-                                               1);
+      nh.advertise<visualization_msgs::Marker>("tree_expansion", 1);
+  // ros::Publisher chosen_path_visualization_pub =
+  // nh.advertise<visualization_msgs::Marker>("selected_branch",
+  // 1);
   ros::Publisher output_path_pub =
-      nh.advertise<nav_msgs::Path>("chosen_path", 1);
+      nh.advertise<nav_msgs::Path>("selected_trajectory", 1);
   ros::Publisher chosen_path_pub =
-      nh.advertise<nav_msgs::Odometry>("REFERENCE_OUT_", 1);
+      nh.advertise<nav_msgs::Odometry>("reference_out_", 1);
+
+  // change it to path msg
   ros::Publisher all_path_pub =
-      nh.advertise<visualization_msgs::Marker>("RRT_PATHS", 1);
+      nh.advertise<visualization_msgs::Marker>("candidate_branches", 1);
   ros::Publisher goal_pub =
-      nh.advertise<visualization_msgs::Marker>("RRT_GOALS", 1);
+      nh.advertise<visualization_msgs::Marker>("candidate_goals", 1);
   ros::Publisher map_pub =
       nh.advertise<ufomap_msgs::UFOMapStamped>("Internal_ufo_map", 11);
-  ros::Subscriber map_sub = nh.subscribe("UFOMAP_IN_", 1, mapCallback);
-  ros::Subscriber sub = nh.subscribe("ODOMETRY_IN_", 1, odomCallback);
-  ros::Publisher hits_pub = nh.advertise<visualization_msgs::Marker>("HITS", 1);
+  ros::Subscriber map_sub = nh.subscribe("ufomap_in_", 1, mapCallback);
+  ros::Subscriber sub = nh.subscribe("odometry_in_", 1, odomCallback);
+  ros::Publisher hits_pub =
+      nh.advertise<visualization_msgs::Marker>("predicted_info_gain", 1);
   ros::Publisher position_pub =
-      nh.advertise<visualization_msgs::Marker>("POSITION", 1);
+      nh.advertise<visualization_msgs::Marker>("robot_bounding_box", 1);
+
+  // change to path msg
   ros::Publisher taken_path_pub =
-      nh.advertise<visualization_msgs::Marker>("PATH_TAKEN", 1);
+      nh.advertise<visualization_msgs::Marker>("exploration_path", 1);
   ros::Publisher execution_time_pub =
       nh.advertise<std_msgs::Float64MultiArray>("errt_execution_time", 1);
 
@@ -2216,7 +2027,7 @@ int main(int argc, char *argv[]) {
       nh.advertise<nav_msgs::Path>("command_path", 1, true);
 
   m_trajectory_Publisher =
-      nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>("PATH_OUT_", 1,
+      nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>("path_out_", 1,
                                                              true);
   ros::Rate rate(10);
 
@@ -2226,27 +2037,10 @@ int main(int argc, char *argv[]) {
   // vz to CHOSEN_PATH_VREF.
   ros::param::get(ros::this_node::getName() + "/start_from_waypoint",
                   start_from_waypoint_);
-  if (start_from_waypoint_) {
-    ros::param::get(ros::this_node::getName() + "/initial_x_", initial_x_);
-    ros::param::get(ros::this_node::getName() + "/initial_y_", initial_y_);
-    ros::param::get(ros::this_node::getName() + "/initial_z_", initial_z_);
-    CHOSEN_PATH.push_back(new node(initial_x_, initial_y_, initial_z_));
-    fetched_path = true;
-    RRT_created = true;
-    GOALS_generated = true;
-    position_received = true;
-    allowNewPath = false;
-    currentTarget = *CHOSEN_PATH.begin();
-    goalNode = *CHOSEN_PATH.begin();
-    CHOSEN_PATH_VREF.push_back(0);
-    CHOSEN_PATH_VREF.push_back(0);
-    CHOSEN_PATH_VREF.push_back(0);
-    vref_itterator = CHOSEN_PATH_VREF.begin();
 
-    generateTrajectory();
-    m_trajectory_Publisher.publish(trajectory_array_);
-    m_command_Path_Publisher.publish(command_path);
-  }
+  ros::param::get(ros::this_node::getName() + "/initial_x_", initial_x_);
+  ros::param::get(ros::this_node::getName() + "/initial_y_", initial_y_);
+  ros::param::get(ros::this_node::getName() + "/initial_z_", initial_z_);
 
   ros::param::get(ros::this_node::getName() + "/map_frame_id", map_frame_id_);
 
@@ -2314,6 +2108,29 @@ int main(int argc, char *argv[]) {
   ros::param::get(ros::this_node::getName() + "/input_rate_weight_pitch",
                   input_rate_weight_pitch_);
 
+  if (start_from_waypoint_) {
+    // start_from_waypoint_ = false;
+    ros::param::get(ros::this_node::getName() + "/initial_x", initial_x_);
+    ros::param::get(ros::this_node::getName() + "/initial_y", initial_y_);
+    ros::param::get(ros::this_node::getName() + "/initial_z", initial_z_);
+    std::cout << "Init reference : " << initial_x_ << ", " << initial_y_ << ", "
+              << initial_z_ << std::endl;
+    CHOSEN_PATH.push_back(new node(initial_x_, initial_y_, initial_z_));
+    fetched_path = true;
+    RRT_created = true;
+    GOALS_generated = true;
+    position_received = true;
+    allowNewPath = false;
+    currentTarget = *CHOSEN_PATH.begin();
+    goalNode = *CHOSEN_PATH.begin();
+    CHOSEN_PATH_VREF.push_back(0);
+    CHOSEN_PATH_VREF.push_back(0);
+    CHOSEN_PATH_VREF.push_back(0);
+    vref_itterator = CHOSEN_PATH_VREF.begin();
+
+    generateTrajectory();
+    publishTrajectory();
+  }
   // Main
   // When the ufomap and current position have been received through their
   // respective callback functions, the rrt executes by: 1) Tuning the
@@ -2343,12 +2160,6 @@ int main(int argc, char *argv[]) {
           high_resolution_clock::now();
 
       generateGoals(myMap, true);
-
-      // high_resolution_clock::time_point stop_total =
-      // high_resolution_clock::now(); auto duration_total =
-      // duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-      // cout << "\nGEN GOALS time: " << duration_total.count() << " mili
-      // seconds for " << endl;
     }
 
     if (map_received and not RRT_created and GOALS_generated) {
@@ -2364,12 +2175,6 @@ int main(int argc, char *argv[]) {
         generateRRT((*(--CHOSEN_PATH.end()))->point->x(),
                     (*(--CHOSEN_PATH.end()))->point->y(),
                     (*(--CHOSEN_PATH.end()))->point->z());
-
-        // high_resolution_clock::time_point stop_total =
-        // high_resolution_clock::now(); auto duration_total =
-        // duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-        // cout << "\nGEN RRT AGAIN -- time: " << duration_total.count() << "
-        // mili seconds for " << endl;
       }
 
       if (RRT_created) {
@@ -2392,13 +2197,6 @@ int main(int argc, char *argv[]) {
         generateTrajectory();
 
         publishTrajectory();
-
-        // high_resolution_clock::time_point stop_total =
-        //   high_resolution_clock::now();
-        // auto duration_total =
-        //   duration_cast<std::chrono::milliseconds>(stop_total - start_total);
-        // ROS_INFO_STREAM("\nSET PATH time: " << duration_total.count() << " ms
-        // \n");
       }
 
       if (fetched_path and goalNode != nullptr) {
@@ -2409,7 +2207,6 @@ int main(int argc, char *argv[]) {
       }
 
       if ((goalNode == nullptr and GOALS_generated)) {
-        // Prints for the current path can be added here
         if (initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and
             not recoveryUnderway) {
           tuneGeneration(myMap, false, true, false, position_x, position_y,
@@ -2419,15 +2216,8 @@ int main(int argc, char *argv[]) {
             generateRRT(position_x, position_y, position_z);
             allowNewPath = true;
             setPath();
-            // if (initialGoalInfo > GLOBAL_STRATEGY_THRESHOLD) {
-            //   break;
-            // }
           }
         }
-        // if((initialGoalInfo < GLOBAL_STRATEGY_THRESHOLD and not
-        // recoveryUnderway)){
-        //   globalStrategy();
-        // }
       }
     }
 
@@ -2446,9 +2236,9 @@ int main(int argc, char *argv[]) {
     }
 
     updatePathTaken();
-    visualize(&points_pub, &output_path_pub, &chosen_path_visualization_pub,
-              &all_path_pub, &goal_pub, &hits_pub, &taken_path_pub, &map_pub,
-              &position_pub, &unknowns_pub);
+    visualize(&points_pub, &output_path_pub, &all_path_pub, &goal_pub,
+              &hits_pub, &taken_path_pub, &map_pub, &position_pub,
+              &unknowns_pub);
     ros::spinOnce();
     rate.sleep();
   }

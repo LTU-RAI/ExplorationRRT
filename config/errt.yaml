@@ -13,7 +13,7 @@ dist_goals:                   0.2              #The minimum distance between dif
 
 
 # RRT Parameters
-v_local:                      20               #The Bounding box side length denoting the local sampling space. Check Paper for detailed explaination. 
+v_local:                      40               #The Bounding box side length denoting the local sampling space. Check Paper for detailed explaination. 
 run_by_nodes:                 true             #Run by number_of_nodes if true and by number_of_itterations if false. Recommended as True
 number_of_nodes:              2000             #Size of the tree as the exit condition for tree expansion
 number_of_iterations:         10000            #The number of iterations, only used if RUN_BY_NODES_ is false
@@ -61,10 +61,10 @@ input_rate_weight_pitch:      10
 
 # Initialization parameters 
 
-start_from_waypoint:          false            #Denotes if there's a starting-point to travel to or not. Can be useful to start ERRT with an initial small map as opposed to from the ground for the first trajectory
-initial_x:                    2                #Initial point x  
-initial_x:                    0                #Initial point y
-initial_x:                    1                #Initial point z
+start_from_waypoint:          true            #Denotes if there's a starting-point to travel to or not. Can be useful to start ERRT with an initial small map as opposed to from the ground for the first trajectory
+initial_x:                    24                #Initial point x  
+initial_y:                    0                #Initial point y
+initial_z:                    2                #Initial point z
 
 
 
