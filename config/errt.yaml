@@ -42,7 +42,7 @@ path_update_dist:             0.3              #The distance from the current ro
 path_improvement_max:         3000             #The maximum amount of micro seconds which can be spent improving a single path
 
 
-# N-MPC Tuning Parameters 
+# NMPC Tuning Parameters 
 
 nmpc_horizon:                 50               #Horizon in the NMPC problem. If edited must then also be specified in the NMPC module builder
 nmpc_dt:                      0.4              #Sampling time of the NMPC problem. This also specifies the desired dt to reach each path segment set by dist_nodes 
