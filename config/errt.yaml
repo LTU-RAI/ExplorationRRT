@@ -1,9 +1,10 @@
 ######## ERRT Tuning Parameters #########
 #########################################
 
+map_frame_id:                 "world"          #UFOMAP and ERRT global frame id for visualization purpose 
+
 # Candidate goals parameters
 
-map_frame_id:                 "world"          #UFOMAP and ERRT global frame id for visualization purpose 
 min_info_goal:                1.0              #The minimum information gain for a candidate goal. Any value but 1 increases the information gain calculations for each sampled candidate goal and can lead to higher computation time
 goal_sensor_range:            3.0              #Separate sensor range for "MIN_INFO_GOAL_" calculation. Preferably set lower than SENSOR_RANGE to promote candidate goals to be generated closer to unknown space 
 number_of_goals:              60               #Number of candidate goals to be generated
@@ -12,27 +13,26 @@ dist_goals:                   0.2              #The minimum distance between dif
 
 
 # RRT Parameters
-
+v_local:                      20               #The Bounding box side length denoting the local sampling space. Check Paper for detailed explaination. 
 run_by_nodes:                 true             #Run by number_of_nodes if true and by number_of_itterations if false. Recommended as True
 number_of_nodes:              2000             #Size of the tree as the exit condition for tree expansion
 number_of_iterations:         10000            #The number of iterations, only used if RUN_BY_NODES_ is false
 planning_depth:               2                #The depth in the OcTree for performing volumetric collision checks in the UFOmap
 dist_nodes:                   0.4              #The set distance between poses in a candidate branch - this must be synced with NMPC_DT_ for the speed profile as v_desired = DISTANCE_BETWEEN_NODES_ / NMPC_DT_
+info_gain_depth:              2                #The depth in the OcTree for information gain calculations
+info_calc_dist:               6.0              #The distance between nodes where information gain calculations are performed - small values can lead to high computations but significant overlap between checks
+goal_connect_dist:            2                #Maximum distance for attempting to connect candidate goals to tree nodes
+
 
 
 # Robot Parameters 
-
 robot_size:                   0.4              #The radius of volumetric collision checks for robot-safe tree generation
-goal_connect_dist:            2                #Maximum distance for attempting to connect candidate goals to tree nodes
-v_local:                      20               #The Bounding box side length denoting the local sampling space. Check Paper for detailed explaination. 
 sensor_range:                 10               #The effective range of the lidar sensor, used for information gain calculations. Set lower than sensor range in UFOmap.
 min_sensor_range:             0.4              #The distance at which the sensor will exclude hits, as to not include occupation hits from the drone itself
 senros_vertical_fov:          0.393            #The vertical angle cut-off (half FoV) for the LiDAR, used for information gain calculation bounding boxes, given in radians. Ex. Ouster 45deg FoV -> 0.393rad (x2)
-info_gain_depth:              2                #The depth in the OcTree for information gain calculations
-info_calc_dist:               6.0              #The distance between nodes where information gain calculations are performed - small values can lead to high computations but significant overlap between checks
 
 
-# Planning tuning parameters 
+# Planning tuning & path tracking parameters 
 
 k_dist:                       0.3              #Gain for the distance cost during candidate branch evaluation
 k_info:                       0.4              #Gain for the information gain during candidate branch evaluation
