@@ -7,13 +7,13 @@ map_frame_id:                 "world"          #UFOMAP and ERRT global frame id
 
 min_info_goal:                1.0              #The minimum information gain for a candidate goal. Any value but 1 increases the information gain calculations for each sampled candidate goal and can lead to higher computation time
 goal_sensor_range:            3.0              #Separate sensor range for "MIN_INFO_GOAL_" calculation. Preferably set lower than SENSOR_RANGE to promote candidate goals to be generated closer to unknown space 
-number_of_goals:              60               #Number of candidate goals to be generated
+number_of_goals:              80               #Number of candidate goals to be generated
 min_dist_to_goal:             1.0              #The minimum distance between candidate goals and the robot position
 dist_goals:                   0.2              #The minimum distance between different generated candidate goals
 
 
 # RRT Parameters
-v_local:                      40               #The Bounding box side length denoting the local sampling space. Check Paper for detailed explaination. 
+v_local:                      30               #The Bounding box side length denoting the local sampling space. Check Paper for detailed explaination. 
 run_by_nodes:                 true             #Run by number_of_nodes if true and by number_of_itterations if false. Recommended as True
 number_of_nodes:              2000             #Size of the tree as the exit condition for tree expansion
 number_of_iterations:         10000            #The number of iterations, only used if RUN_BY_NODES_ is false
