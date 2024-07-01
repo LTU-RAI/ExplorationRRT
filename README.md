@@ -115,8 +115,10 @@ This section will detail a number of tuning parameters in config/errt.yaml and l
 **start_from_waypoint** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, set by subsequent *x,y,z*-coordinates. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
 
 ## Test ERRT in a docker container
+![errt_gif-ezgif com-speed](https://github.com/LTU-RAI/ExplorationRRT/assets/49238097/957df250-dddc-4bd1-b7e9-841269cb16f2)
 
 Run the docker container with NVIDIA flags. In the ERRT directory:
+
 
 ```bash
     ./start_errt_gpu.sh
