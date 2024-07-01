@@ -29,7 +29,7 @@ goal_connect_dist:            2                #Maximum distance for attempting 
 robot_size:                   0.4              #The radius of volumetric collision checks for robot-safe tree generation
 sensor_range:                 10               #The effective range of the lidar sensor, used for information gain calculations. Set lower than sensor range in UFOmap.
 min_sensor_range:             0.4              #The distance at which the sensor will exclude hits, as to not include occupation hits from the drone itself
-senros_vertical_fov:          0.393            #The vertical angle cut-off (half FoV) for the LiDAR, used for information gain calculation bounding boxes, given in radians. Ex. Ouster 45deg FoV -> 0.393rad (x2)
+sensor_vertical_fov:          0.393            #The vertical angle cut-off (half FoV) for the LiDAR, used for information gain calculation bounding boxes, given in radians. Ex. Ouster 45deg FoV -> 0.393rad (x2)
 
 
 # Planning tuning & path tracking parameters 
