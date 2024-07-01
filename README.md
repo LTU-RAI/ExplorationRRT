@@ -25,7 +25,7 @@ When using the framework in academic publications, please cite our published wor
 
 ## Requirements
 
-The E-RRT repository only requires docker. If you do not have docker installed, please follow the docker installation instructions. If you already have docker installed, you can skip this step.
+The ERRT repository only requires docker. If you do not have docker installed, please follow the docker installation instructions. If you already have docker installed, you can skip this step.
 
 ```bash
 # Add Docker's official GPG key:
@@ -67,41 +67,41 @@ There are also many visualization topics included in the ERRT program such as th
 
 ## Tuning Parameters
 
-This section will detail a number of tuning parameters in launch/errt.launch and launch/server.launch (UFOmap). The related launch files detail all possible tuning and configuration parameters. 
+This section will detail a number of tuning parameters in config/errt.yaml and launch/server.launch (UFOmap). The related launch files detail all possible tuning and configuration parameters. 
 
 **resolution** - Found in server.launch. The resolution of the UFOmap. 
 
-**PLANNING_DEPTH_** and **INFO_GAIN_DEPTH_** - The depth of the Octree in UFOmap practically means merging voxels into larger ones. This significantly speeds up various volumetric occupancy checks. ERRT is configured to use a small **resolution** of ~0.05-0.15m but performing computationally demanding actions such as information gain calculations at a set depth in the Octree. 
+**planning_depth** and **info_gain_depth** - The depth of the Octree in UFOmap practically means merging voxels into larger ones. This significantly speeds up various volumetric occupancy checks. ERRT is configured to use a small **resolution** of ~0.05-0.15m but performing computationally demanding actions such as information gain calculations at a set depth in the Octree. 
 
-**ROBOT_SIZE_** - The approximate size-radius of the robot. This is used in volumetric collision checks to ensure robot-safe trajectories.  
+**robot_size** - The approximate size-radius of the robot. This is used in volumetric collision checks to ensure robot-safe trajectories.  
 
-**V_LOCAL_** - The side length of the bounding box that defines the local sampling space for generating the RRT.
+**v_local** - The side length of the bounding box that defines the local sampling space for generating the RRT.
 
-**NUMBER_OF_NODES_** - The size of the RRT as the exit condition to stop tree expansion. 
+**number_of_nodes** - The size of the RRT as the exit condition to stop tree expansion. 
 
-**NUMBER_OF_GOALS_** - The number of candidate goals to be generated and consequently the number of candidate trajectories that will be investigated. Large effect on computation time. 
+**number_of_goals** - The number of candidate goals to be generated and consequently the number of candidate trajectories that will be investigated. Large effect on computation time. 
 
-**SENSOR_RANGE_** - The range of the LiDAR model used to compute predicted information gain along candidate branches. Must be set lower than the **max_range** in server.launch. Recommended to use a much smaller range than the real range of the sensor for both parameters - both for computation effort and to guarantee useful, dense, and consistent data integration into the UFOmap. 
+**sensor_range** - The range of the LiDAR model used to compute predicted information gain along candidate branches. Must be set lower than the **max_range** in server.launch. Recommended to use a much smaller range than the real range of the sensor for both parameters - both for computation effort and to guarantee useful, dense, and consistent data integration into the UFOmap. 
 
-**SENSOR_VERTICAL_** - The vertical cutoff angle in radians for the LiDAR model as half the vertical field of view. Should match the onboard LiDAR on the robot. Ex. Ouster 32-beam 45deg FoV -> **SENSOR_VERTICAL** = 0.393
+**sensor_vertical_fov** - The vertical cutoff angle in radians for the LiDAR model as half the vertical field of view. Should match the onboard LiDAR on the robot. Ex. Ouster 32-beam 45deg FoV -> **SENSOR_VERTICAL** = 0.393
 
-**INFO_CALC_DIST_** - The distance between nodes in candidate branches where information gain calculations will be performed. Too small values lead to big overlap between checks, and a significant increase in computation time. 
+**info_calc_dist** - The distance between nodes in candidate branches where information gain calculations will be performed. Too small values lead to big overlap between checks, and a significant increase in computation time. 
 
-**K_Dist, K_Info, K_u** - Gains related to the distance cost, information gain, and actuation cost along candidate branches. Changing these will change which types of trajectories will be favored. Note: the information gain is calculated from the *number* of unknown voxels in sensor view so **K_Info** might need to be edited with significant changes to **resolution** or **INFO_GAIN_DEPTH_**. 
+**k_dist, k_info, k_u** - Gains related to the distance cost, information gain, and actuation cost along candidate branches. Changing these will change which types of trajectories will be favored. Note: the information gain is calculated from the *number* of unknown voxels in sensor view so **K_Info** might need to be edited with significant changes to **resolution** or **INFO_GAIN_DEPTH_**. 
 
-**INITIAL_POINT_** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, set by subsequent *x,y,z*-coordinates. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
+**start_from_waypoint** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, set by subsequent *x,y,z*-coordinates. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
 
-## Test E-RRT in a docker container
+## Test ERRT in a docker container
 The repository contains a Dockerfile that allows the user to build a docker image containing packages for exploration, planning, control and simulation environment. 
 
-Clone the E-RRT project
+Clone the ERRT project
 
 ```bash
   git clone https://github.com/LTU-RAI/ExplorationRRT.git
 
 ```
 
-Go to the E-RRT directory
+Go to the ERRT directory
 
 ```bash
   cd ExplorationRRT/docker
@@ -125,8 +125,8 @@ If you do not have NVIDIA GPU :
 ```bash
     ./start_errt_no_gpu.sh
 ```
-Once you are inside the docker container, please run the following command to start the E-RRT tmux session.
-This session will launch the E-RRT sub-modules and a Rviz window to visualize the drone exploring the cave environment. 
+Once you are inside the docker container, please run the following command to start the ERRT tmux session.
+This session will launch the ERRT sub-modules and a Rviz window to visualize the drone exploring the cave environment. 
 
 ```bash
 tmuxinator errt
