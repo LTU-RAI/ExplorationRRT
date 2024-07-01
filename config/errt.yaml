@@ -1,7 +1,7 @@
 ######## ERRT Tuning Parameters #########
 #########################################
 
-map_frame_id:                 "world"          #UFOMAP and ERRT global frame id for visualization purpose 
+map_frame_id:                 "world"          #UFOMAP and ERRT global frame id 
 
 # Candidate goals parameters
 
