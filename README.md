@@ -46,6 +46,29 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 ```
+The repository contains a Dockerfile that allows the user to build a docker image containing packages for exploration, planning, control and simulation environment. 
+
+## Cloning the repository and building the docker
+
+Clone the ERRT project
+
+```bash
+  git clone https://github.com/LTU-RAI/ExplorationRRT.git
+
+```
+
+Go to the ERRT directory
+
+```bash
+  cd ExplorationRRT/docker
+```
+
+Build the docker image with following command. The build process might take some time when building for first time. 
+
+```bash
+  sudo docker build --build-arg USERNAME=$(whoami) -t errt_test . 
+
+```
 
 
 # Fundamentals & Critical launch parameters
@@ -92,27 +115,6 @@ This section will detail a number of tuning parameters in config/errt.yaml and l
 **start_from_waypoint** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, set by subsequent *x,y,z*-coordinates. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
 
 ## Test ERRT in a docker container
-The repository contains a Dockerfile that allows the user to build a docker image containing packages for exploration, planning, control and simulation environment. 
-
-Clone the ERRT project
-
-```bash
-  git clone https://github.com/LTU-RAI/ExplorationRRT.git
-
-```
-
-Go to the ERRT directory
-
-```bash
-  cd ExplorationRRT/docker
-```
-
-Build the docker image with following command. The build process might take some time when building for first time. 
-
-```bash
-  sudo docker build --build-arg USERNAME=$(whoami) -t errt_test . 
-
-```
 
 Run the docker container with NVIDIA flags.
 
