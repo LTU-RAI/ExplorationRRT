@@ -82,7 +82,7 @@ The Following ROS topic configurations can be found in the launch/errt.launch fi
 
 **remap from="UFOMAP_IN_" to="ufomap_mapping_server_node/map"** - The UFOmap topic. Maps at different depths can also be used.
 
-**remap from="REFERENCE_OUT_" to="/hummingbird/reference"** - Momentary pose references along the trajectory. These are updated by the condition of the robot position being closer to the current reference than PATH_UPDATE_DIST_. 
+**remap from="REFERENCE_OUT_" to="/hummingbird/reference"** - Momentary pose references along the trajectory. These are updated by the condition of the robot position being closer to the current reference than **path_update_dist**. 
 
 **remap from="PATH_OUT_" to="/hummingbird/command/trajectory"** - Path topic as a MultiDOFJointTrajectory message - Set up with the message type to be synced with the RotorS trajectory tracking controller.
 
