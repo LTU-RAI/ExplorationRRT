@@ -86,7 +86,7 @@ The Following ROS topic configurations can be found in the launch/errt.launch fi
 
 **remap from="path_out_" to="/hummingbird/command/trajectory"** - Path topic as a MultiDOFJointTrajectory message - Set up with the message type to be synced with the RotorS trajectory tracking controller.
 
-There are also many visualization topics included in the ERRT program such as the RRT (whole tree), GOALS, HITS (predicted exploration), PATHS (all paths), and SELECTED_PATH. These are set up in the rviz/errt.rviz.
+There are also many visualization topics included in the ERRT program such as the tree_expansion (whole tree), candidate_goals, predicted_info_gain (predicted exploration), candidate_branches (all paths), and selected_trajectory. These are set up in the rviz/errt.rviz.
 
 ## Tuning Parameters
 

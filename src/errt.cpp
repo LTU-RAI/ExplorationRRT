@@ -1074,6 +1074,8 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       ALL_PATH.clear();
       for (it_comeon_visualizer5 = myGoals.begin();
            it_comeon_visualizer5 != myGoals.end(); it_comeon_visualizer5++) {
+           // std::vector<node *> candidate_branch;
+        candidate_branch,clear()
         (*it_comeon_visualizer5)->getPath(&ALL_PATH);
         ALL_PATH.push_back((*it_comeon_visualizer5));
       }
