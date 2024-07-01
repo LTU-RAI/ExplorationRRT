@@ -116,7 +116,7 @@ This section will detail a number of tuning parameters in config/errt.yaml and l
 
 ## Test ERRT in a docker container
 
-Run the docker container with NVIDIA flags.
+Run the docker container with NVIDIA flags. In the ERRT directory:
 
 ```bash
     ./start_errt_gpu.sh
