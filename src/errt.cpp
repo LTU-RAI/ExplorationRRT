@@ -1074,30 +1074,38 @@ void visualize(ros::Publisher *points_pub, ros::Publisher *output_path_pub,
       ALL_PATH.clear();
       for (it_comeon_visualizer5 = myGoals.begin();
            it_comeon_visualizer5 != myGoals.end(); it_comeon_visualizer5++) {
-           // std::vector<node *> candidate_branch;
-        candidate_branch,clear()
+            std::list<node *> candidate_branch_vis;
+        candidate_branch_vis.clear();
+        (*it_comeon_visualizer5)->getPath(&candidate_branch_vis);
         (*it_comeon_visualizer5)->getPath(&ALL_PATH);
         ALL_PATH.push_back((*it_comeon_visualizer5));
+        for (auto it = candidate_branch_vis.begin(); it != std::prev(candidate_branch_vis.end(), 1); it++) {
+
+        geometry_msgs::Point p0;
+        geometry_msgs::Point p1;
+        p0.x = (*it)->point->x();
+        p0.y = (*it)->point->y();
+        p0.z = (*it)->point->z();
+        auto temp_it = std::next(it, 1);
+        p1.x = (*temp_it)->point->x();
+        p1.y = (*temp_it)->point->y();
+        p1.z = (*temp_it)->point->z();
+
+        // if (temp_it != std::prev(ALL_PATH.end(), 0)) {
+          PATH_line_list.points.push_back(p0);
+          PATH_line_list.points.push_back(p1);
+        // }
+        }
+
       }
       std::list<node *>::iterator it_comeon_visualizer6;
       for (it_comeon_visualizer6 = ALL_PATH.begin();
            it_comeon_visualizer6 != std::prev(ALL_PATH.end(), 1);
            it_comeon_visualizer6++) {
         geometry_msgs::Point p;
-        geometry_msgs::Point p1;
         p.x = (*it_comeon_visualizer6)->point->x();
         p.y = (*it_comeon_visualizer6)->point->y();
         p.z = (*it_comeon_visualizer6)->point->z();
-        auto temp_it = std::next(it_comeon_visualizer6, 1);
-        p1.x = (*temp_it)->point->x();
-        p1.y = (*temp_it)->point->y();
-        p1.z = (*temp_it)->point->z();
-
-        PATH_points.points.push_back(p);
-        if (temp_it != std::prev(ALL_PATH.end(), 0)) {
-          PATH_line_list.points.push_back(p);
-          PATH_line_list.points.push_back(p1);
-        }
       }
       // all_path_pub->publish(PATH_points);
       all_path_pub->publish(PATH_line_list);
