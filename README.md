@@ -43,7 +43,8 @@ echo \
 
 sudo apt-get update
 
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin python3-pip
+pip install gdown
 
 ```
 The repository contains a Dockerfile that allows the user to build a docker image containing packages for exploration, planning, control and simulation environment. 
