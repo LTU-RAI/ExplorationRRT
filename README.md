@@ -56,11 +56,14 @@ Clone the ERRT project
   git clone https://github.com/LTU-RAI/ExplorationRRT.git
 
 ```
-
-Go to the ERRT directory
+Go to the ERRT directory and download cave models for gazebo. (This speeds up the world loading process in Gazebo)
 
 ```bash
   cd ExplorationRRT/docker
+  gdown --id 1TDbXF9He_LXYY57Xo3tOxvEVYH3kPtS8
+  gdown --id 1y7BDt0tjK9Ml7MlTxUwOTG8ZygO_dpI0
+  unzip models.zip 
+  unzip ignition_models.zip 
 ```
 
 Build the docker image with following command. The build process might take some time when building for first time. 
