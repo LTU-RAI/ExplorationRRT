@@ -141,7 +141,7 @@ tmuxinator errt
 
 ## Acknowledgement
 
-If you find the REF framework useful in your research, please consider citing the REF article.
+If you find the E-RRT framework useful in your research, please consider citing the E-RRT article.
 
 ```bibtex
 @ARTICLE{10582913,
