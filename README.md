@@ -16,7 +16,6 @@ The public version of the framework is provided as a docker with all dependencie
 
 The docker is pre-configured to load the DARPA SubT Cave World consisting of wide interconnected tunnels and caves, and the ERRT and UFOmap tuning is specified for this environment - and as such optimal performance in other environments might require parameter tuning. The provided version relies also on a full-tracjectory tracking controller provided by RotorS, for the UAV to track the generated and selected path. 
 
-When using the framework in academic publications, please cite our published work as: 
 
 ![image(15)](https://github.com/LTU-RAI/ExplorationRRT/assets/49238097/ed52dec3-6133-4387-a20a-fe6a104cbb18)
 
@@ -138,4 +137,23 @@ This session will launch the ERRT sub-modules and a Rviz window to visualize the
 
 ```bash
 tmuxinator errt
+```
+
+## Acknowledgement
+
+If you find the REF framework useful in your research, please consider citing the REF article.
+
+```bibtex
+@ARTICLE{10582913,
+  author={Lindqvist, Björn and Patel, Akash and Löfgren, Kalle and Nikolakopoulos, George},
+  journal={IEEE Transactions on Robotics}, 
+  title={A Tree-based Next-best-trajectory Method for 3D UAV Exploration}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-18},
+  keywords={Robots;Robot sensing systems;Costs;Collision avoidance;Autonomous aerial vehicles;Trajectory;Three-dimensional displays;Tree-based Exploration;RRT;Subterranean Exploration;Field Robotics;Unmanned Aerial Vehicles},
+  doi={10.1109/TRO.2024.3422052}}
+}
+
 ```
