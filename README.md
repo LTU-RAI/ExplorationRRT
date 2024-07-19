@@ -10,15 +10,13 @@ The ERRT framework is a combined Exploration-Planning algorithm for the explorat
 
 ##
 
-The framework heavily relies on the UFOmap occupancy mapper library and requires an UFOmap topic as input, together with the robot localization/odometry. As output the user can select to use a continously updated pose reference or the full trajectory to track.  
+The framework heavily relies on the [UFOmap](https://github.com/UnknownFreeOccupied/ufomap) occupancy mapper library and requires an UFOmap topic as input, together with the robot localization/odometry. As output the user can select to use a continously updated pose reference or the full trajectory to track.  
 
-The public version of the framework is provided as a docker with all dependencies already configured including but not limited to: the UFOmap framework (https://github.com/UnknownFreeOccupied/ufomap), the RotorS UAV simulator and trajectory tracker (https://github.com/ethz-asl/rotors_simulator), and the NMPC optimizer (https://alphaville.github.io/optimization-engine/). Instructions for installing the docker are provided below, and further down are detailed instruction on running the framework from the installed docker. 
+The public version of the framework provides a pre configured Dockerfile with all dependencies already configured including but not limited to: the [UFOmap](https://github.com/UnknownFreeOccupied/ufomap), the [RotorS UAV simulator and trajectory tracker](https://github.com/ethz-asl/rotors_simulator), and the [NMPC optimizer](https://alphaville.github.io/optimization-engine/). Instructions for installing docker and building the Dockerfile are provided below, and further down are detailed instruction on running the framework inside the errt docker container. 
 
-The docker is pre-configured to load the DARPA SubT Cave World consisting of wide interconnected tunnels and caves, and the ERRT and UFOmap tuning is specified for this environment - and as such optimal performance in other environments might require parameter tuning. The provided version relies also on a full-tracjectory tracking controller provided by RotorS, for the UAV to track the generated and selected path. 
-
+The docker container based simulation is pre-configured to load the DARPA SubT Cave World consisting of wide interconnected tunnels and caves, and the ERRT and UFOmap tuning is specified for this environment - and as such optimal performance in other environments might require parameter tuning. The provided version relies also on a full-tracjectory tracking controller provided by RotorS, for the UAV to track the generated and selected path. 
 
 ![image(15)](https://github.com/LTU-RAI/ExplorationRRT/assets/49238097/ed52dec3-6133-4387-a20a-fe6a104cbb18)
-
 
 # Installation 
 
@@ -56,7 +54,7 @@ Clone the ERRT project
   git clone https://github.com/LTU-RAI/ExplorationRRT.git
 
 ```
-Go to the ERRT directory and download cave models for gazebo. (This speeds up the world loading process in Gazebo)
+Navigate to the ERRT directory and download cave models for gazebo. (This speeds up the world loading process in Gazebo)
 
 ```bash
   cd ExplorationRRT/docker
@@ -72,7 +70,6 @@ Build the docker image with following command. The build process might take some
   sudo docker build --build-arg USERNAME=$(whoami) -t errt_test . 
 
 ```
-
 
 # Fundamentals & Critical launch parameters
 This section will detail some of the critical launch parameters of interest for the user - focusing on baseline configuration params, and those that can have a large impact on using ERRT different environments. The relevant launch files launch/errt.launch, config/errt.yaml, and launch/server.launch (for UFOmap) has more details for every configuration parameter. 
