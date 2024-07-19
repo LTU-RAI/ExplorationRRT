@@ -95,27 +95,22 @@ There are also many visualization topics included in the ERRT program such as th
 
 This section will detail a number of tuning parameters in config/errt.yaml and launch/server.launch (UFOmap). The related launch files detail all possible tuning and configuration parameters. 
 
-**resolution** - Found in server.launch. The resolution of the UFOmap. 
-
-**planning_depth** and **info_gain_depth** - The depth of the Octree in UFOmap practically means merging voxels into larger ones. This significantly speeds up various volumetric occupancy checks. ERRT is configured to use a small **resolution** of ~0.05-0.15m but performing computationally demanding actions such as information gain calculations at a set depth in the Octree. 
-
-**robot_size** - The approximate size-radius of the robot. This is used in volumetric collision checks to ensure robot-safe trajectories.  
-
-**v_local** - The side length of the bounding box that defines the local sampling space for generating the RRT.
-
-**number_of_nodes** - The size of the RRT as the exit condition to stop tree expansion. 
-
-**number_of_goals** - The number of candidate goals to be generated and consequently the number of candidate trajectories that will be investigated. Large effect on computation time. 
-
-**sensor_range** - The range of the LiDAR model used to compute predicted information gain along candidate branches. Must be set lower than the **max_range** in server.launch. Recommended to use a much smaller range than the real range of the sensor for both parameters - both for computation effort and to guarantee useful, dense, and consistent data integration into the UFOmap. 
-
-**sensor_vertical_fov** - The vertical cutoff angle in radians for the LiDAR model as half the vertical field of view. Should match the onboard LiDAR on the robot. Ex. Ouster 32-beam 45deg FoV -> **sensor_vertical_fov** = 0.393
-
-**info_calc_dist** - The distance between nodes in candidate branches where information gain calculations will be performed. Too small values lead to big overlap between checks, and a significant increase in computation time. 
-
-**k_dist, k_info, k_u** - Gains related to the distance cost, information gain, and actuation cost along candidate branches. Changing these will change which types of trajectories will be favored. Note: the information gain is calculated from the *number* of unknown voxels in sensor view so **K_Info** might need to be edited with significant changes to **resolution** or **info_gain_depth**. 
-
-**start_from_waypoint** - *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, set by subsequent *x,y,z*-coordinates. Can be useful to provide an initial direction of exploration or to "hot-start" ERRT with a small map and not just with scans from the ground. 
+| Parameter               | Description                                                                                         |
+|-------------------------|-----------------------------------------------------------------------------------------------------|
+| **resolution**          | Found in server.launch. The resolution of the UFOmap.                                               |
+| **planning_depth**      | The depth of the Octree in UFOmap practically means merging voxels into larger ones. <br> This significantly speeds up various volumetric occupancy checks. <br> ERRT is configured to use a small **resolution** of ~0.05-0.15m but performing computationally demanding actions such as information gain calculations at a set depth in the Octree. |
+| **info_gain_depth**     | Similar to planning_depth, used for information gain calculations.                                  |
+| **robot_size**          | Approximate size-radius of the robot, used in collision checks.                                     |
+| **v_local**             | Side length of the bounding box for local sampling space in RRT.                                    |
+| **number_of_nodes**     | Size of the RRT, determining when to stop tree expansion.                                           |
+| **number_of_goals**     | Number of candidate goals and trajectories to investigate. Affects computation time.                |
+| **sensor_range**        | Range of the LiDAR model for computing predicted information gain. <br> Should be set lower than max_range in server.launch. |
+| **sensor_vertical_fov** | Vertical cutoff angle for the LiDAR model, matching the onboard LiDAR on the robot. <br> Example: Ouster 32-beam 45° FoV -> **sensor_vertical_fov** = 0.393 |
+| **info_calc_dist**      | Distance between nodes in candidate branches where information gain calculations are performed. <br> Smaller values increase computation time. |
+| **k_dist**              | Gain related to the distance cost along candidate branches.                                         |
+| **k_info**              | Gain related to the information gain along candidate branches.                                      |
+| **k_u**                 | Gain related to the actuation cost along candidate branches.                                        |
+| **start_from_waypoint** | *true/false* indicates if the UAV should travel to a specified initial coordinate before ERRT takes over navigation, <br> set by subsequent *x,y,z*-coordinates.          |
 
 ## Test ERRT in a docker container
 ![errt_gif-ezgif com-speed](https://github.com/LTU-RAI/ExplorationRRT/assets/49238097/957df250-dddc-4bd1-b7e9-841269cb16f2)
@@ -157,3 +152,4 @@ If you find the E-RRT framework useful in your research, please consider citing 
 }
 
 ```
+
